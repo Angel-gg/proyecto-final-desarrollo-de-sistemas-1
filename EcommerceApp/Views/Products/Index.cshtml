@@ -1,0 +1,28 @@
+@model List<EcommerceApp.Models.Product>
+<h2>Productos</h2>
+@if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+{
+    <a href="@Url.Action("Create")" class="btn btn-primary mb-3">Crear Producto</a>
+}
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="@(product.ImageUrl ?? "/images/default-product.jpg")" class="card-img-top" alt="@product.Name" />
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">@product.Description</p>
+                    <p class="card-text"><strong>Precio:</strong> @product.Price.ToString("C")</p>
+                    <p class="card-text"><strong>Stock:</strong> @product.Stock</p>
+                    <a href="@Url.Action("Details", new { id = product.Id })" class="btn btn-info">Ver</a>
+                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                    {
+                        <a href="@Url.Action("Edit", new { id = product.Id })" class="btn btn-warning">Editar</a>
+                        <a href="@Url.Action("Delete", new { id = product.Id })" class="btn btn-danger">Eliminar</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

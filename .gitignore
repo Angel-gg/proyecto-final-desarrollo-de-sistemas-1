@@ -1,0 +1,15 @@
+## [Visual Studio / .NET]
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+*.DotSettings.user
+_ReSharper*/
+*.suo
+*.userprefs
+appsettings.Development.json
+*.db
+*.log

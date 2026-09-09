@@ -1,0 +1,10 @@
+@model EcommerceApp.Models.Product
+<h2>¿Eliminar este producto?</h2>
+<h4>@Model.Name</h4>
+<p>@Model.Description</p>
+<p><strong>Precio:</strong> @Model.Price.ToString("C")</p>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
+</form>

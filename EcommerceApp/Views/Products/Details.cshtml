@@ -1,0 +1,8 @@
+@model EcommerceApp.Models.Product
+<h2>@Model.Name</h2>
+<img src="@(Model.ImageUrl ?? "/images/default-product.jpg")" style="max-width:300px" class="mb-3" />
+<p>@Model.Description</p>
+<p><strong>Precio:</strong> @Model.Price.ToString("C")</p>
+<p><strong>Stock:</strong> @Model.Stock</p>
+<p><strong>Categoría:</strong> @Model.Category</p>
+<a href="@Url.Action("Index")" class="btn btn-secondary">Volver</a>
