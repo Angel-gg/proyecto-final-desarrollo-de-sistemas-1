@@ -1,0 +1,198 @@
+@{
+    ViewData["Title"] = "Panel Administrativo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --primary: #6c63ff;
+        --primary-dark: #574fd6;
+        --accent: #00d9b5;
+        --bg-dark: #0d0f1a;
+        --card-bg: rgba(255,255,255,0.05);
+        --text-main: #e8eaf6;
+        --text-sub: #9da8c7;
+    }
+
+    body { background: var(--bg-dark); color: var(--text-main); }
+
+    .dashboard-hero {
+        background: linear-gradient(135deg, #1a1c2e 0%, #12142a 100%);
+        border-bottom: 1px solid rgba(108,99,255,0.2);
+        padding: 2.5rem 2rem 2rem;
+    }
+
+    .role-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        padding: 0.3rem 0.85rem;
+        border-radius: 50px;
+        text-transform: uppercase;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border: 1px solid rgba(108,99,255,0.15);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary);
+    }
+
+    .stat-card .stat-icon {
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-card .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-sub);
+        margin-top: 0.25rem;
+    }
+
+    .nav-card {
+        background: var(--card-bg);
+        border: 1px solid rgba(108,99,255,0.15);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text-main);
+        display: block;
+        transition: all 0.2s ease;
+    }
+
+    .nav-card:hover {
+        border-color: var(--primary);
+        background: rgba(108,99,255,0.1);
+        color: var(--text-main);
+        transform: translateY(-2px);
+    }
+
+    .nav-card .nav-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+</style>
+
+<div class="dashboard-hero">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h1 class="h3 mb-1 fw-bold">
+                    👋 Bienvenido, @ViewBag.NombreUsuario
+                </h1>
+                <span class="role-badge">@ViewBag.Rol</span>
+                @if (ViewBag.SucursalId != null)
+                {
+                    <span class="ms-2 text-muted" style="font-size:0.85rem">Sucursal #@ViewBag.SucursalId</span>
+                }
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    🚪 Cerrar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid py-4 px-4">
+    <!-- Tarjetas de estadísticas (sprint futuro: datos reales) -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:rgba(108,99,255,0.15)">📦</div>
+                <div class="stat-value">—</div>
+                <div class="stat-label">Productos en inventario</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:rgba(0,217,181,0.15)">💰</div>
+                <div class="stat-value">—</div>
+                <div class="stat-label">Ventas del mes</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:rgba(255,193,7,0.15)">🏪</div>
+                <div class="stat-value">—</div>
+                <div class="stat-label">Sucursales activas</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:rgba(255,99,132,0.15)">👥</div>
+                <div class="stat-value">—</div>
+                <div class="stat-label">Clientes registrados</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulos de navegación -->
+    <h5 class="mb-3" style="color:var(--text-sub)">Módulos del sistema</h5>
+    <div class="row g-3">
+        @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+        {
+            <div class="col-sm-6 col-md-4 col-xl-3">
+                <a href="#" class="nav-card">
+                    <div class="nav-icon">🗺️</div>
+                    <div class="fw-bold">Regiones y Sucursales</div>
+                    <div style="font-size:0.82rem;color:var(--text-sub)">Gestión de la estructura organizacional</div>
+                </a>
+            </div>
+        }
+        @if (User.IsInRole("Vendedor") || User.IsInRole("GerenteSucursal") || User.IsInRole("Admin"))
+        {
+            <div class="col-sm-6 col-md-4 col-xl-3">
+                <a href="#" class="nav-card">
+                    <div class="nav-icon">🖥️</div>
+                    <div class="fw-bold">Punto de Venta (POS)</div>
+                    <div style="font-size:0.82rem;color:var(--text-sub)">Registrar ventas físicas en caja</div>
+                </a>
+            </div>
+        }
+        @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+        {
+            <div class="col-sm-6 col-md-4 col-xl-3">
+                <a href="#" class="nav-card">
+                    <div class="nav-icon">🚚</div>
+                    <div class="fw-bold">Compras a Proveedores</div>
+                    <div style="font-size:0.82rem;color:var(--text-sub)">Reabastecimiento de inventario</div>
+                </a>
+            </div>
+        }
+        <div class="col-sm-6 col-md-4 col-xl-3">
+            <a asp-controller="Products" asp-action="Index" class="nav-card">
+                <div class="nav-icon">📋</div>
+                <div class="fw-bold">Catálogo de Productos</div>
+                <div style="font-size:0.82rem;color:var(--text-sub)">Ver y gestionar el inventario</div>
+            </a>
+        </div>
+        <div class="col-sm-6 col-md-4 col-xl-3">
+            <a href="#" class="nav-card">
+                <div class="nav-icon">📊</div>
+                <div class="fw-bold">Reportes de Ingresos</div>
+                <div style="font-size:0.82rem;color:var(--text-sub)">Ingresos filtrados por tu nivel jerárquico</div>
+            </a>
+        </div>
+    </div>
+</div>

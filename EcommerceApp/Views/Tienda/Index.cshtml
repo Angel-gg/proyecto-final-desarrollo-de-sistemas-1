@@ -1,0 +1,121 @@
+@{
+    ViewData["Title"] = "TechParts Store — Tienda Online";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --primary: #6c63ff;
+        --accent: #00d9b5;
+        --bg: #f4f6ff;
+        --card-shadow: 0 4px 24px rgba(108,99,255,0.10);
+    }
+
+    .store-hero {
+        background: linear-gradient(135deg, #6c63ff 0%, #574fd6 60%, #00d9b5 100%);
+        color: #fff;
+        padding: 4rem 2rem;
+        text-align: center;
+        border-radius: 0 0 2rem 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .store-hero h1 { font-size: 2.5rem; font-weight: 800; }
+    .store-hero p { opacity: 0.88; font-size: 1.1rem; }
+
+    .branch-selector {
+        background: #fff;
+        border: 2px solid rgba(108,99,255,0.2);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: var(--card-shadow);
+        max-width: 500px;
+        margin: 0 auto 2.5rem;
+    }
+
+    .product-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        height: 100%;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 36px rgba(108,99,255,0.20);
+    }
+
+    .product-img {
+        height: 160px;
+        background: linear-gradient(135deg, #e8eaff 0%, #f0f9ff 100%);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 4rem;
+    }
+
+    .product-body { padding: 1.25rem; }
+    .product-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+    .product-price { color: var(--primary); font-size: 1.3rem; font-weight: 800; }
+    .product-stock { font-size: 0.8rem; color: #666; }
+
+    .btn-add {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 0.75rem;
+        transition: opacity 0.2s;
+    }
+    .btn-add:hover { opacity: 0.88; color: #fff; }
+</style>
+
+<div class="store-hero">
+    <h1>🛒 TechParts Store</h1>
+    <p>Componentes y periféricos de computación — disponibilidad en tiempo real</p>
+    @if (!User.Identity!.IsAuthenticated)
+    {
+        <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg mt-3 fw-bold px-5">
+            Iniciar sesión para comprar
+        </a>
+    }
+</div>
+
+<div class="container pb-5">
+    <!-- Selector de sucursal -->
+    <div class="branch-selector">
+        <label class="form-label fw-bold mb-2">🏪 Selecciona la sucursal</label>
+        <select class="form-select" id="sucursal-select">
+            <option value="">— Elige una sucursal —</option>
+            <option value="1">Sucursal Centro</option>
+            <option value="2">Sucursal Norte</option>
+            <option value="3">Sucursal Sur</option>
+        </select>
+        <div class="form-text mt-1">El catálogo mostrará solo productos disponibles en esa sucursal.</div>
+    </div>
+
+    <!-- Grid de productos (Sprint 3: conectar con INVENTARIO_SUCURSAL) -->
+    <div class="row g-4" id="product-grid">
+        @for (int i = 0; i < 6; i++)
+        {
+            <div class="col-sm-6 col-md-4 col-xl-3">
+                <div class="product-card">
+                    <div class="product-img">💻</div>
+                    <div class="product-body">
+                        <div class="product-name">Producto de ejemplo #@(i + 1)</div>
+                        <div class="product-price">$@(99 + i * 50).99</div>
+                        <div class="product-stock">Stock: @(10 - i) unidades</div>
+                        <button class="btn btn-add">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-5 text-muted">
+        <small>📦 El inventario se actualiza en tiempo real desde Supabase PostgreSQL.</small>
+    </div>
+</div>

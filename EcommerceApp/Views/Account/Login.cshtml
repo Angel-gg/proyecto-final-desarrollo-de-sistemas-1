@@ -1,22 +1,302 @@
 @model EcommerceApp.Models.LoginViewModel
-<h2>Iniciar Sesión</h2>
-<form asp-action="Login" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group mb-2">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+@{
+    ViewData["Title"] = "Iniciar Sesión — TechParts ERP";
+    Layout = null; // Página de login sin layout genérico
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0d0f1a;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Animated gradient background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.25) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 20%, rgba(0,217,181,0.18) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(86,50,168,0.20) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @@keyframes bgPulse {
+            0%   { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* ── Glass card ── */
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 2.75rem 2.5rem;
+            box-shadow: 0 32px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+            animation: cardIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        @@keyframes cardIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ── Logo / Brand ── */
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #6c63ff, #00d9b5);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.75rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 8px 24px rgba(108,99,255,0.4);
+        }
+
+        .brand h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .brand p {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 0.25rem;
+        }
+
+        /* ── Form elements ── */
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #6c63ff;
+            box-shadow: 0 0 0 3px rgba(108,99,255,0.25);
+            background: rgba(108,99,255,0.08);
+        }
+
+        .form-control::placeholder { color: rgba(255,255,255,0.3); }
+
+        .form-group { margin-bottom: 1.25rem; }
+
+        /* ── Remember me ── */
+        .remember-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .remember-row input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: #6c63ff;
+            cursor: pointer;
+        }
+
+        .remember-row label {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.55);
+            cursor: pointer;
+        }
+
+        /* ── Submit button ── */
+        .btn-login {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, #6c63ff, #574fd6);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 8px 24px rgba(108,99,255,0.35);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(108,99,255,0.5);
+        }
+
+        .btn-login:active { transform: translateY(0); }
+
+        /* ── Error message ── */
+        .alert-error {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 10px;
+            color: #fca5a5;
+            font-size: 0.88rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ── Footer link ── */
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .login-footer a {
+            color: #6c63ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover { text-decoration: underline; }
+
+        /* ── Validation error ── */
+        .field-validation-error {
+            color: #fca5a5;
+            font-size: 0.8rem;
+            margin-top: 0.35rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <!-- Brand -->
+            <div class="brand">
+                <div class="brand-icon">⚡</div>
+                <h1>TechParts ERP</h1>
+                <p>Portal unificado de acceso al sistema</p>
+            </div>
+
+            <!-- Error global -->
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(string.Empty))
+            {
+                <div class="alert-error">
+                    <span>⚠️</span>
+                    <span>@Html.ValidationSummary(true, "", new { @class = "" })</span>
+                </div>
+            }
+            <div asp-validation-summary="ModelOnly" class="alert-error" style="display:none"></div>
+
+            <!-- Form -->
+            <form asp-action="Login" method="post" id="login-form">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label">Correo electrónico</label>
+                    <input asp-for="Email"
+                           id="Email"
+                           class="form-control"
+                           type="email"
+                           placeholder="usuario@empresa.com"
+                           autocomplete="email" />
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password" class="form-label">Contraseña</label>
+                    <input asp-for="Password"
+                           id="Password"
+                           class="form-control"
+                           type="password"
+                           placeholder="••••••••"
+                           autocomplete="current-password" />
+                    <span asp-validation-for="Password" class="field-validation-error"></span>
+                </div>
+
+                <div class="remember-row">
+                    <input asp-for="RememberMe" id="RememberMe" type="checkbox" />
+                    <label asp-for="RememberMe">Mantener sesión iniciada</label>
+                </div>
+
+                <button type="submit" class="btn-login" id="btn-login-submit">
+                    Iniciar sesión →
+                </button>
+            </form>
+
+            <div class="login-footer">
+                ¿No tienes cuenta?
+                <a asp-controller="Account" asp-action="Register">Regístrate aquí</a>
+            </div>
+        </div>
     </div>
-    <div class="form-group mb-2">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group form-check mb-2">
-        <input asp-for="RememberMe" class="form-check-input" />
-        <label asp-for="RememberMe" class="form-check-label"></label>
-    </div>
-    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-    <a href="@Url.Action("Register")" class="btn btn-link">Registrarse</a>
-</form>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+
+    <script>
+        // Feedback visual al enviar el formulario
+        document.getElementById('login-form').addEventListener('submit', function () {
+            const btn = document.getElementById('btn-login-submit');
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+            btn.style.opacity = '0.75';
+        });
+
+        // Mostrar el div de validation-summary si tiene contenido
+        const vs = document.querySelector('[data-valmsg-summary]');
+        if (vs && vs.querySelector('li')) {
+            vs.parentElement.style.display = 'flex';
+        }
+    </script>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>
+
