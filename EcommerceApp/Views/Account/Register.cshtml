@@ -1,31 +1,433 @@
 @model EcommerceApp.Models.RegisterViewModel
-<h2>Registro</h2>
-<form asp-action="Register" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group mb-2">
-        <label asp-for="FullName"></label>
-        <input asp-for="FullName" class="form-control" />
-        <span asp-validation-for="FullName" class="text-danger"></span>
+@{
+    ViewData["Title"] = "Crear cuenta";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear cuenta — TechParts ERP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; font-family: 'Inter', sans-serif; }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: #0d0f1a;
+        }
+
+        /* ── LEFT PANEL ── */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(150deg, #1a1c35 0%, #0d1028 40%, #091520 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 4rem 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
+            top: -100px; left: -100px;
+            pointer-events: none;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 350px; height: 350px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,217,181,0.1) 0%, transparent 70%);
+            bottom: -80px; right: -60px;
+            pointer-events: none;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+            z-index: 1;
+        }
+
+        .brand-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #6c63ff, #00d9b5);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 20px rgba(108,99,255,0.4);
+        }
+
+        .brand-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .brand-name small {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 0.04em;
+        }
+
+        .left-headline {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            z-index: 1;
+        }
+
+        .left-headline span {
+            background: linear-gradient(90deg, #6c63ff, #00d9b5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .left-sub {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            z-index: 1;
+            max-width: 380px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            z-index: 1;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            color: rgba(255,255,255,0.75);
+            font-size: 0.9rem;
+        }
+
+        .feature-item .ficon {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            background: rgba(108,99,255,0.15);
+            border: 1px solid rgba(108,99,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* ── RIGHT PANEL ── */
+        .right-panel {
+            width: 480px;
+            flex-shrink: 0;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem 3rem;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .form-heading {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #0d0f1a;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-subheading {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .field { margin-bottom: 1rem; }
+
+        .field-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.9rem;
+            font-size: 0.95rem;
+            color: #9ca3af;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.7rem 0.9rem 0.7rem 2.5rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            color: #111827;
+            background: #f9fafb;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #6c63ff;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+        }
+
+        .field-error {
+            font-size: 0.78rem;
+            color: #ef4444;
+            margin-top: 0.3rem;
+            display: block;
+        }
+
+        .alert-error {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            color: #dc2626;
+            margin-bottom: 1.25rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #6c63ff 0%, #574fd6 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+        .btn-submit:active { transform: scale(0.98); }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.25rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .form-footer a {
+            color: #6c63ff;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .form-footer a:hover { text-decoration: underline; }
+
+        .copyright {
+            position: absolute;
+            bottom: 1.25rem;
+            left: 0; right: 0;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #d1d5db;
+        }
+
+        @@media (max-width: 860px) {
+            .left-panel { display: none; }
+            .right-panel { width: 100%; padding: 2.5rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="brand-logo">
+            <div class="brand-icon">⚡</div>
+            <div class="brand-name">
+                TechParts ERP
+                <small>Sistema multi-sucursal</small>
+            </div>
+        </div>
+
+        <h2 class="left-headline">
+            Únete a la<br/>
+            plataforma <span>líder</span>
+        </h2>
+        <p class="left-sub">
+            Accede al catálogo de componentes de computación,
+            gestiona tus pedidos y lleva el control de tus compras
+            desde un solo lugar.
+        </p>
+
+        <div class="feature-list">
+            <div class="feature-item">
+                <div class="ficon">🛒</div>
+                <span>Tienda con catálogo actualizado en tiempo real</span>
+            </div>
+            <div class="feature-item">
+                <div class="ficon">📦</div>
+                <span>Historial de pedidos y seguimiento de órdenes</span>
+            </div>
+            <div class="feature-item">
+                <div class="ficon">🏪</div>
+                <span>Disponibilidad por sucursal más cercana</span>
+            </div>
+            <div class="feature-item">
+                <div class="ficon">🔒</div>
+                <span>Cuenta segura con autenticación robusta</span>
+            </div>
+        </div>
     </div>
-    <div class="form-group mb-2">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+        <h1 class="form-heading">Crear cuenta</h1>
+        <p class="form-subheading">Completa tus datos para comenzar</p>
+        <div class="divider"></div>
+
+        <!-- Errors -->
+        <div asp-validation-summary="ModelOnly" class="alert-error" id="validation-summary" style="display:none">
+            <span>⚠️</span>
+        </div>
+
+        <!-- Form -->
+        <form asp-action="Register" method="post" id="register-form">
+            @Html.AntiForgeryToken()
+
+            <div class="field">
+                <label class="field-label" asp-for="FullName">Nombre completo</label>
+                <div class="input-wrap">
+                    <span class="input-icon">👤</span>
+                    <input asp-for="FullName" class="form-input" placeholder="Angel García López" autocomplete="name" />
+                </div>
+                <span asp-validation-for="FullName" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label" asp-for="Email">Correo electrónico</label>
+                <div class="input-wrap">
+                    <span class="input-icon">✉️</span>
+                    <input asp-for="Email" class="form-input" type="email" placeholder="tu@correo.com" autocomplete="email" />
+                </div>
+                <span asp-validation-for="Email" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label" asp-for="Password">Contraseña</label>
+                <div class="input-wrap">
+                    <span class="input-icon">🔒</span>
+                    <input asp-for="Password" id="pwd1" class="form-input" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+                    <button type="button" id="toggle-pwd1" title="Ver contraseña"
+                        style="position:absolute;right:0.75rem;background:none;border:none;cursor:pointer;font-size:1rem;color:#9ca3af;">👁</button>
+                </div>
+                <span asp-validation-for="Password" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label" asp-for="ConfirmPassword">Confirmar contraseña</label>
+                <div class="input-wrap">
+                    <span class="input-icon">🔐</span>
+                    <input asp-for="ConfirmPassword" id="pwd2" class="form-input" type="password" placeholder="Repite la contraseña" autocomplete="new-password" />
+                    <button type="button" id="toggle-pwd2" title="Ver contraseña"
+                        style="position:absolute;right:0.75rem;background:none;border:none;cursor:pointer;font-size:1rem;color:#9ca3af;">👁</button>
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label" asp-for="Address">Dirección (opcional)</label>
+                <div class="input-wrap">
+                    <span class="input-icon">📍</span>
+                    <input asp-for="Address" class="form-input" placeholder="Calle, Colonia, Ciudad" autocomplete="street-address" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btn-register">
+                Crear mi cuenta &nbsp;→
+            </button>
+        </form>
+
+        <div class="form-footer">
+            ¿Ya tienes cuenta?&nbsp;
+            <a asp-controller="Account" asp-action="Login">Inicia sesión aquí</a>
+        </div>
+
+        <div class="copyright">© 2026 TechParts ERP · Desarrollo de Sistemas 1</div>
     </div>
-    <div class="form-group mb-2">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" class="form-control" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Registrarse</button>
-</form>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+
+    <script>
+        // Toggle show/hide passwords
+        function togglePwd(btnId, inputId) {
+            const btn = document.getElementById(btnId);
+            const inp = document.getElementById(inputId);
+            btn.addEventListener('click', () => {
+                const show = inp.type === 'password';
+                inp.type = show ? 'text' : 'password';
+                btn.textContent = show ? '🙈' : '👁';
+            });
+        }
+        togglePwd('toggle-pwd1', 'pwd1');
+        togglePwd('toggle-pwd2', 'pwd2');
+
+        // Disable button on submit
+        document.getElementById('register-form').addEventListener('submit', function () {
+            const btn = document.getElementById('btn-register');
+            btn.textContent = 'Creando cuenta...';
+            btn.disabled = true;
+            btn.style.opacity = '0.75';
+        });
+
+        // Show validation summary
+        const vs = document.querySelector('[data-valmsg-summary]');
+        if (vs && vs.querySelector('li')) {
+            document.getElementById('validation-summary').style.display = 'flex';
+        }
+    </script>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

@@ -1,47 +1,253 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EcommerceApp</title>
+    <title>@ViewData["Title"] — TechParts ERP</title>
     <script type="importmap"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EcommerceApp.styles.css" asp-append-version="true" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+
+        /* ── Navbar premium ── */
+        .tp-navbar {
+            background: linear-gradient(90deg, #0d0f1a 0%, #12142a 100%);
+            border-bottom: 1px solid rgba(108,99,255,0.25);
+            padding: 0.6rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+        }
+
+        .tp-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #fff;
+        }
+        .tp-brand:hover { color: #a78bfa; }
+
+        .tp-brand-icon {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, #6c63ff, #00d9b5);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+
+        .tp-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            list-style: none;
+            margin: 0; padding: 0;
+        }
+
+        .tp-nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 0.45rem 0.85rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .tp-nav-links a:hover {
+            color: #fff;
+            background: rgba(108,99,255,0.2);
+        }
+
+        .tp-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tp-user-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 0.3rem 0.85rem 0.3rem 0.4rem;
+        }
+
+        .tp-user-avatar {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c63ff, #00d9b5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .tp-user-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tp-role-badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #6c63ff, #00d9b5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tp-btn-logout {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.35);
+            color: #f87171;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.4rem 0.9rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .tp-btn-logout:hover {
+            background: rgba(239,68,68,0.25);
+            color: #fca5a5;
+            border-color: #f87171;
+        }
+
+        .tp-btn-login {
+            background: linear-gradient(135deg, #6c63ff, #574fd6);
+            border: none;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.45rem 1.1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .tp-btn-login:hover { opacity: 0.85; color: #fff; }
+
+        /* ── Footer ── */
+        .tp-footer {
+            background: #0d0f1a;
+            border-top: 1px solid rgba(108,99,255,0.15);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.35);
+            margin-top: 4rem;
+        }
+        .tp-footer a { color: rgba(108,99,255,0.7); text-decoration: none; }
+        .tp-footer a:hover { color: #a78bfa; }
+
+        /* ── Main content ── */
+        .tp-main { min-height: calc(100vh - 120px); }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EcommerceApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+<body style="background:#f4f6ff; margin:0; padding:0;">
+
+    <!-- ── Navbar ── -->
+    <nav class="tp-navbar">
+        <!-- Brand -->
+        <a class="tp-brand" asp-controller="Home" asp-action="Index">
+            <div class="tp-brand-icon">⚡</div>
+            TechParts ERP
+        </a>
+
+        <!-- Nav links -->
+        <ul class="tp-nav-links d-none d-md-flex">
+            @if (User.Identity!.IsAuthenticated)
+            {
+                @if (User.IsInRole("Cliente") || User.IsInRole("User"))
+                {
+                    <li><a asp-controller="Tienda" asp-action="Index">🛒 Tienda</a></li>
+                }
+                else
+                {
+                    <li><a asp-controller="Admin" asp-action="Dashboard">📊 Dashboard</a></li>
+                    <li><a asp-controller="Products" asp-action="Index">📦 Productos</a></li>
+                    @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+                    {
+                        <li><a href="#">🗺️ Sucursales</a></li>
+                    }
+                    @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+                    {
+                        <li><a href="#">🚚 Proveedores</a></li>
+                    }
+                }
+            }
+        </ul>
+
+        <!-- Right side -->
+        <div class="tp-nav-right">
+            @if (User.Identity!.IsAuthenticated)
+            {
+                <!-- User chip -->
+                <div class="tp-user-chip d-none d-sm-flex">
+                    <div class="tp-user-avatar">
+                        @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
+                    </div>
+                    <div>
+                        <div class="tp-user-name">@User.Identity.Name</div>
+                        @{
+                            var rolName = User.IsInRole("GerenteGeneral") ? "Gerente General"
+                                        : User.IsInRole("GerenteRegional") ? "Gerente Regional"
+                                        : User.IsInRole("GerenteSucursal") ? "Gerente Sucursal"
+                                        : User.IsInRole("Vendedor") ? "Vendedor"
+                                        : User.IsInRole("Comercial") ? "Comercial"
+                                        : User.IsInRole("Admin") ? "Admin"
+                                        : "Cliente";
+                        }
+                        <div class="tp-role-badge">@rolName</div>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+                <!-- Logout -->
+                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="tp-btn-logout">🚪 Salir</button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="tp-btn-login">Iniciar sesión</a>
+            }
+        </div>
+    </nav>
+
+    <!-- ── Main ── -->
+    <div class="tp-main">
+        @RenderBody()
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - EcommerceApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+    <!-- ── Footer ── -->
+    <footer class="tp-footer">
+        © 2026 TechParts ERP — Desarrollo de Sistemas 1 &nbsp;·&nbsp;
+        <a asp-controller="Home" asp-action="Privacy">Privacidad</a>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

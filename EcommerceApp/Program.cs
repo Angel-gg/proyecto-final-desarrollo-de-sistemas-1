@@ -60,6 +60,7 @@ try
 {
     using var scope = app.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var db = scope.ServiceProvider.GetRequiredService<EcommerceApp.Data.ApplicationDbContext>();
 
     // Roles del nuevo sistema ERP + roles legacy para compatibilidad
@@ -79,6 +80,55 @@ try
     {
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new IdentityRole(role));
+    }
+
+    // ─── Sembrar usuarios de demostración ────────────────────────────────
+    // Contraseña para todos los usuarios de demo: TechParts2026!
+    const string demoPassword = "TechParts2026!";
+
+    var demoUsers = new (string Email, string NombreCompleto, string Rol, int? SucursalId, int? RegionId)[]
+    {
+        // Gerente General — acceso total al sistema ERP
+        ("gerente.general@techparts.com", "Carlos Mendoza Rivera", "GerenteGeneral", null, null),
+        // Gerente Regional — supervisa múltiples sucursales de una región
+        ("gerente.regional@techparts.com", "María Fernández López", "GerenteRegional", null, 1),
+        // Gerente de Sucursal — gestiona solo su tienda física
+        ("gerente.sucursal@techparts.com", "Roberto Jiménez Cruz", "GerenteSucursal", 1, null),
+        // Vendedor — POS y atención al cliente en tienda
+        ("vendedor@techparts.com", "Laura Sánchez Morales", "Vendedor", 1, null),
+        // Comercial — reabastece stock, gestiona compras a proveedores
+        ("comercial@techparts.com", "Diego Reyes Castillo", "Comercial", null, null),
+        // Cliente — acceso a la tienda web
+        ("cliente@techparts.com", "Ana García Pérez", "Cliente", null, null),
+    };
+
+    foreach (var (email, nombre, rol, sucId, regId) in demoUsers)
+    {
+        if (await userManager.FindByEmailAsync(email) == null)
+        {
+            var demoUser = new ApplicationUser
+            {
+                UserName        = email,
+                Email           = email,
+                EmailConfirmed  = true,
+                NombreCompleto  = nombre,
+                FullName        = nombre,
+                SucursalId      = sucId,
+                RegionId        = regId,
+                CodigoCliente   = rol == "Cliente" ? "CLI-DEMO01" : null
+            };
+
+            var createResult = await userManager.CreateAsync(demoUser, demoPassword);
+            if (createResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(demoUser, rol);
+                Console.WriteLine($"[SEED] Usuario '{email}' creado con rol '{rol}'.");
+            }
+            else
+            {
+                Console.WriteLine($"[SEED] Error al crear '{email}': {string.Join(", ", createResult.Errors.Select(e => e.Description))}");
+            }
+        }
     }
 
     // ─── Sembrar productos de muestra si la tabla está vacía ─────────────
