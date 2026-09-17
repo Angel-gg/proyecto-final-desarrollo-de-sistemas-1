@@ -56,8 +56,9 @@ app.MapControllerRoute(
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 // ─── Sembrar todos los roles del sistema ERP ───────────────────────────────
-using (var scope = app.Services.CreateScope())
+try
 {
+    using var scope = app.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
     // Roles del nuevo sistema ERP + roles legacy para compatibilidad
@@ -79,6 +80,10 @@ using (var scope = app.Services.CreateScope())
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new IdentityRole(role));
     }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[AVISO BD] No se pudo conectar a la base de datos para sembrar roles ({ex.Message}). Verifica el estado de tu proyecto Supabase o la cadena de conexión en appsettings.json.");
 }
 
 app.Run();
