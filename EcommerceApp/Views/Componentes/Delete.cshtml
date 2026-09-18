@@ -1,0 +1,68 @@
+@model EcommerceApp.Models.Componente
+@{
+    ViewData["Title"] = $"Eliminar: {Model.Nombre}";
+}
+<style>
+    body { background: #0d0f1a !important; }
+    .del-page { max-width: 560px; margin: 3rem auto; padding: 0 1.5rem 4rem; }
+    .del-card {
+        background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.25);
+        border-radius: 20px; padding: 2.5rem; text-align: center;
+    }
+    .del-icon { font-size: 3.5rem; margin-bottom: 1.25rem; }
+    .del-card h2 { color: #fff; font-weight: 800; font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .del-card p { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 1.75rem; }
+    .del-preview {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem; text-align: left;
+    }
+    .del-preview img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; margin-bottom: 0.75rem; }
+    .del-preview h3 { color: #fff; font-weight: 700; font-size: 1.05rem; margin: 0 0 0.3rem; }
+    .del-preview span { color: rgba(255,255,255,0.4); font-size: 0.82rem; }
+    .del-price {
+        font-size: 1.3rem; font-weight: 800;
+        background: linear-gradient(135deg, #6c63ff, #00d9b5);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .del-actions { display: flex; gap: 0.75rem; }
+    .btn-confirm-del {
+        flex: 1; background: linear-gradient(135deg, #ef4444, #dc2626);
+        border: none; color: #fff; font-weight: 700; padding: 0.75rem;
+        border-radius: 12px; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-confirm-del:hover { opacity: 0.85; }
+    .btn-cancel {
+        flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.6); font-weight: 600; padding: 0.75rem;
+        border-radius: 12px; text-decoration: none; transition: all 0.2s; text-align: center;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+</style>
+
+<div class="del-page">
+    <div class="del-card">
+        <div class="del-icon">⚠️</div>
+        <h2>¿Eliminar este componente?</h2>
+        <p>Esta acción es <strong style="color:#f87171;">permanente</strong> y no se puede deshacer.</p>
+
+        <div class="del-preview">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="@Model.Nombre" />
+            }
+            <h3>@Model.Nombre</h3>
+            <span>@Model.Tipo · @(Model.Marca ?? "")</span><br />
+            <span class="del-price">$@Model.Precio.ToString("N2")</span>
+            &nbsp;<span style="color:rgba(255,255,255,0.35);">— @Model.Stock unidades en stock</span>
+        </div>
+
+        <div class="del-actions">
+            <a asp-action="Index" class="btn-cancel">Cancelar</a>
+            <form asp-action="Delete" method="post" style="flex:1;">
+                <input type="hidden" name="id" value="@Model.Id" />
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-confirm-del" style="width:100%;">🗑️ Sí, eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>

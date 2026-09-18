@@ -1,0 +1,179 @@
+@model List<EcommerceApp.Models.Combo>
+@{
+    ViewData["Title"] = "Combos — TechParts ERP";
+}
+
+<style>
+    body { background: #0d0f1a !important; }
+    .page-header {
+        background: linear-gradient(135deg, #1a1c2e 0%, #12142a 100%);
+        border-bottom: 1px solid rgba(0,217,181,0.2);
+        padding: 2rem 2rem 1.5rem;
+    }
+    .page-header h1 { color: #fff; font-weight: 800; font-size: 1.8rem; margin: 0 0 0.3rem; }
+    .page-header p { color: rgba(255,255,255,0.45); margin: 0; font-size: 0.9rem; }
+    .section-content { padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+
+    .crud-toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.75rem; }
+    .btn-primary-tp {
+        background: linear-gradient(135deg, #00d9b5, #00a89a);
+        border: none; color: #0d0f1a; font-weight: 700; font-size: 0.88rem;
+        padding: 0.55rem 1.25rem; border-radius: 10px; text-decoration: none;
+        white-space: nowrap; transition: opacity 0.2s;
+    }
+    .btn-primary-tp:hover { opacity: 0.85; color: #0d0f1a; }
+
+    .alert-tp {
+        background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3);
+        border-radius: 12px; padding: 0.85rem 1.25rem;
+        color: #34d399; font-size: 0.88rem; margin-bottom: 1.25rem;
+    }
+
+    /* Grid de combos */
+    .combos-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;
+    }
+
+    .combo-card {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(0,217,181,0.12);
+        border-radius: 18px; overflow: hidden;
+        transition: transform 0.22s, box-shadow 0.22s;
+    }
+    .combo-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,217,181,0.12); }
+
+    .combo-img { height: 180px; overflow: hidden; background: rgba(0,217,181,0.06); position: relative; }
+    .combo-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .combo-card:hover .combo-img img { transform: scale(1.05); }
+    .combo-img-placeholder {
+        height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem;
+    }
+
+    .combo-badge {
+        position: absolute; top: 0.75rem; right: 0.75rem;
+        background: rgba(0,217,181,0.2); border: 1px solid rgba(0,217,181,0.4);
+        color: #00d9b5; font-size: 0.72rem; font-weight: 700;
+        padding: 0.25rem 0.65rem; border-radius: 50px;
+    }
+    .combo-inactive { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+    .combo-body { padding: 1.25rem; }
+    .combo-name { color: #fff; font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem; }
+    .combo-desc { color: rgba(255,255,255,0.45); font-size: 0.82rem; line-height: 1.5; margin-bottom: 1rem;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .combo-parts {
+        background: rgba(255,255,255,0.03); border-radius: 10px; padding: 0.75rem;
+        margin-bottom: 1rem; font-size: 0.78rem; color: rgba(255,255,255,0.5);
+    }
+    .combo-parts span { display: block; margin-bottom: 0.2rem; }
+
+    .combo-pricing { display: flex; align-items: flex-end; gap: 0.75rem; margin-bottom: 1rem; }
+    .combo-price {
+        font-size: 1.5rem; font-weight: 900;
+        background: linear-gradient(135deg, #00d9b5, #6c63ff);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .combo-save { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25);
+        color: #34d399; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 6px;
+    }
+
+    .combo-actions { display: flex; gap: 0.4rem; }
+    .btn-action { padding: 0.3rem 0.7rem; border-radius: 7px; font-size: 0.78rem; font-weight: 600;
+        border: none; cursor: pointer; text-decoration: none; transition: all 0.18s; }
+    .btn-view { background: rgba(99,179,237,0.12); color: #63b3ed; border: 1px solid rgba(99,179,237,0.25); }
+    .btn-view:hover { background: rgba(99,179,237,0.2); color: #90cdf4; }
+    .btn-edit { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+    .btn-edit:hover { background: rgba(251,191,36,0.22); color: #fcd34d; }
+    .btn-del { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+    .btn-del:hover { background: rgba(239,68,68,0.2); color: #fca5a5; }
+
+    .empty-dark { text-align: center; padding: 4rem 2rem; color: rgba(255,255,255,0.3); }
+    .empty-dark .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .empty-dark h3 { color: rgba(255,255,255,0.5); font-size: 1.1rem; }
+</style>
+
+<div class="page-header">
+    <h1>🎁 Combos</h1>
+    <p>Paquetes de componentes con precio especial — arma tu PC completa</p>
+</div>
+
+<div class="section-content">
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert-tp">✓ @TempData["Exito"]</div>
+    }
+
+    <div class="crud-toolbar">
+        <span style="color:rgba(255,255,255,0.4); font-size:0.88rem;">@Model.Count combo(s)</span>
+        <div style="margin-left:auto; display:flex; gap:0.5rem;">
+            <a asp-action="Create" class="btn-primary-tp">+ Nuevo Combo</a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-dark">
+            <div class="empty-icon">🎁</div>
+            <h3>No hay combos registrados</h3>
+            <p>Crea el primer combo usando el botón de arriba.</p>
+        </div>
+    }
+    else
+    {
+        <div class="combos-grid">
+            @foreach (var combo in Model)
+            {
+                <div class="combo-card">
+                    <div class="combo-img">
+                        @if (!string.IsNullOrEmpty(combo.ImageUrl))
+                        {
+                            <img src="@combo.ImageUrl" alt="@combo.Nombre" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="combo-img-placeholder">🎁</div>
+                        }
+                        <span class="combo-badge @(!combo.Activo ? "combo-inactive" : "")">
+                            @(combo.Activo ? "✓ Activo" : "Inactivo")
+                        </span>
+                    </div>
+                    <div class="combo-body">
+                        <div class="combo-name">@combo.Nombre</div>
+                        <div class="combo-desc">@combo.Descripcion</div>
+                        @if (combo.ComboComponentes.Any())
+                        {
+                            <div class="combo-parts">
+                                <strong style="color:rgba(255,255,255,0.7); display:block; margin-bottom:0.4rem;">
+                                    📦 @combo.ComboComponentes.Count componente(s):
+                                </strong>
+                                @foreach (var cc in combo.ComboComponentes.Take(3))
+                                {
+                                    <span>• @cc.Componente?.Nombre (x@cc.Cantidad)</span>
+                                }
+                                @if (combo.ComboComponentes.Count > 3)
+                                {
+                                    <span style="color:#6c63ff;">+ @(combo.ComboComponentes.Count - 3) más...</span>
+                                }
+                            </div>
+                        }
+                        <div class="combo-pricing">
+                            <div class="combo-price">$@combo.PrecioVenta.ToString("N2")</div>
+                            @if (combo.PrecioBase > combo.PrecioVenta && combo.PrecioBase > 0)
+                            {
+                                <span class="combo-save">Ahorra $@combo.Ahorro.ToString("N0")</span>
+                            }
+                        </div>
+                        <div class="combo-actions">
+                            <a asp-action="Details" asp-route-id="@combo.Id" class="btn-action btn-view">Ver</a>
+                            <a asp-action="Edit" asp-route-id="@combo.Id" class="btn-action btn-edit">Editar</a>
+                            @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@combo.Id" class="btn-action btn-del">Eliminar</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,99 @@
+@model EcommerceApp.Models.Combo
+@{
+    ViewData["Title"] = $"{Model.Nombre} — Detalle Combo";
+}
+<style>
+    body { background: #0d0f1a !important; }
+    .detail-page { max-width: 900px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }
+    .detail-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,217,181,0.2); border-radius: 20px; overflow: hidden; }
+    .detail-img { width: 100%; height: 260px; object-fit: cover; }
+    .detail-img-placeholder { width: 100%; height: 260px; background: linear-gradient(135deg,rgba(0,217,181,0.12),rgba(108,99,255,0.08)); display:flex;align-items:center;justify-content:center;font-size:5rem; }
+    .detail-body { padding: 2rem; }
+    .combo-status { display:inline-block; font-size:0.75rem; font-weight:700; padding:0.2rem 0.7rem; border-radius:50px; margin-bottom:1rem; }
+    .status-on  { background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:#34d399; }
+    .status-off { background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:#f87171; }
+    .detail-title { color:#fff; font-weight:800; font-size:1.8rem; margin:0 0 1rem; }
+    .detail-desc { color:rgba(255,255,255,0.6); line-height:1.7; margin-bottom:1.5rem; }
+    .pricing-row { display:flex; align-items:flex-end; gap:1rem; margin-bottom:1.5rem; }
+    .combo-price { font-size:2.4rem; font-weight:900; background:linear-gradient(135deg,#00d9b5,#6c63ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .combo-save { background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.25); color:#34d399; font-size:0.82rem; font-weight:700; padding:0.25rem 0.75rem; border-radius:8px; }
+    .section-title { color:rgba(255,255,255,0.8); font-weight:700; font-size:1rem; margin-bottom:1rem; }
+    .parts-list { display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1.5rem; }
+    .part-row {
+        display:grid; grid-template-columns:auto 1fr auto auto;
+        align-items:center; gap:0.75rem;
+        background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
+        border-radius:12px; padding:0.75rem 1rem;
+    }
+    .part-img { width:40px;height:40px;border-radius:8px;object-fit:cover;background:rgba(108,99,255,0.15); }
+    .part-img-ph { width:40px;height:40px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem; }
+    .part-name { color:#fff; font-weight:600; font-size:0.9rem; }
+    .part-type { color:rgba(255,255,255,0.35); font-size:0.75rem; }
+    .part-qty { background:rgba(108,99,255,0.15);color:#a78bfa;font-weight:700;font-size:0.8rem;padding:0.2rem 0.55rem;border-radius:6px; }
+    .part-price { color:rgba(255,255,255,0.5); font-size:0.85rem; font-weight:600; white-space:nowrap; }
+    .detail-actions { display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1.5rem; }
+    .btn-tp { padding:0.6rem 1.25rem; border-radius:10px; font-weight:700; font-size:0.88rem; text-decoration:none; transition:opacity 0.2s; }
+    .btn-back { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.6); }
+    .btn-back:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .btn-edit { background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); color:#fbbf24; }
+    .btn-edit:hover { opacity:0.8; color:#fbbf24; }
+</style>
+
+<div class="detail-page">
+    <div class="detail-card">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" class="detail-img" alt="@Model.Nombre" />
+        }
+        else
+        {
+            <div class="detail-img-placeholder">🎁</div>
+        }
+        <div class="detail-body">
+            <span class="combo-status @(Model.Activo ? "status-on" : "status-off")">
+                @(Model.Activo ? "✓ Activo" : "✗ Inactivo")
+            </span>
+            <h1 class="detail-title">@Model.Nombre</h1>
+            <p class="detail-desc">@Model.Descripcion</p>
+
+            <div class="pricing-row">
+                <div class="combo-price">$@Model.PrecioVenta.ToString("N2")</div>
+                @if (Model.PrecioBase > Model.PrecioVenta && Model.PrecioBase > 0)
+                {
+                    <span class="combo-save">💰 Ahorra $@Model.Ahorro.ToString("N0")</span>
+                }
+            </div>
+
+            @if (Model.ComboComponentes.Any())
+            {
+                <div class="section-title">📦 Componentes incluidos (@Model.ComboComponentes.Count)</div>
+                <div class="parts-list">
+                    @foreach (var cc in Model.ComboComponentes)
+                    {
+                        <div class="part-row">
+                            @if (!string.IsNullOrEmpty(cc.Componente?.ImageUrl))
+                            {
+                                <img src="@cc.Componente.ImageUrl" class="part-img" alt="@cc.Componente.Nombre" />
+                            }
+                            else
+                            {
+                                <div class="part-img-ph">🔧</div>
+                            }
+                            <div>
+                                <div class="part-name">@cc.Componente?.Nombre</div>
+                                <div class="part-type">@cc.Componente?.Tipo · @cc.Componente?.Marca</div>
+                            </div>
+                            <span class="part-qty">x@cc.Cantidad</span>
+                            <span class="part-price">$@cc.Componente?.Precio.ToString("N2")</span>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="detail-actions">
+                <a asp-action="Index" class="btn-tp btn-back">← Volver</a>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-tp btn-edit">✏️ Editar</a>
+            </div>
+        </div>
+    </div>
+</div>

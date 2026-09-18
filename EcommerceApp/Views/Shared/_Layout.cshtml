@@ -183,11 +183,14 @@
                 @if (User.IsInRole("Cliente") || User.IsInRole("User"))
                 {
                     <li><a asp-controller="Tienda" asp-action="Index">🛒 Tienda</a></li>
+                    <li><a asp-controller="Tienda" asp-action="Carrito">🛒 Mi Carrito</a></li>
                 }
                 else
                 {
                     <li><a asp-controller="Admin" asp-action="Dashboard">📊 Dashboard</a></li>
-                    <li><a asp-controller="Products" asp-action="Index">📦 Productos</a></li>
+                    <li><a asp-controller="Componentes" asp-action="Index">🔧 Componentes</a></li>
+                    <li><a asp-controller="Combos" asp-action="Index">🎁 Combos</a></li>
+                    <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
                     @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
                     {
                         <li><a href="#">🗺️ Sucursales</a></li>

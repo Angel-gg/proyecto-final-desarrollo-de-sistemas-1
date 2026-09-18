@@ -1,0 +1,245 @@
+@model List<EcommerceApp.Models.Componente>
+@{
+    ViewData["Title"] = "Componentes — TechParts ERP";
+    var tipos = ViewBag.Tipos as List<string> ?? new();
+    var tipoActual = ViewBag.TipoActual as string;
+    var busqueda = ViewBag.Busqueda as string;
+}
+
+<style>
+    body { background: #0d0f1a !important; }
+
+    .page-header {
+        background: linear-gradient(135deg, #1a1c2e 0%, #12142a 100%);
+        border-bottom: 1px solid rgba(108,99,255,0.2);
+        padding: 2rem 2rem 1.5rem;
+    }
+    .page-header h1 { color: #fff; font-weight: 800; font-size: 1.8rem; margin: 0 0 0.3rem; }
+    .page-header p { color: rgba(255,255,255,0.5); margin: 0; font-size: 0.9rem; }
+
+    .section-content { padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+
+    /* Toolbar */
+    .crud-toolbar {
+        display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .search-box {
+        flex: 1; min-width: 200px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px;
+        padding: 0.55rem 1rem;
+        color: #fff; font-size: 0.88rem;
+        outline: none; transition: border-color 0.2s;
+    }
+    .search-box:focus { border-color: #6c63ff; }
+    .search-box::placeholder { color: rgba(255,255,255,0.3); }
+
+    .filter-chip {
+        padding: 0.4rem 0.9rem;
+        border-radius: 50px;
+        border: 1.5px solid rgba(255,255,255,0.15);
+        background: transparent;
+        color: rgba(255,255,255,0.6);
+        font-size: 0.8rem; font-weight: 600;
+        cursor: pointer; text-decoration: none;
+        transition: all 0.18s; white-space: nowrap;
+    }
+    .filter-chip:hover { border-color: #6c63ff; color: #a78bfa; }
+    .filter-chip.active { background: #6c63ff; border-color: #6c63ff; color: #fff; }
+
+    .btn-primary-tp {
+        background: linear-gradient(135deg, #6c63ff, #574fd6);
+        border: none; color: #fff; font-weight: 700; font-size: 0.88rem;
+        padding: 0.55rem 1.25rem; border-radius: 10px;
+        text-decoration: none; white-space: nowrap;
+        transition: opacity 0.2s;
+    }
+    .btn-primary-tp:hover { opacity: 0.85; color: #fff; }
+
+    /* Alert success */
+    .alert-tp {
+        background: rgba(16,185,129,0.1);
+        border: 1px solid rgba(16,185,129,0.3);
+        border-radius: 12px; padding: 0.85rem 1.25rem;
+        color: #34d399; font-size: 0.88rem; margin-bottom: 1.25rem;
+    }
+
+    /* Table */
+    .crud-table-wrap {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px; overflow: hidden;
+    }
+    .crud-table { width: 100%; border-collapse: collapse; }
+    .crud-table thead { background: rgba(108,99,255,0.12); }
+    .crud-table th {
+        padding: 0.9rem 1.1rem;
+        text-align: left; font-size: 0.78rem; font-weight: 700;
+        letter-spacing: 0.07em; text-transform: uppercase;
+        color: rgba(255,255,255,0.5); border: none;
+    }
+    .crud-table td {
+        padding: 0.85rem 1.1rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.85); font-size: 0.88rem;
+        vertical-align: middle;
+    }
+    .crud-table tbody tr { transition: background 0.15s; }
+    .crud-table tbody tr:hover { background: rgba(108,99,255,0.06); }
+
+    .comp-thumb {
+        width: 44px; height: 44px; border-radius: 10px; object-fit: cover;
+        background: rgba(108,99,255,0.15);
+    }
+    .comp-thumb-placeholder {
+        width: 44px; height: 44px; border-radius: 10px;
+        background: rgba(108,99,255,0.15);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem;
+    }
+
+    .type-badge {
+        padding: 0.22rem 0.7rem; border-radius: 50px; font-size: 0.72rem; font-weight: 700;
+        background: rgba(108,99,255,0.15); color: #a78bfa;
+        border: 1px solid rgba(108,99,255,0.3);
+    }
+
+    .price-cell {
+        font-weight: 800; font-size: 0.97rem;
+        background: linear-gradient(135deg, #6c63ff, #00d9b5);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .stock-cell-ok  { color: #34d399; font-weight: 700; }
+    .stock-cell-low { color: #fbbf24; font-weight: 700; }
+    .stock-cell-out { color: #f87171; font-weight: 700; }
+
+    .action-btns { display: flex; gap: 0.4rem; flex-wrap: nowrap; }
+    .btn-action {
+        padding: 0.3rem 0.7rem; border-radius: 7px; font-size: 0.78rem; font-weight: 600;
+        border: none; cursor: pointer; text-decoration: none; transition: all 0.18s;
+    }
+    .btn-view    { background: rgba(99,179,237,0.12); color: #63b3ed; border: 1px solid rgba(99,179,237,0.25); }
+    .btn-view:hover { background: rgba(99,179,237,0.2); color: #90cdf4; }
+    .btn-edit    { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+    .btn-edit:hover { background: rgba(251,191,36,0.22); color: #fcd34d; }
+    .btn-del     { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+    .btn-del:hover { background: rgba(239,68,68,0.2); color: #fca5a5; }
+
+    .empty-dark {
+        text-align: center; padding: 4rem 2rem;
+        color: rgba(255,255,255,0.3);
+    }
+    .empty-dark .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .empty-dark h3 { color: rgba(255,255,255,0.5); font-size: 1.1rem; }
+</style>
+
+<div class="page-header">
+    <h1>🔧 Componentes de Hardware</h1>
+    <p>Gestión de inventario — CPU, GPU, RAM, Almacenamiento y más</p>
+</div>
+
+<div class="section-content">
+
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert-tp">✓ @TempData["Exito"]</div>
+    }
+
+    <!-- Toolbar -->
+    <div class="crud-toolbar">
+        <form method="get" style="display:flex; gap:0.75rem; flex:1; min-width:0; flex-wrap:wrap;">
+            <input name="busqueda" value="@busqueda" class="search-box" placeholder="🔍 Buscar por nombre o marca..." />
+            @if (!string.IsNullOrEmpty(tipoActual))
+            {
+                <input type="hidden" name="tipo" value="@tipoActual" />
+            }
+            <button type="submit" class="btn-primary-tp" style="background: rgba(108,99,255,0.25); border:1px solid rgba(108,99,255,0.4);">Buscar</button>
+        </form>
+        @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn-primary-tp">+ Nuevo Componente</a>
+        }
+    </div>
+
+    <!-- Filtros por tipo -->
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+        <a href="@Url.Action("Index")" class="filter-chip @(tipoActual == null ? "active" : "")">Todos</a>
+        @foreach (var t in tipos)
+        {
+            <a href="@Url.Action("Index", new { tipo = t, busqueda })" class="filter-chip @(tipoActual == t ? "active" : "")">@t</a>
+        }
+    </div>
+
+    <!-- Tabla -->
+    @if (!Model.Any())
+    {
+        <div class="crud-table-wrap">
+            <div class="empty-dark">
+                <div class="empty-icon">📦</div>
+                <h3>No hay componentes registrados</h3>
+                <p>Crea el primer componente usando el botón de arriba.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="crud-table-wrap">
+            <table class="crud-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Marca</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(c.ImageUrl))
+                                {
+                                    <img src="@c.ImageUrl" class="comp-thumb" alt="@c.Nombre" />
+                                }
+                                else
+                                {
+                                    <div class="comp-thumb-placeholder">💻</div>
+                                }
+                            </td>
+                            <td style="font-weight:600; color:#fff; max-width:220px;">@c.Nombre</td>
+                            <td><span class="type-badge">@c.Tipo</span></td>
+                            <td style="color:rgba(255,255,255,0.55);">@(c.Marca ?? "—")</td>
+                            <td class="price-cell">$@c.Precio.ToString("N2")</td>
+                            <td class="@(c.Stock > 10 ? "stock-cell-ok" : c.Stock > 0 ? "stock-cell-low" : "stock-cell-out")">
+                                @(c.Stock > 10 ? $"✓ {c.Stock}" : c.Stock > 0 ? $"⚠ {c.Stock}" : "✗ Agotado")
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a asp-action="Details" asp-route-id="@c.Id" class="btn-action btn-view">Ver</a>
+                                    @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn-action btn-edit">Editar</a>
+                                    }
+                                    @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@c.Id" class="btn-action btn-del">Eliminar</a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <p style="color:rgba(255,255,255,0.3); font-size:0.8rem; margin-top:1rem; text-align:right;">
+            @Model.Count componente(s) mostrado(s)
+        </p>
+    }
+</div>

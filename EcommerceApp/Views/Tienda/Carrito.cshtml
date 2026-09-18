@@ -1,0 +1,207 @@
+@model EcommerceApp.Models.CarritoViewModel
+@{
+    ViewData["Title"] = "Mi Carrito — TechParts";
+}
+
+<style>
+    body { background: #0d0f1a !important; }
+
+    .cart-page { max-width: 900px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }
+
+    .cart-header { margin-bottom: 2rem; }
+    .cart-header h1 { color: #fff; font-weight: 800; font-size: 1.8rem; margin: 0 0 0.3rem; }
+    .cart-header p { color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+
+    .alert-tp { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:0.85rem 1.25rem; color:#34d399; font-size:0.88rem; margin-bottom:1.25rem; }
+    .alert-err { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:12px; padding:0.85rem 1.25rem; color:#f87171; font-size:0.88rem; margin-bottom:1.25rem; }
+
+    .cart-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; }
+    @@media(max-width:700px){ .cart-layout { grid-template-columns: 1fr; } }
+
+    /* Items */
+    .cart-items { display: flex; flex-direction: column; gap: 0.75rem; }
+    .cart-item {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px; padding: 1rem 1.25rem;
+        display: grid; grid-template-columns: 60px 1fr auto;
+        align-items: center; gap: 1rem;
+        transition: border-color 0.2s;
+    }
+    .cart-item:hover { border-color: rgba(108,99,255,0.25); }
+
+    .cart-item-img { width:60px; height:60px; border-radius:10px; object-fit:cover; background:rgba(108,99,255,0.12); }
+    .cart-item-img-ph { width:60px; height:60px; border-radius:10px; background:rgba(108,99,255,0.12); display:flex; align-items:center; justify-content:center; font-size:1.6rem; }
+
+    .cart-item-info { min-width: 0; }
+    .cart-item-name { color: #fff; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cart-item-type { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 50px; margin-top: 0.2rem; }
+    .type-comp { background:rgba(108,99,255,0.15); color:#a78bfa; border:1px solid rgba(108,99,255,0.25); }
+    .type-combo { background:rgba(0,217,181,0.12); color:#00d9b5; border:1px solid rgba(0,217,181,0.25); }
+    .cart-item-price { color:rgba(255,255,255,0.5); font-size:0.82rem; margin-top:0.3rem; }
+
+    .cart-item-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+    .cart-item-subtotal {
+        font-size: 1.1rem; font-weight: 800;
+        background: linear-gradient(135deg, #6c63ff, #00d9b5);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .qty-controls { display: flex; align-items: center; gap: 0.4rem; }
+    .qty-btn {
+        width: 28px; height: 28px; border-radius: 7px; border: none; cursor: pointer;
+        font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center;
+        transition: all 0.15s;
+    }
+    .qty-btn-minus { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+    .qty-btn-minus:hover { background: rgba(239,68,68,0.2); color: #f87171; }
+    .qty-btn-plus { background: rgba(108,99,255,0.2); color: #a78bfa; }
+    .qty-btn-plus:hover { background: rgba(108,99,255,0.35); color: #c4b5fd; }
+    .qty-num { color: #fff; font-weight: 700; font-size: 0.9rem; min-width: 20px; text-align: center; }
+
+    .btn-remove { background: none; border: none; color: rgba(239,68,68,0.5); cursor: pointer; font-size: 0.75rem; padding: 0; transition: color 0.2s; }
+    .btn-remove:hover { color: #f87171; }
+
+    /* Empty */
+    .cart-empty { text-align: center; padding: 5rem 2rem; }
+    .cart-empty .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .cart-empty h2 { color: rgba(255,255,255,0.6); font-size: 1.3rem; margin-bottom: 0.5rem; }
+    .cart-empty p { color: rgba(255,255,255,0.3); margin-bottom: 1.5rem; }
+    .btn-go-shop { background: linear-gradient(135deg,#6c63ff,#574fd6); color:#fff; font-weight:700; padding:0.7rem 1.5rem; border-radius:12px; text-decoration:none; transition:opacity 0.2s; }
+    .btn-go-shop:hover { opacity:0.85; color:#fff; }
+
+    /* Summary sidebar */
+    .cart-summary {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(108,99,255,0.2);
+        border-radius: 18px; padding: 1.5rem; height: fit-content;
+        position: sticky; top: 80px;
+    }
+    .cart-summary h3 { color: #fff; font-weight: 700; font-size: 1rem; margin: 0 0 1.25rem; }
+
+    .summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.88rem; }
+    .summary-row .label { color: rgba(255,255,255,0.5); }
+    .summary-row .value { color: rgba(255,255,255,0.85); font-weight: 600; }
+    .summary-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 1rem 0; }
+    .summary-total { display: flex; justify-content: space-between; align-items: center; }
+    .summary-total .label { color: #fff; font-weight: 700; font-size: 1rem; }
+    .summary-total .total-price {
+        font-size: 1.6rem; font-weight: 900;
+        background: linear-gradient(135deg, #6c63ff, #00d9b5);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .btn-checkout {
+        width: 100%; background: linear-gradient(135deg, #6c63ff, #574fd6);
+        border: none; color: #fff; font-weight: 700; font-size: 0.95rem;
+        padding: 0.85rem; border-radius: 12px; cursor: pointer; margin-top: 1.25rem;
+        transition: opacity 0.2s; text-align: center; display: block; text-decoration: none;
+    }
+    .btn-checkout:hover { opacity: 0.85; color: #fff; }
+    .btn-clear { width:100%; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:#f87171; font-weight:600; font-size:0.82rem; padding:0.55rem; border-radius:10px; cursor:pointer; margin-top:0.6rem; transition:all 0.2s; }
+    .btn-clear:hover { background:rgba(239,68,68,0.15); }
+
+    .secure-note { text-align:center; font-size:0.75rem; color:rgba(255,255,255,0.25); margin-top:0.75rem; }
+</style>
+
+<div class="cart-page">
+    <div class="cart-header">
+        <h1>🛒 Mi Carrito</h1>
+        <p>@Model.TotalItems artículo(s) en tu carrito</p>
+    </div>
+
+    @if (TempData["Exito"] != null) { <div class="alert-tp">✓ @TempData["Exito"]</div> }
+    @if (TempData["Error"] != null) { <div class="alert-err">⚠ @TempData["Error"]</div> }
+
+    @if (!Model.Items.Any())
+    {
+        <div class="cart-empty">
+            <div class="empty-icon">🛒</div>
+            <h2>Tu carrito está vacío</h2>
+            <p>Explora nuestro catálogo y agrega componentes o combos.</p>
+            <a asp-controller="Tienda" asp-action="Index" class="btn-go-shop">Ver Tienda</a>
+        </div>
+    }
+    else
+    {
+        <div class="cart-layout">
+            <!-- Items -->
+            <div class="cart-items">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="cart-item">
+                        <!-- Imagen -->
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" class="cart-item-img" alt="@item.Nombre" />
+                        }
+                        else
+                        {
+                            <div class="cart-item-img-ph">@(item.Tipo == "combo" ? "🎁" : "🔧")</div>
+                        }
+
+                        <!-- Info -->
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">@item.Nombre</div>
+                            <span class="cart-item-type @(item.Tipo == "combo" ? "type-combo" : "type-comp")">
+                                @(item.Tipo == "combo" ? "🎁 Combo" : "🔧 Componente")
+                            </span>
+                            <div class="cart-item-price">$@item.Precio.ToString("N2") c/u</div>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="cart-item-controls">
+                            <div class="cart-item-subtotal">$@item.Subtotal.ToString("N2")</div>
+                            <div class="qty-controls">
+                                <form asp-action="QuitarDelCarrito" method="post" style="margin:0;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <input type="hidden" name="tipo" value="@item.Tipo" />
+                                    <button type="submit" class="qty-btn qty-btn-minus">−</button>
+                                </form>
+                                <span class="qty-num">@item.Cantidad</span>
+                                <form asp-action="AgregarAlCarrito" method="post" style="margin:0;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <input type="hidden" name="tipo" value="@item.Tipo" />
+                                    <button type="submit" class="qty-btn qty-btn-plus">+</button>
+                                </form>
+                            </div>
+                            <form asp-action="EliminarDelCarrito" method="post" style="margin:0;">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <input type="hidden" name="tipo" value="@item.Tipo" />
+                                <button type="submit" class="btn-remove">🗑 Quitar</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Sidebar resumen -->
+            <div class="cart-summary">
+                <h3>📋 Resumen del pedido</h3>
+
+                @foreach (var item in Model.Items)
+                {
+                    <div class="summary-row">
+                        <span class="label">@item.Nombre (x@item.Cantidad)</span>
+                        <span class="value">$@item.Subtotal.ToString("N2")</span>
+                    </div>
+                }
+
+                <div class="summary-divider"></div>
+                <div class="summary-total">
+                    <span class="label">Total</span>
+                    <span class="total-price">$@Model.Total.ToString("N2")</span>
+                </div>
+
+                <a href="#" class="btn-checkout"
+                   onclick="alert('Módulo de pago próximamente 🚀'); return false;">
+                    💳 Proceder al Pago
+                </a>
+
+                <form asp-action="VaciarCarrito" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-clear">🗑 Vaciar carrito</button>
+                </form>
+
+                <p class="secure-note">🔒 Pago seguro · SSL cifrado</p>
+            </div>
+        </div>
+    }
+</div>

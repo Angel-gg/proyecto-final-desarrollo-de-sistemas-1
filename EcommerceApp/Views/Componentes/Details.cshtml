@@ -1,0 +1,113 @@
+@model EcommerceApp.Models.Componente
+@{
+    ViewData["Title"] = $"{Model.Nombre} — Detalles";
+}
+<style>
+    body { background: #0d0f1a !important; }
+    .detail-page { max-width: 900px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }
+    .detail-card {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(108,99,255,0.2);
+        border-radius: 20px; overflow: hidden;
+    }
+    .detail-img { width: 100%; height: 280px; object-fit: cover; }
+    .detail-img-placeholder {
+        width: 100%; height: 280px;
+        background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,217,181,0.08));
+        display: flex; align-items: center; justify-content: center; font-size: 6rem;
+    }
+    .detail-body { padding: 2rem; }
+    .detail-type-badge {
+        display: inline-block; background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3);
+        color: #a78bfa; font-size: 0.78rem; font-weight: 700;
+        padding: 0.25rem 0.8rem; border-radius: 50px; margin-bottom: 1rem;
+    }
+    .detail-title { color: #fff; font-weight: 800; font-size: 1.8rem; margin: 0 0 0.4rem; }
+    .detail-brand { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-bottom: 1.25rem; }
+    .detail-price {
+        font-size: 2.2rem; font-weight: 900;
+        background: linear-gradient(135deg, #6c63ff, #00d9b5);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        margin-bottom: 1.5rem;
+    }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    .detail-field { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 1rem 1.25rem; }
+    .detail-field label { color: rgba(255,255,255,0.4); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .detail-field p { color: #fff; font-size: 0.95rem; margin: 0.3rem 0 0; font-weight: 600; }
+    .detail-desc { color: rgba(255,255,255,0.65); line-height: 1.7; margin-bottom: 1.5rem; }
+    .detail-specs {
+        background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15);
+        border-radius: 12px; padding: 1rem 1.25rem; color: rgba(255,255,255,0.7);
+        font-size: 0.88rem; line-height: 1.6; margin-bottom: 1.5rem;
+        white-space: pre-wrap;
+    }
+    .stock-ok  { color: #34d399; }
+    .stock-low { color: #fbbf24; }
+    .stock-out { color: #f87171; }
+    .detail-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .btn-tp { padding: 0.6rem 1.25rem; border-radius: 10px; font-weight: 700; font-size: 0.88rem; text-decoration: none; transition: opacity 0.2s; }
+    .btn-tp-edit { background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.3); color: #fbbf24; }
+    .btn-tp-edit:hover { opacity: 0.8; color: #fbbf24; }
+    .btn-tp-back { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
+    .btn-tp-back:hover { background: rgba(255,255,255,0.1); color: #fff; }
+</style>
+
+<div class="detail-page">
+    <div class="detail-card">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" class="detail-img" alt="@Model.Nombre" />
+        }
+        else
+        {
+            <div class="detail-img-placeholder">🔧</div>
+        }
+        <div class="detail-body">
+            <span class="detail-type-badge">@Model.Tipo</span>
+            <h1 class="detail-title">@Model.Nombre</h1>
+            @if (!string.IsNullOrEmpty(Model.Marca))
+            {
+                <p class="detail-brand">por @Model.Marca</p>
+            }
+            <div class="detail-price">$@Model.Precio.ToString("N2") MXN</div>
+
+            <div class="detail-grid">
+                <div class="detail-field">
+                    <label>Stock</label>
+                    <p class="@(Model.Stock > 10 ? "stock-ok" : Model.Stock > 0 ? "stock-low" : "stock-out")">
+                        @(Model.Stock > 10 ? $"✓ {Model.Stock} unidades" : Model.Stock > 0 ? $"⚠ Solo {Model.Stock} restantes" : "✗ Agotado")
+                    </p>
+                </div>
+                <div class="detail-field">
+                    <label>ID del sistema</label>
+                    <p>#@Model.Id</p>
+                </div>
+                <div class="detail-field">
+                    <label>Registrado</label>
+                    <p>@Model.CreadoEn.ToString("dd/MM/yyyy")</p>
+                </div>
+                @if (Model.ActualizadoEn.HasValue)
+                {
+                    <div class="detail-field">
+                        <label>Última actualización</label>
+                        <p>@Model.ActualizadoEn.Value.ToString("dd/MM/yyyy")</p>
+                    </div>
+                }
+            </div>
+
+            <p class="detail-desc">@Model.Descripcion</p>
+
+            @if (!string.IsNullOrEmpty(Model.Especificaciones))
+            {
+                <div class="detail-specs">📋 @Model.Especificaciones</div>
+            }
+
+            <div class="detail-actions">
+                <a asp-action="Index" class="btn-tp btn-tp-back">← Volver al listado</a>
+                @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-tp btn-tp-edit">✏️ Editar</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

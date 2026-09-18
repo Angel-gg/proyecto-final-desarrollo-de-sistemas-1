@@ -1,0 +1,155 @@
+@model EcommerceApp.Models.Componente
+@{
+    ViewData["Title"] = $"Editar: {Model.Nombre} — TechParts ERP";
+}
+
+<style>
+    body { background: #0d0f1a !important; }
+    .form-page { max-width: 720px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }
+    .form-card {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(251,191,36,0.2);
+        border-radius: 20px; padding: 2.5rem; backdrop-filter: blur(10px);
+    }
+    .form-card h2 { color: #fff; font-weight: 800; font-size: 1.5rem; margin: 0 0 0.4rem; }
+    .form-subtitle { color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-bottom: 2rem; }
+    .form-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 1.5rem 0; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @@media(max-width:600px){ .form-row { grid-template-columns: 1fr; } }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label {
+        display: block; color: rgba(255,255,255,0.7);
+        font-size: 0.82rem; font-weight: 600; margin-bottom: 0.45rem; letter-spacing: 0.04em;
+    }
+    .form-control-tp {
+        width: 100%; background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+        padding: 0.65rem 0.95rem; color: #fff; font-size: 0.9rem;
+        outline: none; transition: border-color 0.2s; box-sizing: border-box;
+    }
+    .form-control-tp:focus { border-color: #fbbf24; background: rgba(251,191,36,0.06); }
+    .form-control-tp::placeholder { color: rgba(255,255,255,0.25); }
+    select.form-control-tp option { background: #1a1c2e; color: #fff; }
+    textarea.form-control-tp { resize: vertical; min-height: 90px; }
+    .form-error { color: #f87171; font-size: 0.78rem; margin-top: 0.35rem; }
+    .preview-img {
+        width: 100%; height: 160px; border-radius: 12px; object-fit: cover;
+        border: 1px solid rgba(255,255,255,0.1); margin-top: 0.5rem;
+    }
+    .form-actions { display: flex; gap: 0.75rem; margin-top: 1.75rem; }
+    .btn-save {
+        flex: 1; background: linear-gradient(135deg, #fbbf24, #d97706);
+        border: none; color: #0d0f1a; font-weight: 700; font-size: 0.95rem;
+        padding: 0.75rem 1.5rem; border-radius: 12px; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-save:hover { opacity: 0.85; }
+    .btn-cancel {
+        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.6); font-weight: 600; font-size: 0.9rem;
+        padding: 0.75rem 1.25rem; border-radius: 12px; text-decoration: none; text-align: center;
+        transition: all 0.2s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .edit-badge {
+        display: inline-block; background: rgba(251,191,36,0.12);
+        border: 1px solid rgba(251,191,36,0.3); color: #fbbf24;
+        font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.65rem; border-radius: 50px;
+        margin-bottom: 0.4rem;
+    }
+</style>
+
+<div class="form-page">
+    <div class="form-card">
+        <span class="edit-badge">✏️ Editando</span>
+        <h2>@Model.Nombre</h2>
+        <p class="form-subtitle">Modifica los datos del componente — ID #@Model.Id</p>
+
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreadoEn" />
+            <div asp-validation-summary="ModelOnly" class="form-error" style="margin-bottom:1rem;"></div>
+
+            <div class="form-row">
+                <div class="form-group" style="grid-column:1/-1">
+                    <label asp-for="Nombre" class="form-label">Nombre del componente *</label>
+                    <input asp-for="Nombre" class="form-control-tp" />
+                    <span asp-validation-for="Nombre" class="form-error"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Tipo" class="form-label">Tipo / Categoría *</label>
+                    <select asp-for="Tipo" class="form-control-tp">
+                        <option>Procesadores</option>
+                        <option>Tarjetas de Video</option>
+                        <option>Memoria RAM</option>
+                        <option>Almacenamiento</option>
+                        <option>Tarjetas Madre</option>
+                        <option>Fuentes de Poder</option>
+                        <option>Refrigeración</option>
+                        <option>Monitores</option>
+                        <option>Periféricos</option>
+                        <option>Gabinetes</option>
+                        <option>Redes</option>
+                        <option>Otro</option>
+                    </select>
+                    <span asp-validation-for="Tipo" class="form-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Marca" class="form-label">Marca</label>
+                    <input asp-for="Marca" class="form-control-tp" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descripcion" class="form-label">Descripción *</label>
+                <textarea asp-for="Descripcion" class="form-control-tp"></textarea>
+                <span asp-validation-for="Descripcion" class="form-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Especificaciones" class="form-label">Especificaciones técnicas</label>
+                <textarea asp-for="Especificaciones" class="form-control-tp" style="min-height:70px;"></textarea>
+            </div>
+            <div class="form-divider"></div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Precio" class="form-label">Precio (MXN) *</label>
+                    <input asp-for="Precio" class="form-control-tp" type="number" step="0.01" />
+                    <span asp-validation-for="Precio" class="form-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Stock" class="form-label">Stock disponible *</label>
+                    <input asp-for="Stock" class="form-control-tp" type="number" min="0" />
+                    <span asp-validation-for="Stock" class="form-error"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageUrl" class="form-label">URL de imagen</label>
+                <input asp-for="ImageUrl" class="form-control-tp" id="imgUrlInput" />
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img id="imgPreview" src="@Model.ImageUrl" class="preview-img" alt="Imagen actual" />
+                }
+                else
+                {
+                    <img id="imgPreview" class="preview-img" style="display:none;" alt="Vista previa" />
+                }
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">💾 Guardar Cambios</button>
+                <a asp-action="Index" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const urlInput = document.getElementById('imgUrlInput');
+        const preview = document.getElementById('imgPreview');
+        urlInput.addEventListener('input', () => {
+            const url = urlInput.value.trim();
+            if (url) { preview.src = url; preview.style.display = 'block'; preview.onerror = () => preview.style.display = 'none'; }
+            else { preview.style.display = 'none'; }
+        });
+    </script>
+}
