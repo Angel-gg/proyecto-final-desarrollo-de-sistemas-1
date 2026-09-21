@@ -4,6 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] — TechParts ERP</title>
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#6c63ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TechParts" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <script type="importmap"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -191,6 +198,7 @@
                     <li><a asp-controller="Componentes" asp-action="Index">🔧 Componentes</a></li>
                     <li><a asp-controller="Combos" asp-action="Index">🎁 Combos</a></li>
                     <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
+                    <li><a asp-controller="Reportes" asp-action="Index">📋 Reportes</a></li>
                     @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
                     {
                         <li><a href="#">🗺️ Sucursales</a></li>
@@ -255,5 +263,22 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    @* ── Web Speech API (todos los usuarios autenticados) ── *@
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <script src="~/js/speech.js" asp-append-version="true"></script>
+    }
+
+    @* ── PWA Service Worker Registration ── *@
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('[PWA] Service Worker registrado:', reg.scope))
+                    .catch(err => console.warn('[PWA] Error registrando SW:', err));
+            });
+        }
+    </script>
 </body>
 </html>

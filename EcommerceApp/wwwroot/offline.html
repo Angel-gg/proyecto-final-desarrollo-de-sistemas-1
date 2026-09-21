@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sin conexión — TechParts ERP</title>
+    <link rel="manifest" href="/manifest.json" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: #0d0f1a;
+            color: #e0e0ff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 480px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .icon-wrapper {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #6c63ff22, #00d9b522);
+            border: 2px solid rgba(108,99,255,0.4);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(108,99,255,0.3); }
+            50%       { transform: scale(1.05); box-shadow: 0 0 40px rgba(108,99,255,0.5); }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6c63ff, #00d9b5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: rgba(200,200,255,0.6);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #6c63ff, #574fd6);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
+        .signal-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .bar {
+            width: 8px;
+            border-radius: 3px;
+            background: rgba(108,99,255,0.2);
+            border: 1px solid rgba(108,99,255,0.3);
+        }
+        .bar-1 { height: 12px; }
+        .bar-2 { height: 20px; }
+        .bar-3 { height: 28px; }
+        .bar-4 { height: 36px; }
+
+        /* Floating particles background */
+        .particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+        .p { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(108,99,255,0.15), transparent 70%); animation: floatUp linear infinite; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="icon-wrapper">📡</div>
+        <div class="signal-bars">
+            <div class="bar bar-1"></div>
+            <div class="bar bar-2"></div>
+            <div class="bar bar-3"></div>
+            <div class="bar bar-4"></div>
+        </div>
+        <h1>Sin conexión</h1>
+        <p>
+            No hay conexión a internet en este momento.<br />
+            Algunas funciones como la tienda y el login han sido guardadas y
+            estarán disponibles cuando recuperes la conexión.
+        </p>
+        <button class="btn" onclick="window.location.reload()">
+            🔄 &nbsp;Intentar de nuevo
+        </button>
+    </div>
+
+    <script>
+        // Floating particles
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 8; i++) {
+            const p = document.createElement('div');
+            p.className = 'p';
+            const size = Math.random() * 150 + 80;
+            p.style.cssText = `
+                width:${size}px; height:${size}px;
+                left:${Math.random() * 100}%;
+                animation-duration:${Math.random() * 20 + 15}s;
+                animation-delay:${Math.random() * 15}s;
+                opacity:0;
+            `;
+            container.appendChild(p);
+        }
+    </script>
+</body>
+</html>

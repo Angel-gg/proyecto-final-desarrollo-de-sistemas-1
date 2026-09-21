@@ -1,0 +1,221 @@
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+<style>
+    .rep-hero {
+        background: linear-gradient(135deg, #0d0f1a 0%, #12142a 100%);
+        border-bottom: 1px solid rgba(108,99,255,0.2);
+        padding: 2.5rem 2rem 2rem;
+        margin-bottom: 2rem;
+    }
+    .rep-hero h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #6c63ff, #00d9b5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0 0 0.35rem;
+    }
+    .rep-hero p { color: rgba(200,200,255,0.6); margin: 0; font-size: 0.92rem; }
+
+    .rep-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+        padding: 0 2rem 2.5rem;
+    }
+
+    .rep-card {
+        background: rgba(13,15,26,0.7);
+        border: 1px solid rgba(108,99,255,0.2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        backdrop-filter: blur(10px);
+    }
+    .rep-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(108,99,255,0.2);
+        border-color: rgba(108,99,255,0.5);
+    }
+
+    .rep-card-icon {
+        width: 52px; height: 52px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .rep-card-icon.purple { background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(108,99,255,0.1)); border: 1px solid rgba(108,99,255,0.3); }
+    .rep-card-icon.teal   { background: linear-gradient(135deg, rgba(0,217,181,0.2), rgba(0,217,181,0.1)); border: 1px solid rgba(0,217,181,0.3); }
+    .rep-card-icon.amber  { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1)); border: 1px solid rgba(245,158,11,0.3); }
+    .rep-card-icon.red    { background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1)); border: 1px solid rgba(239,68,68,0.3); }
+
+    .rep-card h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #e0e0ff;
+        margin: 0 0 0.4rem;
+    }
+    .rep-card p {
+        font-size: 0.82rem;
+        color: rgba(200,200,255,0.55);
+        margin: 0 0 1.25rem;
+        line-height: 1.5;
+    }
+
+    .rep-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+    .btn-pdf {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: #fff;
+        border: none; border-radius: 10px;
+        padding: 0.5rem 1rem;
+        font-size: 0.82rem; font-weight: 600;
+        text-decoration: none;
+        transition: opacity 0.2s, transform 0.15s;
+        cursor: pointer;
+    }
+    .btn-pdf:hover { opacity: 0.85; transform: translateY(-1px); color: #fff; }
+
+    .btn-excel {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #fff;
+        border: none; border-radius: 10px;
+        padding: 0.5rem 1rem;
+        font-size: 0.82rem; font-weight: 600;
+        text-decoration: none;
+        transition: opacity 0.2s, transform 0.15s;
+        cursor: pointer;
+    }
+    .btn-excel:hover { opacity: 0.85; transform: translateY(-1px); color: #fff; }
+
+    .rep-badge {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        margin-left: 0.4rem;
+        vertical-align: middle;
+    }
+    .rep-badge.only-admin { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+    .rep-info {
+        background: rgba(108,99,255,0.08);
+        border: 1px solid rgba(108,99,255,0.2);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin: 0 2rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.85rem;
+        color: rgba(200,200,255,0.75);
+    }
+    .rep-info strong { color: #a78bfa; }
+
+    body { background: #080a14; }
+</style>
+
+<div class="rep-hero">
+    <h1>📋 Centro de Reportes</h1>
+    <p>Descarga reportes en PDF o Excel de todos los módulos del sistema.</p>
+</div>
+
+<div class="rep-info">
+    <span>💡</span>
+    <div>
+        <strong>Tip de voz:</strong> Di <em>"ir a reportes"</em> o <em>"ver reportes"</em> para navegar aquí con el micrófono 🎙️
+    </div>
+</div>
+
+<div class="rep-grid">
+
+    <!-- Componentes -->
+    <div class="rep-card">
+        <div class="rep-card-icon purple">🔧</div>
+        <h3>Componentes</h3>
+        <p>Lista completa de componentes con tipo, marca, precio y stock actual. Identifica items con stock crítico.</p>
+        <div class="rep-actions">
+            <a href="/Reportes/ComponentesPdf" class="btn-pdf" id="btn-comp-pdf">
+                📄 Descargar PDF
+            </a>
+            <a href="/Reportes/ComponentesExcel" class="btn-excel" id="btn-comp-excel">
+                📊 Descargar Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Combos -->
+    <div class="rep-card">
+        <div class="rep-card-icon teal">🎁</div>
+        <h3>Combos</h3>
+        <p>Detalle de todos los combos, sus componentes incluidos, precio de venta y disponibilidad.</p>
+        <div class="rep-actions">
+            <a href="/Reportes/CombosPdf" class="btn-pdf" id="btn-combos-pdf">
+                📄 Descargar PDF
+            </a>
+            <a href="/Reportes/CombosExcel" class="btn-excel" id="btn-combos-excel">
+                📊 Descargar Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Inventario -->
+    <div class="rep-card">
+        <div class="rep-card-icon amber">📦</div>
+        <h3>Inventario Consolidado</h3>
+        <p>Resumen de valor total del inventario agrupado por categoría. Incluye valor económico por producto y alertas de stock crítico.</p>
+        <div class="rep-actions">
+            <a href="/Reportes/InventarioPdf" class="btn-pdf" id="btn-inv-pdf">
+                📄 Descargar PDF
+            </a>
+            <a href="/Reportes/InventarioExcel" class="btn-excel" id="btn-inv-excel">
+                📊 Descargar Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Usuarios (Solo Admin/Gerente General) -->
+    @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+    {
+        <div class="rep-card">
+            <div class="rep-card-icon red">👥</div>
+            <h3>
+                Usuarios del Sistema
+                <span class="rep-badge only-admin">Solo Gerentes</span>
+            </h3>
+            <p>Lista de todos los usuarios registrados con sus roles, sucursal asignada y código de cliente.</p>
+            <div class="rep-actions">
+                <a href="/Reportes/UsuariosExcel" class="btn-excel" id="btn-usuarios-excel">
+                    📊 Descargar Excel
+                </a>
+            </div>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+<script>
+    // Feedback visual al descargar
+    document.querySelectorAll('.btn-pdf, .btn-excel').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const original = this.innerHTML;
+            this.innerHTML = this.classList.contains('btn-pdf') ? '⏳ Generando PDF...' : '⏳ Generando Excel...';
+            this.style.opacity = '0.7';
+            setTimeout(() => {
+                this.innerHTML = original;
+                this.style.opacity = '';
+            }, 3000);
+        });
+    });
+</script>
+}
