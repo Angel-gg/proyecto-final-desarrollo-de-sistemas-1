@@ -1,0 +1,126 @@
+@model List<EcommerceApp.Models.Proveedor>
+@{
+    ViewData["Title"] = "Proveedores";
+    var esAdmin = User.IsInRole("GerenteGeneral") || User.IsInRole("Admin");
+    var esComercial = User.IsInRole("Comercial");
+    var categorias = ViewBag.Categorias as List<string> ?? new List<string>();
+    var categoriaActual = ViewBag.CategoriaActual as string;
+}
+<style>
+    body { background: #080a14; }
+    .page-hero { background: linear-gradient(135deg,#0d0f1a,#12142a); border-bottom:1px solid rgba(0,217,181,0.2); padding:2rem 2rem 1.5rem; margin-bottom:2rem; }
+    .page-hero h1 { font-size:1.7rem; font-weight:800; background:linear-gradient(135deg,#00d9b5,#6c63ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:0; }
+    .page-hero p { color:rgba(200,200,255,0.55); margin:0.25rem 0 0; font-size:0.88rem; }
+    .prov-toolbar { padding:0 2rem 1.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; }
+    .cat-btn { background:rgba(255,255,255,0.05);border:1px solid rgba(0,217,181,0.3);color:#e0e0ff;font-size:0.8rem;font-weight:600;padding:0.35rem 0.85rem;border-radius:50px;text-decoration:none;transition:all 0.2s; }
+    .cat-btn:hover { background:rgba(0,217,181,0.15);color:#fff; }
+    .cat-btn.active { background:#00d9b5;color:#000;border-color:#00d9b5; }
+    .prov-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.2rem; padding:0 2rem 2.5rem; }
+    .prov-card { background:rgba(13,15,26,0.7); border:1px solid rgba(0,217,181,0.2); border-radius:16px; padding:1.4rem; backdrop-filter:blur(10px); transition:transform 0.2s,border-color 0.2s; display:flex;flex-direction:column; }
+    .prov-card:hover { transform:translateY(-3px); border-color:rgba(0,217,181,0.5); }
+    .prov-card.inactivo { opacity:0.55; border-color:rgba(255,255,255,0.08); }
+    .prov-icon { width:48px;height:48px; border-radius:12px; background:linear-gradient(135deg,rgba(0,217,181,0.2),rgba(108,99,255,0.1)); border:1px solid rgba(0,217,181,0.3); display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem; }
+    .prov-name { font-size:1rem;font-weight:700;color:#e0e0ff;margin-bottom:0.3rem; }
+    .prov-cat { font-size:0.75rem;color:#00d9b5;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem; }
+    .prov-meta { font-size:0.8rem;color:rgba(200,200,255,0.5);line-height:1.7;flex-grow:1; }
+    .prov-meta span { display:block; }
+    .badge-activa { display:inline-block;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);font-size:0.7rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:50px; }
+    .badge-inactiva { display:inline-block;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);font-size:0.7rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:50px; }
+    .prov-actions { display:flex;gap:0.5rem;margin-top:1.25rem;flex-wrap:wrap; }
+    .btn-sm-edit { background:rgba(0,217,181,0.15);border:1px solid rgba(0,217,181,0.3);color:#5eead4;font-size:0.78rem;font-weight:600;border-radius:8px;padding:0.35rem 0.75rem;text-decoration:none;transition:all 0.2s; }
+    .btn-sm-edit:hover { background:rgba(0,217,181,0.3);color:#a7f3d0; }
+    .btn-sm-toggle { background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;font-size:0.78rem;font-weight:600;border-radius:8px;padding:0.35rem 0.75rem;cursor:pointer;transition:all 0.2s; }
+    .btn-sm-toggle:hover { background:rgba(245,158,11,0.25); }
+    .btn-sm-del { background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;font-size:0.78rem;font-weight:600;border-radius:8px;padding:0.35rem 0.75rem;cursor:pointer;transition:all 0.2s; }
+    .btn-sm-del:hover { background:rgba(239,68,68,0.25); }
+    .btn-new { display:inline-flex;align-items:center;gap:0.4rem;background:linear-gradient(135deg,#00d9b5,#00a89a);color:#000;border:none;border-radius:10px;padding:0.55rem 1.2rem;font-size:0.85rem;font-weight:700;text-decoration:none;transition:opacity 0.2s; }
+    .btn-new:hover { opacity:0.85;color:#000; }
+    .empty-box { text-align:center;padding:4rem 2rem;color:rgba(200,200,255,0.4); }
+    .alert-msg { margin:0 2rem 1.5rem;padding:0.85rem 1.25rem;border-radius:10px;font-size:0.88rem;font-weight:600; }
+    .alert-ok { background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10b981; }
+</style>
+
+<div class="page-hero">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+            <h1>🚚 Proveedores</h1>
+            <p>Directorio de proveedores y abastecimiento de inventario</p>
+        </div>
+        @if (esAdmin || esComercial)
+        {
+            <a asp-action="Create" class="btn-new">+ Nuevo Proveedor</a>
+        }
+    </div>
+</div>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alert-msg alert-ok">✓ @TempData["Exito"]</div>
+}
+
+@if (categorias.Any())
+{
+    <div class="prov-toolbar">
+        <a href="@Url.Action("Index")" class="cat-btn @(categoriaActual == null ? "active" : "")">Todos</a>
+        @foreach (var c in categorias)
+        {
+            <a href="@Url.Action("Index", new { categoria = c })" class="cat-btn @(categoriaActual == c ? "active" : "")">@c</a>
+        }
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="empty-box">
+        <div style="font-size:3rem;margin-bottom:1rem;">🚚</div>
+        <p>No hay proveedores registrados @(categoriaActual != null ? $"en \"{categoriaActual}\"" : "aún").</p>
+        @if ((esAdmin || esComercial) && categoriaActual == null)
+        {
+            <a asp-action="Create" class="btn-new" style="display:inline-flex;margin-top:1rem;">+ Registrar primer proveedor</a>
+        }
+    </div>
+}
+else
+{
+    <div class="prov-grid">
+        @foreach (var p in Model)
+        {
+            <div class="prov-card @(!p.Activo ? "inactivo" : "")">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.75rem;">
+                    <div class="prov-icon">🚚</div>
+                    @if (p.Activo) { <span class="badge-activa">● Activo</span> }
+                    else { <span class="badge-inactiva">○ Inactivo</span> }
+                </div>
+                <div class="prov-name">@p.Nombre</div>
+                @if (!string.IsNullOrEmpty(p.CategoriaEspecialidad)) { <div class="prov-cat">@p.CategoriaEspecialidad</div> }
+                <div class="prov-meta">
+                    @if (!string.IsNullOrEmpty(p.Contacto)) { <span>👤 @p.Contacto</span> }
+                    @if (!string.IsNullOrEmpty(p.Telefono)) { <span>📞 @p.Telefono</span> }
+                    @if (!string.IsNullOrEmpty(p.Email)) { <span>✉️ @p.Email</span> }
+                    @if (!string.IsNullOrEmpty(p.Ciudad)) { <span>📍 @p.Ciudad</span> }
+                    @if (!string.IsNullOrEmpty(p.SitioWeb)) { <span>🌐 <a href="@p.SitioWeb" target="_blank" style="color:inherit;">Website</a></span> }
+                </div>
+                @if (esAdmin || esComercial)
+                {
+                    <div class="prov-actions">
+                        <a asp-action="Edit" asp-route-id="@p.Id" class="btn-sm-edit">✏️ Editar</a>
+                        <form asp-action="ToggleActivo" asp-route-id="@p.Id" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-sm-toggle">
+                                @(p.Activo ? "⏸ Desactivar" : "▶ Activar")
+                            </button>
+                        </form>
+                        @if (esAdmin)
+                        {
+                            <form asp-action="Delete" asp-route-id="@p.Id" method="post" style="margin:0;"
+                                  onsubmit="return confirm('¿Eliminar proveedor «@p.Nombre»?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-sm-del">🗑</button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

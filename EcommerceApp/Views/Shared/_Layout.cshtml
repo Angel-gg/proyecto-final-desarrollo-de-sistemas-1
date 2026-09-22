@@ -190,7 +190,11 @@
                 @if (User.IsInRole("Cliente") || User.IsInRole("User"))
                 {
                     <li><a asp-controller="Tienda" asp-action="Index">🛒 Tienda</a></li>
-                    <li><a asp-controller="Tienda" asp-action="Carrito">🛒 Mi Carrito</a></li>
+                    <li>
+                        <a asp-controller="Tienda" asp-action="Carrito" id="nav-cart-link" style="position:relative;">
+                            🛒 Mi Carrito <span id="nav-cart-badge" class="badge bg-danger rounded-pill" style="display:none; font-size:0.65rem; position:absolute; top:-5px; right:-10px;">0</span>
+                        </a>
+                    </li>
                     <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Mis Pedidos</a></li>
                 }
                 else
@@ -203,11 +207,12 @@
                     <li><a asp-controller="Reportes" asp-action="Index">📋 Reportes</a></li>
                     @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
                     {
-                        <li><a href="#">🗺️ Sucursales</a></li>
+                        <li><a asp-controller="Personal" asp-action="Index">👥 Personal</a></li>
+                        <li><a asp-controller="Sucursales" asp-action="Index">🗺️ Sucursales</a></li>
                     }
                     @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
                     {
-                        <li><a href="#">🚚 Proveedores</a></li>
+                        <li><a asp-controller="Proveedores" asp-action="Index">🚚 Proveedores</a></li>
                     }
                 }
             }
@@ -281,6 +286,18 @@
                     .catch(err => console.warn('[PWA] Error registrando SW:', err));
             });
         }
+
+        // ── JS for Cart Count Badge ──
+        $(document).ready(function() {
+            var cartLink = $('#nav-cart-link');
+            if (cartLink.length) {
+                $.get('/Tienda/CarritoCount', function(data) {
+                    if (data && data.count > 0) {
+                        $('#nav-cart-badge').text(data.count).show();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

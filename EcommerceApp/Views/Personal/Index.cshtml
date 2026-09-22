@@ -1,0 +1,127 @@
+@model List<EcommerceApp.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "Control de Personal";
+    var rolesDisp = ViewBag.RolesDisponibles as string[] ?? Array.Empty<string>();
+    var userRoles = ViewBag.UserRoles as Dictionary<string, IList<string>> ?? new Dictionary<string, IList<string>>();
+    var search = ViewBag.Search as string;
+    var rolActual = ViewBag.RolActual as string;
+}
+<style>
+    body { background: #080a14; }
+    .page-hero { background: linear-gradient(135deg,#0d0f1a,#12142a); border-bottom:1px solid rgba(167,139,250,0.2); padding:2rem 2rem 1.5rem; margin-bottom:2rem; }
+    .page-hero h1 { font-size:1.7rem; font-weight:800; background:linear-gradient(135deg,#a78bfa,#6c63ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:0; }
+    .page-hero p { color:rgba(200,200,255,0.55); margin:0.25rem 0 0; font-size:0.88rem; }
+    .toolbar { display:flex; gap:1rem; padding:0 2rem 1.5rem; flex-wrap:wrap; align-items:center; }
+    .search-input { background:rgba(255,255,255,0.05);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:0.5rem 1rem;color:#fff;min-width:250px; }
+    .search-input:focus { outline:none;border-color:#a78bfa; }
+    .select-rol { background:rgba(255,255,255,0.05);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:0.5rem 1rem;color:#fff; }
+    .btn-search { background:linear-gradient(135deg,#a78bfa,#6c63ff);color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;cursor:pointer; }
+    .table-container { padding:0 2rem 2.5rem; overflow-x:auto; }
+    .table-personal { width:100%;border-collapse:collapse; background:rgba(13,15,26,0.7);backdrop-filter:blur(10px);border-radius:16px;overflow:hidden;border:1px solid rgba(167,139,250,0.2); }
+    .table-personal th { background:rgba(167,139,250,0.1);color:#c4b5fd;font-weight:600;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;padding:1rem;text-align:left;border-bottom:1px solid rgba(167,139,250,0.2); }
+    .table-personal td { padding:1rem;color:#e0e0ff;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,0.05); }
+    .table-personal tr:last-child td { border-bottom:none; }
+    .table-personal tr:hover { background:rgba(255,255,255,0.02); }
+    .avatar { width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#6c63ff);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#fff;margin-right:0.75rem; }
+    .user-info { display:flex;align-items:center; }
+    .role-badge { display:inline-block;padding:0.25rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:700;margin-right:0.25rem;margin-bottom:0.25rem; }
+    .rb-GerenteGeneral { background:rgba(167,139,250,0.15);color:#c4b5fd;border:1px solid rgba(167,139,250,0.3); }
+    .rb-Admin { background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3); }
+    .rb-Vendedor { background:rgba(0,217,181,0.15);color:#5eead4;border:1px solid rgba(0,217,181,0.3); }
+    .rb-Cliente { background:rgba(255,255,255,0.1);color:#d1d5db;border:1px solid rgba(255,255,255,0.2); }
+    .rb-default { background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.3); }
+    .btn-edit { background:rgba(167,139,250,0.15);color:#c4b5fd;border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:0.4rem 0.8rem;font-size:0.8rem;font-weight:600;text-decoration:none;transition:all 0.2s;display:inline-block; }
+    .btn-edit:hover { background:rgba(167,139,250,0.3);color:#fff; }
+    .alert-msg { margin:0 2rem 1.5rem;padding:0.85rem 1.25rem;border-radius:10px;font-size:0.88rem;font-weight:600; }
+    .alert-ok { background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10b981; }
+</style>
+
+<div class="page-hero">
+    <h1>👥 Control de Personal</h1>
+    <p>Directorio de usuarios y asignación de roles del sistema</p>
+</div>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alert-msg alert-ok">✓ @TempData["Exito"]</div>
+}
+
+<form method="get" class="toolbar">
+    <input type="text" name="search" value="@search" placeholder="Buscar por email o nombre..." class="search-input" />
+    <select name="rol" class="select-rol">
+        <option value="Todos">Todos los roles</option>
+        @foreach (var r in rolesDisp)
+        {
+            if (rolActual == r)
+            {
+                <option value="@r" selected>@r</option>
+            }
+            else
+            {
+                <option value="@r">@r</option>
+            }
+        }
+    </select>
+    <button type="submit" class="btn-search">🔍 Filtrar</button>
+    <a asp-action="Index" class="btn-search" style="background:rgba(255,255,255,0.1);color:#fff;text-decoration:none;">Limpiar</a>
+</form>
+
+<div class="table-container">
+    <table class="table-personal">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Roles Actuales</th>
+                <th>Registrado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                var nombre = u.NombreCompleto ?? u.FullName ?? "Sin Nombre";
+                var initial = !string.IsNullOrEmpty(u.Email) ? u.Email.Substring(0, 1).ToUpper() : "?";
+                var roles = userRoles.ContainsKey(u.Id) ? userRoles[u.Id] : new List<string>();
+                
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="avatar">@initial</div>
+                            <div>
+                                <div style="font-weight:700;color:#fff;">@nombre</div>
+                                <div style="font-size:0.75rem;color:rgba(200,200,255,0.6);">@u.Email</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        @if (!roles.Any())
+                        {
+                            <span style="color:rgba(255,255,255,0.3);font-size:0.8rem;">Sin rol asignado</span>
+                        }
+                        else
+                        {
+                            foreach (var r in roles)
+                            {
+                                var badgeClass = "rb-default";
+                                if (r == "GerenteGeneral") badgeClass = "rb-GerenteGeneral";
+                                else if (r == "Admin") badgeClass = "rb-Admin";
+                                else if (r == "Vendedor") badgeClass = "rb-Vendedor";
+                                else if (r == "Cliente") badgeClass = "rb-Cliente";
+                                
+                                <span class="role-badge @badgeClass">@r</span>
+                            }
+                        }
+                    </td>
+                    <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-action="EditarRol" asp-route-id="@u.Id" class="btn-edit">✏️ Modificar Roles</a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="4" style="text-align:center;padding:3rem;color:rgba(255,255,255,0.3);">No se encontraron usuarios.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

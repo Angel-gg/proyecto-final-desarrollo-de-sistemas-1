@@ -134,6 +134,13 @@ namespace EcommerceApp.Controllers
             return RedirectToAction(nameof(Carrito));
         }
 
+        [HttpGet]
+        public IActionResult CarritoCount()
+        {
+            var carrito = ObtenerCarrito();
+            return Json(new { count = carrito.TotalItems });
+        }
+
         // ─── Checkout ─────────────────────────────────────────────────────────
 
         [Authorize]
@@ -163,8 +170,10 @@ namespace EcommerceApp.Controllers
             var userId = userManager.GetUserId(User)!;
 
             // Generar número único de pedido
-            var fechaHoy   = DateTime.Now;
-            var countHoy   = await db.Pedidos.CountAsync(p => p.FechaPedido.Date == fechaHoy.Date);
+            var fechaHoy   = DateTime.UtcNow;
+            var inicioDia  = fechaHoy.Date.ToUniversalTime();
+            var finDia     = inicioDia.AddDays(1);
+            var countHoy   = await db.Pedidos.CountAsync(p => p.FechaPedido >= inicioDia && p.FechaPedido < finDia);
             var numPedido  = $"TPC-{fechaHoy:yyyyMMdd}-{(countHoy + 1):D4}";
 
             decimal subtotal = carrito.Total;

@@ -1,0 +1,101 @@
+@model List<EcommerceApp.Models.Sucursal>
+@{
+    ViewData["Title"] = "Sucursales";
+    var esAdmin = User.IsInRole("GerenteGeneral") || User.IsInRole("Admin");
+}
+<style>
+    body { background: #080a14; }
+    .page-hero { background: linear-gradient(135deg,#0d0f1a,#12142a); border-bottom:1px solid rgba(108,99,255,0.2); padding:2rem 2rem 1.5rem; margin-bottom:2rem; }
+    .page-hero h1 { font-size:1.7rem; font-weight:800; background:linear-gradient(135deg,#6c63ff,#00d9b5); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:0; }
+    .page-hero p { color:rgba(200,200,255,0.55); margin:0.25rem 0 0; font-size:0.88rem; }
+    .suc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.2rem; padding:0 2rem 2.5rem; }
+    .suc-card { background:rgba(13,15,26,0.7); border:1px solid rgba(108,99,255,0.2); border-radius:16px; padding:1.4rem; backdrop-filter:blur(10px); transition:transform 0.2s,border-color 0.2s; }
+    .suc-card:hover { transform:translateY(-3px); border-color:rgba(108,99,255,0.5); }
+    .suc-card.inactiva { opacity:0.55; border-color:rgba(255,255,255,0.08); }
+    .suc-icon { width:48px;height:48px; border-radius:12px; background:linear-gradient(135deg,rgba(108,99,255,0.2),rgba(0,217,181,0.1)); border:1px solid rgba(108,99,255,0.3); display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem; }
+    .suc-name { font-size:1rem;font-weight:700;color:#e0e0ff;margin-bottom:0.3rem; }
+    .suc-meta { font-size:0.8rem;color:rgba(200,200,255,0.5);line-height:1.7; }
+    .suc-meta span { display:block; }
+    .badge-activa { display:inline-block;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);font-size:0.7rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:50px; }
+    .badge-inactiva { display:inline-block;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);font-size:0.7rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:50px; }
+    .suc-actions { display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap; }
+    .btn-sm-edit { background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3);color:#a78bfa;font-size:0.78rem;font-weight:600;border-radius:8px;padding:0.35rem 0.75rem;text-decoration:none;transition:all 0.2s; }
+    .btn-sm-edit:hover { background:rgba(108,99,255,0.3);color:#c4b5fd; }
+    .btn-sm-toggle { background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;font-size:0.78rem;font-weight:600;border-radius:8px;padding:0.35rem 0.75rem;cursor:pointer;transition:all 0.2s; }
+    .btn-sm-toggle:hover { background:rgba(245,158,11,0.25); }
+    .btn-sm-del { background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;font-size:0.78rem;font-weight:600;border-radius:8px;padding:0.35rem 0.75rem;cursor:pointer;transition:all 0.2s; }
+    .btn-sm-del:hover { background:rgba(239,68,68,0.25); }
+    .btn-new { display:inline-flex;align-items:center;gap:0.4rem;background:linear-gradient(135deg,#6c63ff,#574fd6);color:#fff;border:none;border-radius:10px;padding:0.55rem 1.2rem;font-size:0.85rem;font-weight:700;text-decoration:none;transition:opacity 0.2s; }
+    .btn-new:hover { opacity:0.85;color:#fff; }
+    .empty-box { text-align:center;padding:4rem 2rem;color:rgba(200,200,255,0.4); }
+    .alert-msg { margin:0 2rem 1.5rem;padding:0.85rem 1.25rem;border-radius:10px;font-size:0.88rem;font-weight:600; }
+    .alert-ok { background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10b981; }
+</style>
+
+<div class="page-hero">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+            <h1>🏢 Sucursales</h1>
+            <p>Gestión de la red de sucursales de TechParts ERP</p>
+        </div>
+        @if (esAdmin)
+        {
+            <a asp-action="Create" class="btn-new">+ Nueva Sucursal</a>
+        }
+    </div>
+</div>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alert-msg alert-ok">✓ @TempData["Exito"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="empty-box">
+        <div style="font-size:3rem;margin-bottom:1rem;">🏢</div>
+        <p>No hay sucursales registradas aún.</p>
+        @if (esAdmin) { <a asp-action="Create" class="btn-new" style="display:inline-flex;margin-top:1rem;">+ Crear primera sucursal</a> }
+    </div>
+}
+else
+{
+    <div class="suc-grid">
+        @foreach (var s in Model)
+        {
+            <div class="suc-card @(!s.Activa ? "inactiva" : "")">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.75rem;">
+                    <div class="suc-icon">🏢</div>
+                    @if (s.Activa) { <span class="badge-activa">● Activa</span> }
+                    else { <span class="badge-inactiva">○ Inactiva</span> }
+                </div>
+                <div class="suc-name">@s.Nombre</div>
+                <div class="suc-meta">
+                    @if (!string.IsNullOrEmpty(s.Ciudad)) { <span>📍 @s.Ciudad@(s.Estado != null ? ", " + s.Estado : "")</span> }
+                    @if (!string.IsNullOrEmpty(s.Direccion)) { <span>🏠 @s.Direccion</span> }
+                    @if (!string.IsNullOrEmpty(s.Telefono)) { <span>📞 @s.Telefono</span> }
+                    @if (!string.IsNullOrEmpty(s.Email)) { <span>✉️ @s.Email</span> }
+                    @if (!string.IsNullOrEmpty(s.Responsable)) { <span>👤 @s.Responsable</span> }
+                    <span>📅 @s.CreadaEn.ToString("dd/MM/yyyy")</span>
+                </div>
+                @if (esAdmin)
+                {
+                    <div class="suc-actions">
+                        <a asp-action="Edit" asp-route-id="@s.Id" class="btn-sm-edit">✏️ Editar</a>
+                        <form asp-action="ToggleActiva" asp-route-id="@s.Id" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-sm-toggle">
+                                @(s.Activa ? "⏸ Desactivar" : "▶ Activar")
+                            </button>
+                        </form>
+                        <form asp-action="Delete" asp-route-id="@s.Id" method="post" style="margin:0;"
+                              onsubmit="return confirm('¿Eliminar sucursal «@s.Nombre»?')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-sm-del">🗑</button>
+                        </form>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

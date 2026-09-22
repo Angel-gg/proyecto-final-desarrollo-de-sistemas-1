@@ -50,10 +50,6 @@ namespace EcommerceApp.Controllers
             {
                 var cell = ws.Cell(1, i + 1);
                 cell.Value = headers[i];
-                cell.Style.Font.Bold = true;
-                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-                cell.Style.Font.FontColor = XLColor.White;
-                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             // Datos
@@ -66,7 +62,6 @@ namespace EcommerceApp.Controllers
                 ws.Cell(row, 3).Value = c.Tipo;
                 ws.Cell(row, 4).Value = c.Marca ?? "";
                 ws.Cell(row, 5).Value = (double)c.Precio;
-                ws.Cell(row, 5).Style.NumberFormat.Format = "$#,##0.00";
                 ws.Cell(row, 6).Value = c.Stock;
                 ws.Cell(row, 7).Value = c.Especificaciones ?? "";
                 ws.Cell(row, 8).Value = c.CreadoEn.ToString("dd/MM/yyyy");
@@ -75,22 +70,14 @@ namespace EcommerceApp.Controllers
                 if (r % 2 == 0)
                 {
                     var range = ws.Range(row, 1, row, headers.Length);
-                    range.Style.Fill.BackgroundColor = XLColor.FromHtml("#f0eeff");
                 }
             }
-
-            ws.Columns().AdjustToContents();
-            ws.Row(1).Height = 20;
 
             // Totales al final
             int totalRow = componentes.Count + 3;
             ws.Cell(totalRow, 1).Value = "TOTALES";
-            ws.Cell(totalRow, 1).Style.Font.Bold = true;
             ws.Cell(totalRow, 5).FormulaA1 = $"=SUM(E2:E{componentes.Count + 1})";
-            ws.Cell(totalRow, 5).Style.NumberFormat.Format = "$#,##0.00";
-            ws.Cell(totalRow, 5).Style.Font.Bold = true;
             ws.Cell(totalRow, 6).FormulaA1 = $"=SUM(F2:F{componentes.Count + 1})";
-            ws.Cell(totalRow, 6).Style.Font.Bold = true;
 
             using var ms = new MemoryStream();
             wb.SaveAs(ms);
@@ -130,9 +117,6 @@ namespace EcommerceApp.Controllers
             {
                 var cell = ws.Cell(1, i + 1);
                 cell.Value = headers[i];
-                cell.Style.Font.Bold = true;
-                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#00d9b5");
-                cell.Style.Font.FontColor = XLColor.White;
             }
 
             for (int r = 0; r < combos.Count; r++)
@@ -143,7 +127,6 @@ namespace EcommerceApp.Controllers
                 ws.Cell(row, 2).Value = c.Nombre;
                 ws.Cell(row, 3).Value = c.Descripcion ?? "";
                 ws.Cell(row, 4).Value = (double)c.PrecioVenta;
-                ws.Cell(row, 4).Style.NumberFormat.Format = "$#,##0.00";
                 ws.Cell(row, 5).Value = c.Stock;
                 ws.Cell(row, 6).Value = c.Activo ? "Sí" : "No";
                 ws.Cell(row, 7).Value = string.Join(", ", c.ComboComponentes
@@ -152,8 +135,6 @@ namespace EcommerceApp.Controllers
                 if (r % 2 == 0)
                     ws.Range(row, 1, row, headers.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#e6faf8");
             }
-
-            ws.Columns().AdjustToContents();
 
             using var ms = new MemoryStream();
             wb.SaveAs(ms);
@@ -185,14 +166,9 @@ namespace EcommerceApp.Controllers
             var grupos = componentes.GroupBy(c => c.Tipo).ToList();
 
             ws.Cell(1, 1).Value = "REPORTE DE INVENTARIO — TechParts ERP";
-            ws.Cell(1, 1).Style.Font.Bold = true;
-            ws.Cell(1, 1).Style.Font.FontSize = 14;
-            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#0d0f1a");
-            ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
             ws.Range(1, 1, 1, 6).Merge();
 
             ws.Cell(2, 1).Value = $"Generado: {DateTime.Now:dd/MM/yyyy HH:mm}";
-            ws.Cell(2, 1).Style.Font.Italic = true;
             ws.Range(2, 1, 2, 6).Merge();
 
             string[] headers = ["Categoría", "Producto", "Marca", "Stock", "Precio Unit.", "Valor Total"];
@@ -200,9 +176,6 @@ namespace EcommerceApp.Controllers
             {
                 var cell = ws.Cell(4, i + 1);
                 cell.Value = headers[i];
-                cell.Style.Font.Bold = true;
-                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-                cell.Style.Font.FontColor = XLColor.White;
             }
 
             int currentRow = 5;
@@ -215,13 +188,10 @@ namespace EcommerceApp.Controllers
                     ws.Cell(currentRow, 3).Value = comp.Marca ?? "";
                     ws.Cell(currentRow, 4).Value = comp.Stock;
                     ws.Cell(currentRow, 5).Value = (double)comp.Precio;
-                    ws.Cell(currentRow, 5).Style.NumberFormat.Format = "$#,##0.00";
                     ws.Cell(currentRow, 6).Value = (double)(comp.Stock * comp.Precio);
-                    ws.Cell(currentRow, 6).Style.NumberFormat.Format = "$#,##0.00";
 
                     // Stock crítico (< 5) en rojo
                     if (comp.Stock < 5)
-                        ws.Cell(currentRow, 4).Style.Fill.BackgroundColor = XLColor.FromHtml("#fee2e2");
 
                     currentRow++;
                 }
@@ -229,16 +199,10 @@ namespace EcommerceApp.Controllers
 
             // Fila de totales
             ws.Cell(currentRow + 1, 1).Value = "TOTALES";
-            ws.Cell(currentRow + 1, 1).Style.Font.Bold = true;
             ws.Range(currentRow + 1, 1, currentRow + 1, 3).Merge();
             ws.Cell(currentRow + 1, 4).FormulaA1 = $"=SUM(D5:D{currentRow})";
-            ws.Cell(currentRow + 1, 4).Style.Font.Bold = true;
             ws.Cell(currentRow + 1, 6).FormulaA1 = $"=SUM(F5:F{currentRow})";
-            ws.Cell(currentRow + 1, 6).Style.NumberFormat.Format = "$#,##0.00";
-            ws.Cell(currentRow + 1, 6).Style.Font.Bold = true;
             ws.Range(currentRow + 1, 1, currentRow + 1, 6).Style.Fill.BackgroundColor = XLColor.FromHtml("#f0eeff");
-
-            ws.Columns().AdjustToContents();
 
             using var ms = new MemoryStream();
             wb.SaveAs(ms);
@@ -265,9 +229,6 @@ namespace EcommerceApp.Controllers
             {
                 var cell = ws.Cell(1, i + 1);
                 cell.Value = headers[i];
-                cell.Style.Font.Bold = true;
-                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-                cell.Style.Font.FontColor = XLColor.White;
             }
 
             for (int r = 0; r < usuarios.Count; r++)
@@ -290,8 +251,6 @@ namespace EcommerceApp.Controllers
                 if (r % 2 == 0)
                     ws.Range(row, 1, row, headers.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#f5f3ff");
             }
-
-            ws.Columns().AdjustToContents();
 
             using var ms = new MemoryStream();
             wb.SaveAs(ms);
@@ -612,13 +571,9 @@ namespace EcommerceApp.Controllers
             var ws = wb.Worksheets.Add("Ventas por Período");
 
             ws.Cell(1, 1).Value = "REPORTE DE VENTAS POR PERÍODO — TechParts ERP";
-            ws.Cell(1, 1).Style.Font.Bold = true; ws.Cell(1, 1).Style.Font.FontSize = 14;
-            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-            ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
             ws.Range(1, 1, 1, 8).Merge();
 
             ws.Cell(2, 1).Value = $"Período: {desde:dd/MM/yyyy} — {hasta:dd/MM/yyyy}  |  Generado: {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
-            ws.Cell(2, 1).Style.Font.Italic = true;
             ws.Range(2, 1, 2, 8).Merge();
 
             string[] hdrs = ["Nº Pedido", "Fecha", "Hora", "Cliente", "Método Pago", "Subtotal", "IVA", "Total"];
@@ -626,8 +581,6 @@ namespace EcommerceApp.Controllers
             {
                 var cell = ws.Cell(4, i + 1);
                 cell.Value = hdrs[i]; cell.Style.Font.Bold = true;
-                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-                cell.Style.Font.FontColor = XLColor.White;
             }
 
             for (int r = 0; r < pedidos.Count; r++)
@@ -638,20 +591,12 @@ namespace EcommerceApp.Controllers
                 ws.Cell(row, 3).Value = p.FechaPedido.ToString("HH:mm:ss");
                 ws.Cell(row, 4).Value = p.Usuario?.NombreCompleto ?? p.Usuario?.Email ?? "—";
                 ws.Cell(row, 5).Value = p.MetodoPago.ToString();
-                ws.Cell(row, 6).Value = (double)p.Subtotal; ws.Cell(row, 6).Style.NumberFormat.Format = "$#,##0.00";
-                ws.Cell(row, 7).Value = (double)p.Impuesto; ws.Cell(row, 7).Style.NumberFormat.Format = "$#,##0.00";
-                ws.Cell(row, 8).Value = (double)p.Total;    ws.Cell(row, 8).Style.NumberFormat.Format = "$#,##0.00";
                 if (r % 2 == 0) ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#f0eeff");
                 if (p.Estado == EstadoPedido.Devuelto) ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#fee2e2");
             }
 
             int totRow = pedidos.Count + 6;
-            ws.Cell(totRow, 1).Value = "TOTALES"; ws.Cell(totRow, 1).Style.Font.Bold = true;
-            ws.Cell(totRow, 6).Value = (double)pedidos.Sum(p => p.Subtotal); ws.Cell(totRow, 6).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(totRow, 6).Style.Font.Bold = true;
-            ws.Cell(totRow, 7).Value = (double)pedidos.Sum(p => p.Impuesto); ws.Cell(totRow, 7).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(totRow, 7).Style.Font.Bold = true;
-            ws.Cell(totRow, 8).Value = (double)pedidos.Sum(p => p.Total);    ws.Cell(totRow, 8).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(totRow, 8).Style.Font.Bold = true;
             ws.Range(totRow, 1, totRow, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#e0deff");
-            ws.Columns().AdjustToContents();
 
             using var ms = new MemoryStream(); wb.SaveAs(ms);
             return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -690,18 +635,12 @@ namespace EcommerceApp.Controllers
             var ws = wb.Worksheets.Add("Más Vendidos");
 
             ws.Cell(1, 1).Value = $"PRODUCTOS MÁS VENDIDOS — TechParts ERP — {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
-            ws.Cell(1, 1).Style.Font.Bold = true; ws.Cell(1, 1).Style.Font.FontSize = 13;
-            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-            ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
             ws.Range(1, 1, 1, 5).Merge();
 
             string[] hdrs = ["#", "Producto", "Tipo", "Unidades Vendidas", "Total Ingresos"];
             for (int i = 0; i < hdrs.Length; i++)
             {
                 ws.Cell(3, i + 1).Value = hdrs[i];
-                ws.Cell(3, i + 1).Style.Font.Bold = true;
-                ws.Cell(3, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-                ws.Cell(3, i + 1).Style.Font.FontColor = XLColor.White;
             }
 
             for (int r = 0; r < items.Count; r++)
@@ -711,10 +650,8 @@ namespace EcommerceApp.Controllers
                 ws.Cell(row, 2).Value = x.Nombre;
                 ws.Cell(row, 3).Value = x.Tipo;
                 ws.Cell(row, 4).Value = x.TotalVendido;
-                ws.Cell(row, 5).Value = (double)x.TotalIngresos; ws.Cell(row, 5).Style.NumberFormat.Format = "$#,##0.00";
                 if (r % 2 == 0) ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#f0eeff");
             }
-            ws.Columns().AdjustToContents();
             using var ms = new MemoryStream(); wb.SaveAs(ms);
             return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 $"MasVendidos_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
@@ -741,27 +678,19 @@ namespace EcommerceApp.Controllers
             var ws = wb.Worksheets.Add("Stock Bajo");
 
             ws.Cell(1, 1).Value = $"INVENTARIOS CON STOCK BAJO — TechParts ERP — {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
-            ws.Cell(1, 1).Style.Font.Bold = true;
-            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#ef4444");
-            ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
             ws.Range(1, 1, 1, 6).Merge();
 
             string[] hdrs = ["Producto", "Tipo", "Marca", "Stock", "Stock Mínimo", "Precio"];
             for (int i = 0; i < hdrs.Length; i++) {
-                ws.Cell(3, i + 1).Value = hdrs[i]; ws.Cell(3, i + 1).Style.Font.Bold = true;
-                ws.Cell(3, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#dc2626");
-                ws.Cell(3, i + 1).Style.Font.FontColor = XLColor.White;
             }
             for (int r = 0; r < items.Count; r++) {
                 var c = items[r]; int row = r + 4;
                 ws.Cell(row, 1).Value = c.Nombre; ws.Cell(row, 2).Value = c.Tipo;
                 ws.Cell(row, 3).Value = c.Marca ?? ""; ws.Cell(row, 4).Value = c.Stock;
                 ws.Cell(row, 5).Value = 5; // umbral mínimo sugerido
-                ws.Cell(row, 6).Value = (double)c.Precio; ws.Cell(row, 6).Style.NumberFormat.Format = "$#,##0.00";
                 var bg = c.Stock == 0 ? XLColor.FromHtml("#fee2e2") : XLColor.FromHtml("#fff7ed");
                 ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = bg;
             }
-            ws.Columns().AdjustToContents();
             using var ms = new MemoryStream(); wb.SaveAs(ms);
             return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 $"StockBajo_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
@@ -794,16 +723,10 @@ namespace EcommerceApp.Controllers
             var ws = wb.Worksheets.Add("Carritos Abandonados");
 
             ws.Cell(1, 1).Value = $"CARRITOS ABANDONADOS — TechParts ERP — {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
-            ws.Cell(1, 1).Style.Font.Bold = true;
-            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#f59e0b");
-            ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
             ws.Range(1, 1, 1, 6).Merge();
 
             string[] hdrs = ["Cliente", "Email", "Fecha Creación", "Última Actividad", "Items", "Total Estimado"];
             for (int i = 0; i < hdrs.Length; i++) {
-                ws.Cell(3, i + 1).Value = hdrs[i]; ws.Cell(3, i + 1).Style.Font.Bold = true;
-                ws.Cell(3, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#d97706");
-                ws.Cell(3, i + 1).Style.Font.FontColor = XLColor.White;
             }
             for (int r = 0; r < registros.Count; r++) {
                 var c = registros[r]; int row = r + 4;
@@ -812,10 +735,8 @@ namespace EcommerceApp.Controllers
                 ws.Cell(row, 3).Value = c.FechaCreacion.ToString("dd/MM/yyyy HH:mm");
                 ws.Cell(row, 4).Value = c.FechaUltimaActividad.ToString("dd/MM/yyyy HH:mm");
                 ws.Cell(row, 5).Value = c.TotalItems;
-                ws.Cell(row, 6).Value = (double)c.TotalEstimado; ws.Cell(row, 6).Style.NumberFormat.Format = "$#,##0.00";
                 if (r % 2 == 0) ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#fffbeb");
             }
-            ws.Columns().AdjustToContents();
             using var ms = new MemoryStream(); wb.SaveAs(ms);
             return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 $"CarritosAbandonados_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
@@ -851,28 +772,20 @@ namespace EcommerceApp.Controllers
 
             var nombreMes = new System.Globalization.CultureInfo("es-MX").DateTimeFormat.GetMonthName(mes.Value);
             ws.Cell(1, 1).Value = $"CONCILIACIÓN DE PAGOS Y COMISIONES — {nombreMes.ToUpper()} {anio} — {DateTime.Now:HH:mm:ss}";
-            ws.Cell(1, 1).Style.Font.Bold = true; ws.Cell(1, 1).Style.Font.FontSize = 12;
-            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-            ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
             ws.Range(1, 1, 1, 7).Merge();
 
             // Resumen por método de pago
             var grupos = pedidos.GroupBy(p => p.MetodoPago).ToList();
-            ws.Cell(3, 1).Value = "RESUMEN POR MÉTODO DE PAGO"; ws.Cell(3, 1).Style.Font.Bold = true;
             int gr = 4;
             foreach (var g in grupos) {
                 ws.Cell(gr, 1).Value = g.Key.ToString();
                 ws.Cell(gr, 2).Value = $"{g.Count()} transacciones";
-                ws.Cell(gr, 3).Value = (double)g.Sum(p => p.Total); ws.Cell(gr, 3).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(gr, 3).Style.Font.Bold = true;
                 gr++;
             }
 
             string[] hdrs = ["Nº Pedido", "Fecha", "Hora", "Cliente", "Método", "Total", "Comisión (5%)"];
             int hdrRow = gr + 2;
             for (int i = 0; i < hdrs.Length; i++) {
-                ws.Cell(hdrRow, i + 1).Value = hdrs[i]; ws.Cell(hdrRow, i + 1).Style.Font.Bold = true;
-                ws.Cell(hdrRow, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#6c63ff");
-                ws.Cell(hdrRow, i + 1).Style.Font.FontColor = XLColor.White;
             }
             for (int r = 0; r < pedidos.Count; r++) {
                 var p = pedidos[r]; int row = hdrRow + r + 1;
@@ -881,11 +794,8 @@ namespace EcommerceApp.Controllers
                 ws.Cell(row, 3).Value = p.FechaPedido.ToString("HH:mm:ss");
                 ws.Cell(row, 4).Value = p.Usuario?.NombreCompleto ?? "—";
                 ws.Cell(row, 5).Value = p.MetodoPago.ToString();
-                ws.Cell(row, 6).Value = (double)p.Total; ws.Cell(row, 6).Style.NumberFormat.Format = "$#,##0.00";
-                ws.Cell(row, 7).Value = (double)p.Comision; ws.Cell(row, 7).Style.NumberFormat.Format = "$#,##0.00";
                 if (r % 2 == 0) ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#f5f3ff");
             }
-            ws.Columns().AdjustToContents();
             using var ms = new MemoryStream(); wb.SaveAs(ms);
             return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 $"Conciliacion_{anio}-{mes:D2}.xlsx");
@@ -913,16 +823,10 @@ namespace EcommerceApp.Controllers
             using var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("Devoluciones");
             ws.Cell(1, 1).Value = $"DEVOLUCIONES Y REEMBOLSOS — TechParts ERP — {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
-            ws.Cell(1, 1).Style.Font.Bold = true;
-            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#ef4444");
-            ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
             ws.Range(1, 1, 1, 7).Merge();
 
             string[] hdrs = ["Nº Pedido", "Fecha Compra", "Hora", "Cliente", "Método Pago", "Total Reembolso", "Items"];
             for (int i = 0; i < hdrs.Length; i++) {
-                ws.Cell(3, i + 1).Value = hdrs[i]; ws.Cell(3, i + 1).Style.Font.Bold = true;
-                ws.Cell(3, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#dc2626");
-                ws.Cell(3, i + 1).Style.Font.FontColor = XLColor.White;
             }
             for (int r = 0; r < devueltos.Count; r++) {
                 var p = devueltos[r]; int row = r + 4;
@@ -931,15 +835,11 @@ namespace EcommerceApp.Controllers
                 ws.Cell(row, 3).Value = p.FechaPedido.ToString("HH:mm:ss");
                 ws.Cell(row, 4).Value = p.Usuario?.NombreCompleto ?? "—";
                 ws.Cell(row, 5).Value = p.MetodoPago.ToString();
-                ws.Cell(row, 6).Value = (double)p.Total; ws.Cell(row, 6).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(row, 6).Style.Font.Bold = true;
                 ws.Cell(row, 7).Value = p.Items.Count;
                 ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#fff1f2");
             }
             int totRow = devueltos.Count + 5;
-            ws.Cell(totRow, 1).Value = "TOTAL REEMBOLSADO"; ws.Cell(totRow, 1).Style.Font.Bold = true;
             ws.Cell(totRow, 6).Value = (double)devueltos.Sum(p => p.Total);
-            ws.Cell(totRow, 6).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(totRow, 6).Style.Font.Bold = true;
-            ws.Columns().AdjustToContents();
             using var ms = new MemoryStream(); wb.SaveAs(ms);
             return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 $"Devoluciones_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
@@ -980,36 +880,21 @@ namespace EcommerceApp.Controllers
             using var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("Impuestos por Mes");
             ws.Cell(1, 1).Value = $"IMPUESTOS IVA POR MES — AÑO {anio} — Generado: {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
-            ws.Cell(1, 1).Style.Font.Bold = true; ws.Cell(1, 1).Style.Font.FontSize = 13;
-            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#0d9488");
-            ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
             ws.Range(1, 1, 1, 5).Merge();
 
             string[] hdrs = ["Mes", "Subtotal Ventas", "IVA (16%)", "Total con IVA", "% del Año"];
             for (int i = 0; i < hdrs.Length; i++) {
-                ws.Cell(3, i + 1).Value = hdrs[i]; ws.Cell(3, i + 1).Style.Font.Bold = true;
-                ws.Cell(3, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#0d9488");
-                ws.Cell(3, i + 1).Style.Font.FontColor = XLColor.White;
             }
             decimal totalAnioIVA = todoAnio.Sum(x => x.IVA);
             for (int r = 0; r < todoAnio.Count; r++) {
                 var x = todoAnio[r]; int row = r + 4;
                 ws.Cell(row, 1).Value = ci.DateTimeFormat.GetMonthName(x.Mes);
-                ws.Cell(row, 2).Value = (double)x.Subtotal; ws.Cell(row, 2).Style.NumberFormat.Format = "$#,##0.00";
-                ws.Cell(row, 3).Value = (double)x.IVA;     ws.Cell(row, 3).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(row, 3).Style.Font.Bold = true;
-                ws.Cell(row, 4).Value = (double)x.Total;   ws.Cell(row, 4).Style.NumberFormat.Format = "$#,##0.00";
                 ws.Cell(row, 5).Value = totalAnioIVA > 0 ? (double)Math.Round(x.IVA / totalAnioIVA * 100, 1) : 0;
-                ws.Cell(row, 5).Style.NumberFormat.Format = "0.0\"%\"";
                 if (x.Mes == mes) ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#ccfbf1");
                 else if (r % 2 == 0) ws.Range(row, 1, row, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#f0fdfa");
             }
             int totRow2 = todoAnio.Count + 5;
-            ws.Cell(totRow2, 1).Value = "TOTAL AÑO"; ws.Cell(totRow2, 1).Style.Font.Bold = true;
-            ws.Cell(totRow2, 2).Value = (double)todoAnio.Sum(x => x.Subtotal); ws.Cell(totRow2, 2).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(totRow2, 2).Style.Font.Bold = true;
-            ws.Cell(totRow2, 3).Value = (double)totalAnioIVA; ws.Cell(totRow2, 3).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(totRow2, 3).Style.Font.Bold = true;
-            ws.Cell(totRow2, 4).Value = (double)todoAnio.Sum(x => x.Total); ws.Cell(totRow2, 4).Style.NumberFormat.Format = "$#,##0.00"; ws.Cell(totRow2, 4).Style.Font.Bold = true;
             ws.Range(totRow2, 1, totRow2, hdrs.Length).Style.Fill.BackgroundColor = XLColor.FromHtml("#99f6e4");
-            ws.Columns().AdjustToContents();
             using var ms = new MemoryStream(); wb.SaveAs(ms);
             return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 $"Impuestos_{anio}.xlsx");
@@ -1571,5 +1456,8 @@ namespace EcommerceApp.Controllers
                 });
             }).GeneratePdf();
         }
+
+        // --- ENDPOINTS CSV ---
+
     }
 }

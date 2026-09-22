@@ -126,6 +126,19 @@
     }
     .btn-excel:hover { opacity: 0.85; transform: translateY(-1px); color: #fff; }
 
+    .btn-csv {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        border: none; border-radius: 10px;
+        padding: 0.5rem 1rem;
+        font-size: 0.82rem; font-weight: 600;
+        text-decoration: none;
+        transition: opacity 0.2s, transform 0.15s;
+        cursor: pointer;
+    }
+    .btn-csv:hover { opacity: 0.85; transform: translateY(-1px); color: #fff; }
+
     .rep-filter-box {
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(108,99,255,0.15);
@@ -230,6 +243,7 @@
         <div class="rep-actions">
             <button onclick="descargarVentas('pdf')" class="btn-pdf">📄 PDF</button>
             <button onclick="descargarVentas('excel')" class="btn-excel">📊 Excel</button>
+            <button onclick="descargarVentas('csv')" class="btn-csv">📋 CSV</button>
         </div>
     </div>
 
@@ -246,6 +260,7 @@
         <div class="rep-actions">
             <a href="/Reportes/MasVendidosPdf" class="btn-pdf">📄 PDF</a>
             <a href="/Reportes/MasVendidosExcel" class="btn-excel">📊 Excel</a>
+            <a href="/Reportes/MasVendidosCsv" class="btn-csv">📋 CSV</a>
         </div>
     </div>
 
@@ -262,6 +277,7 @@
         <div class="rep-actions">
             <a href="/Reportes/StockBajoPdf" class="btn-pdf">📄 PDF</a>
             <a href="/Reportes/StockBajoExcel" class="btn-excel">📊 Excel</a>
+            <a href="/Reportes/StockBajoCsv" class="btn-csv">📋 CSV</a>
         </div>
     </div>
 
@@ -278,6 +294,7 @@
         <div class="rep-actions">
             <a href="/Reportes/CarritosAbandonadosPdf" class="btn-pdf">📄 PDF</a>
             <a href="/Reportes/CarritosAbandonadosExcel" class="btn-excel">📊 Excel</a>
+            <a href="/Reportes/CarritosAbandonadosCsv" class="btn-csv">📋 CSV</a>
         </div>
     </div>
 
@@ -294,6 +311,7 @@
         <div class="rep-actions">
             <a href="/Reportes/DevolucionesPdf" class="btn-pdf">📄 PDF</a>
             <a href="/Reportes/DevolucionesExcel" class="btn-excel">📊 Excel</a>
+            <a href="/Reportes/DevolucionesCsv" class="btn-csv">📋 CSV</a>
         </div>
     </div>
 
@@ -349,6 +367,7 @@
             <div class="rep-actions">
                 <button onclick="descargarConciliacion('pdf')" class="btn-pdf">📄 PDF</button>
                 <button onclick="descargarConciliacion('excel')" class="btn-excel">📊 Excel</button>
+                <button onclick="descargarConciliacion('csv')" class="btn-csv">📋 CSV</button>
             </div>
         </div>
 
@@ -380,6 +399,7 @@
             <div class="rep-actions">
                 <button onclick="descargarImpuestos('pdf')" class="btn-pdf">📄 PDF</button>
                 <button onclick="descargarImpuestos('excel')" class="btn-excel">📊 Excel</button>
+                <button onclick="descargarImpuestos('csv')" class="btn-csv">📋 CSV</button>
             </div>
         </div>
     }
@@ -394,6 +414,7 @@
         <div class="rep-actions">
             <a href="/Reportes/ComponentesPdf" class="btn-pdf">📄 PDF</a>
             <a href="/Reportes/ComponentesExcel" class="btn-excel">📊 Excel</a>
+            <a href="/Reportes/ComponentesCsv" class="btn-csv">📋 CSV</a>
         </div>
     </div>
 
@@ -407,6 +428,7 @@
         <div class="rep-actions">
             <a href="/Reportes/CombosPdf" class="btn-pdf">📄 PDF</a>
             <a href="/Reportes/CombosExcel" class="btn-excel">📊 Excel</a>
+            <a href="/Reportes/CombosCsv" class="btn-csv">📋 CSV</a>
         </div>
     </div>
 
@@ -420,6 +442,7 @@
         <div class="rep-actions">
             <a href="/Reportes/InventarioPdf" class="btn-pdf">📄 PDF</a>
             <a href="/Reportes/InventarioExcel" class="btn-excel">📊 Excel</a>
+            <a href="/Reportes/InventarioCsv" class="btn-csv">📋 CSV</a>
         </div>
     </div>
 
@@ -437,6 +460,7 @@
             </div>
             <div class="rep-actions">
                 <a href="/Reportes/UsuariosExcel" class="btn-excel">📊 Excel</a>
+                <a href="/Reportes/UsuariosCsv" class="btn-csv">📋 CSV</a>
             </div>
         </div>
     }
@@ -460,27 +484,30 @@
     function descargarVentas(tipo) {
         const desde = document.getElementById('vp-desde').value;
         const hasta = document.getElementById('vp-hasta').value;
-        const url = tipo === 'pdf' 
-            ? `/Reportes/VentasPeriodoPdf?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`
-            : `/Reportes/VentasPeriodoExcel?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`;
+        let url = '';
+        if (tipo === 'pdf') url = `/Reportes/VentasPeriodoPdf?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`;
+        else if (tipo === 'excel') url = `/Reportes/VentasPeriodoExcel?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`;
+        else url = `/Reportes/VentasPeriodoCsv?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`;
         window.location.href = url;
     }
 
     function descargarConciliacion(tipo) {
         const mes = document.getElementById('con-mes').value;
         const anio = document.getElementById('con-anio').value;
-        const url = tipo === 'pdf'
-            ? `/Reportes/ConciliacionPdf?mes=${mes}&anio=${anio}`
-            : `/Reportes/ConciliacionExcel?mes=${mes}&anio=${anio}`;
+        let url = '';
+        if (tipo === 'pdf') url = `/Reportes/ConciliacionPdf?mes=${mes}&anio=${anio}`;
+        else if (tipo === 'excel') url = `/Reportes/ConciliacionExcel?mes=${mes}&anio=${anio}`;
+        else url = `/Reportes/ConciliacionCsv?mes=${mes}&anio=${anio}`;
         window.location.href = url;
     }
 
     function descargarImpuestos(tipo) {
         const mes = document.getElementById('imp-mes').value;
         const anio = document.getElementById('imp-anio').value;
-        const url = tipo === 'pdf'
-            ? `/Reportes/ImpuestosMesPdf?mes=${mes}&anio=${anio}`
-            : `/Reportes/ImpuestosExcel?mes=${mes}&anio=${anio}`;
+        let url = '';
+        if (tipo === 'pdf') url = `/Reportes/ImpuestosMesPdf?mes=${mes}&anio=${anio}`;
+        else if (tipo === 'excel') url = `/Reportes/ImpuestosExcel?mes=${mes}&anio=${anio}`;
+        else url = `/Reportes/ImpuestosMesCsv?mes=${mes}&anio=${anio}`;
         window.location.href = url;
     }
 
@@ -494,11 +521,14 @@
     }
 
     // Feedback visual al descargar
-    document.querySelectorAll('.btn-pdf, .btn-excel').forEach(btn => {
+    document.querySelectorAll('.btn-pdf, .btn-excel, .btn-csv').forEach(btn => {
         btn.addEventListener('click', function() {
             if (this.tagName === 'A' || this.onclick) {
                 const original = this.innerHTML;
-                this.innerHTML = this.classList.contains('btn-pdf') ? '⏳ Generando PDF...' : '⏳ Generando Excel...';
+                if (this.classList.contains('btn-pdf')) this.innerHTML = '⏳ Generando PDF...';
+                else if (this.classList.contains('btn-excel')) this.innerHTML = '⏳ Generando Excel...';
+                else this.innerHTML = '⏳ Generando CSV...';
+                
                 this.style.opacity = '0.7';
                 setTimeout(() => {
                     this.innerHTML = original;

@@ -21,6 +21,10 @@ namespace EcommerceApp.Data
         public DbSet<PedidoItem> PedidoItems { get; set; }
         public DbSet<CarritoAbandonado> CarritosAbandonados { get; set; }
 
+        // ── Módulo de Organización ──
+        public DbSet<Sucursal> Sucursales { get; set; }
+        public DbSet<Proveedor> Proveedores { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -97,6 +101,14 @@ namespace EcommerceApp.Data
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // ── Sucursal ──
+            modelBuilder.Entity<Sucursal>()
+                .Property(s => s.Nombre).HasMaxLength(150).IsRequired();
+
+            // ── Proveedor ──
+            modelBuilder.Entity<Proveedor>()
+                .Property(p => p.Nombre).HasMaxLength(150).IsRequired();
         }
     }
 }

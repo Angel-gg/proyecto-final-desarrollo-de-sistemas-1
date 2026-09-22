@@ -1,0 +1,74 @@
+@model EcommerceApp.Models.Proveedor
+@{
+    ViewData["Title"] = "Nuevo Proveedor";
+}
+<style>
+    body { background: #080a14; }
+    .form-container { max-width: 600px; margin: 2rem auto; background: rgba(13,15,26,0.7); border: 1px solid rgba(0,217,181,0.2); border-radius: 16px; padding: 2rem; backdrop-filter: blur(10px); }
+    .form-title { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: rgba(200,200,255,0.8); margin-bottom: 0.4rem; }
+    .form-control { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,217,181,0.3); border-radius: 8px; padding: 0.6rem 0.8rem; color: #fff; font-size: 0.9rem; }
+    .form-control:focus { outline: none; border-color: #00d9b5; box-shadow: 0 0 0 3px rgba(0,217,181,0.2); }
+    .btn-submit { background: linear-gradient(135deg, #00d9b5, #00a89a); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; width: 100%; cursor: pointer; transition: opacity 0.2s; }
+    .btn-submit:hover { opacity: 0.9; }
+    .btn-cancel { display: block; text-align: center; color: rgba(200,200,255,0.6); margin-top: 1rem; text-decoration: none; font-size: 0.85rem; }
+    .btn-cancel:hover { color: #fff; }
+</style>
+
+<div class="form-container">
+    <div class="form-title">🚚 Registrar Nuevo Proveedor</div>
+    <form asp-action="Create" method="post">
+        <div class="form-group">
+            <label asp-for="Nombre" class="form-label">Nombre de Empresa o Proveedor *</label>
+            <input asp-for="Nombre" class="form-control" required />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label asp-for="CategoriaEspecialidad" class="form-label">Categoría (ej: CPU, Periféricos)</label>
+                <input asp-for="CategoriaEspecialidad" class="form-control" placeholder="Ej. Procesadores" />
+            </div>
+            <div class="col-md-6 form-group">
+                <label asp-for="SitioWeb" class="form-label">Sitio Web</label>
+                <input asp-for="SitioWeb" type="url" class="form-control" placeholder="https://..." />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Contacto" class="form-label">Nombre del Contacto Comercial</label>
+            <input asp-for="Contacto" class="form-control" />
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label asp-for="Telefono" class="form-label">Teléfono</label>
+                <input asp-for="Telefono" class="form-control" />
+            </div>
+            <div class="col-md-6 form-group">
+                <label asp-for="Email" class="form-label">Email de contacto</label>
+                <input asp-for="Email" type="email" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label asp-for="Ciudad" class="form-label">Ciudad</label>
+                <input asp-for="Ciudad" class="form-control" />
+            </div>
+            <div class="col-md-6 form-group">
+                <label asp-for="Direccion" class="form-label">Dirección</label>
+                <input asp-for="Direccion" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-top:1.5rem;">
+            <input asp-for="Activo" type="checkbox" style="width:18px;height:18px;accent-color:#00d9b5;" checked />
+            <label asp-for="Activo" class="form-label" style="margin:0;">Proveedor Activo inmediatamente</label>
+        </div>
+
+        <button type="submit" class="btn-submit mt-4">Crear Proveedor</button>
+        <a asp-action="Index" class="btn-cancel">Cancelar y Volver</a>
+    </form>
+</div>
