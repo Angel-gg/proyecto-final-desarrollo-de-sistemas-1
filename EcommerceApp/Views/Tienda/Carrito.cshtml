@@ -190,8 +190,7 @@
                     <span class="total-price">$@Model.Total.ToString("N2")</span>
                 </div>
 
-                <a href="#" class="btn-checkout"
-                   onclick="alert('Módulo de pago próximamente 🚀'); return false;">
+                <a asp-controller="Tienda" asp-action="Checkout" class="btn-checkout">
                     💳 Proceder al Pago
                 </a>
 

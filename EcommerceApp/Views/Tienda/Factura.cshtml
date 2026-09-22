@@ -1,0 +1,258 @@
+@model EcommerceApp.Models.Pedido
+@{
+    ViewData["Title"] = $"Factura {Model.NumeroPedido} — TechParts";
+    bool devuelto = Model.Estado == EcommerceApp.Models.EstadoPedido.Devuelto;
+}
+
+<style>
+    body { background: #080a14 !important; }
+
+    .fac-page { max-width: 820px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
+
+    /* ── Toolbar de acciones ── */
+    .fac-toolbar {
+        display: flex; gap: .75rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+        align-items: center;
+    }
+    .btn-back { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+        color: rgba(255,255,255,.6); border-radius: 10px; padding: .5rem 1rem;
+        font-size: .82rem; text-decoration: none; transition: all .2s; }
+    .btn-back:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .btn-dl-pdf { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff;
+        border: none; border-radius: 10px; padding: .5rem 1.1rem;
+        font-size: .82rem; font-weight: 700; text-decoration: none; cursor: pointer;
+        transition: opacity .2s; }
+    .btn-dl-pdf:hover { opacity: .85; color: #fff; }
+    .btn-print { background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.3);
+        color: #a78bfa; border-radius: 10px; padding: .5rem 1.1rem;
+        font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .btn-print:hover { background: rgba(108,99,255,.25); }
+
+    /* ── Tarjeta de factura ── */
+    .fac-card {
+        background: rgba(13,15,26,0.95); border: 1px solid rgba(108,99,255,.25);
+        border-radius: 20px; overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    }
+
+    /* Encabezado */
+    .fac-header {
+        background: linear-gradient(135deg,#1a1040 0%,#0d1a40 100%);
+        padding: 2rem 2.5rem;
+        display: flex; justify-content: space-between; align-items: flex-start;
+        border-bottom: 1px solid rgba(108,99,255,.2);
+    }
+    .fac-brand h2 { font-size: 1.6rem; font-weight: 900; margin: 0 0 .2rem;
+        background: linear-gradient(135deg,#6c63ff,#00d9b5);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; }
+    .fac-brand p { color: rgba(200,200,255,.5); font-size: .8rem; margin: 0; }
+
+    .fac-meta { text-align: right; }
+    .fac-num { font-size: 1.1rem; font-weight: 800; color: #fff; }
+    .fac-fecha { font-size: .78rem; color: rgba(200,200,255,.5); margin-top: .2rem; }
+    .fac-hora  { font-size: .85rem; color: #00d9b5; font-weight: 700; margin-top: .15rem; }
+
+    .fac-estado-badge {
+        display: inline-block; padding: .25rem .75rem; border-radius: 30px;
+        font-size: .72rem; font-weight: 800; text-transform: uppercase;
+        letter-spacing: .06em; margin-top: .5rem;
+    }
+    .estado-completado { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.3); }
+    .estado-devuelto   { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+    .estado-pendiente  { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+
+    /* Datos cliente */
+    .fac-info { padding: 1.5rem 2.5rem; display: grid;
+        grid-template-columns: 1fr 1fr; gap: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,.06); }
+    .fac-info-block label { display: block; font-size: .68rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .07em; color: #6c63ff; margin-bottom: .3rem; }
+    .fac-info-block span { color: rgba(255,255,255,.85); font-size: .88rem; }
+
+    /* Tabla de items */
+    .fac-table-wrap { padding: 0 2.5rem; margin: 1.5rem 0; }
+    .fac-table { width: 100%; border-collapse: collapse; }
+    .fac-table thead tr { background: rgba(108,99,255,.1); }
+    .fac-table th { padding: .65rem .85rem; text-align: left; font-size: .72rem;
+        font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+        color: rgba(200,200,255,.6); border-bottom: 1px solid rgba(108,99,255,.15); }
+    .fac-table td { padding: .75rem .85rem; font-size: .88rem; color: rgba(255,255,255,.8);
+        border-bottom: 1px solid rgba(255,255,255,.04); }
+    .fac-table tbody tr:hover td { background: rgba(255,255,255,.02); }
+    .fac-table td.num { text-align: right; }
+    .item-badge { display: inline-block; font-size: .65rem; font-weight: 700;
+        padding: .1rem .4rem; border-radius: 4px; margin-left: .35rem; vertical-align: middle; }
+    .badge-comp  { background: rgba(108,99,255,.2); color: #a78bfa; }
+    .badge-combo { background: rgba(0,217,181,.15); color: #00d9b5; }
+
+    /* Totales */
+    .fac-totals { padding: 1.25rem 2.5rem 2rem; }
+    .tot-row { display: flex; justify-content: flex-end; gap: 5rem;
+        font-size: .88rem; margin-bottom: .6rem; }
+    .tot-row .label { color: rgba(255,255,255,.5); }
+    .tot-row .value { min-width: 110px; text-align: right; color: rgba(255,255,255,.85); font-weight: 600; }
+    .tot-divider { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: .75rem 0; }
+    .tot-grand { display: flex; justify-content: flex-end; gap: 5rem; align-items: center; }
+    .tot-grand .label { color: #fff; font-weight: 800; font-size: 1rem; }
+    .tot-grand .value {
+        min-width: 110px; text-align: right; font-size: 1.6rem; font-weight: 900;
+        background: linear-gradient(135deg,#6c63ff,#00d9b5);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Método de pago */
+    .fac-footer { padding: 1rem 2.5rem 1.5rem;
+        border-top: 1px solid rgba(255,255,255,.06);
+        display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: .75rem; }
+    .metodo-chip { display: inline-flex; align-items: center; gap: .5rem;
+        background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+        border-radius: 30px; padding: .35rem .85rem; font-size: .8rem; color: rgba(255,255,255,.7); }
+    .fac-legal { font-size: .7rem; color: rgba(255,255,255,.2); }
+
+    @@media print {
+        .fac-toolbar, .btn-confirm { display: none !important; }
+        body { background: #fff !important; }
+        .fac-card { border: 1px solid #ccc; box-shadow: none; }
+    }
+</style>
+
+<div class="fac-page">
+    <!-- Toolbar -->
+    <div class="fac-toolbar">
+        <a asp-action="MisPedidos" class="btn-back">← Mis Pedidos</a>
+        <a href="/Reportes/FacturaPdf/@Model.Id" class="btn-dl-pdf" id="btn-pdf-fac">
+            📄 Descargar PDF
+        </a>
+        <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+
+    <!-- Tarjeta de factura -->
+    <div class="fac-card">
+
+        <!-- Encabezado -->
+        <div class="fac-header">
+            <div class="fac-brand">
+                <h2>⚡ TechParts ERP</h2>
+                <p>Sistema de E-Commerce y ERP</p>
+                <p>techparts.com · RFC: TEC2024ABC001</p>
+            </div>
+            <div class="fac-meta">
+                <div class="fac-num">@Model.NumeroPedido</div>
+                <div class="fac-fecha">📅 @Model.FechaPedido.ToString("dd/MM/yyyy")</div>
+                <div class="fac-hora">🕐 @Model.FechaPedido.ToString("HH:mm:ss")</div>
+                <div>
+                    @if (Model.Estado == EcommerceApp.Models.EstadoPedido.Completado)
+                    { <span class="fac-estado-badge estado-completado">✓ Completado</span> }
+                    else if (Model.Estado == EcommerceApp.Models.EstadoPedido.Devuelto)
+                    { <span class="fac-estado-badge estado-devuelto">↩ Devuelto</span> }
+                    else
+                    { <span class="fac-estado-badge estado-pendiente">⏳ Pendiente</span> }
+                </div>
+            </div>
+        </div>
+
+        <!-- Info cliente -->
+        <div class="fac-info">
+            <div class="fac-info-block">
+                <label>Cliente</label>
+                <span>@(Model.Usuario?.NombreCompleto ?? Model.Usuario?.FullName ?? "Cliente")</span>
+            </div>
+            <div class="fac-info-block">
+                <label>Correo</label>
+                <span>@(Model.Usuario?.Email ?? "—")</span>
+            </div>
+            <div class="fac-info-block">
+                <label>Fecha de compra</label>
+                <span>@Model.FechaPedido.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-MX"))</span>
+            </div>
+            <div class="fac-info-block">
+                <label>Hora exacta</label>
+                <span style="color:#00d9b5;font-weight:700;">@Model.FechaPedido.ToString("HH:mm:ss")</span>
+            </div>
+        </div>
+
+        <!-- Tabla de ítems -->
+        <div class="fac-table-wrap">
+            <table class="fac-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Producto</th>
+                        <th style="text-align:right">Precio Unit.</th>
+                        <th style="text-align:right">Cant.</th>
+                        <th style="text-align:right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int rowNum = 1; }
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@rowNum</td>
+                            <td>
+                                @item.ProductoNombre
+                                <span class="item-badge @(item.Tipo == "combo" ? "badge-combo" : "badge-comp")">
+                                    @(item.Tipo == "combo" ? "🎁 Combo" : "🔧 Comp.")
+                                </span>
+                            </td>
+                            <td class="num">$@item.PrecioUnitario.ToString("N2")</td>
+                            <td class="num">@item.Cantidad</td>
+                            <td class="num">$@item.Subtotal.ToString("N2")</td>
+                        </tr>
+                        rowNum++;
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Totales -->
+        <div class="fac-totals">
+            <div class="tot-row">
+                <span class="label">Subtotal</span>
+                <span class="value">$@Model.Subtotal.ToString("N2")</span>
+            </div>
+            <div class="tot-row">
+                <span class="label">IVA (16%)</span>
+                <span class="value">$@Model.Impuesto.ToString("N2")</span>
+            </div>
+            <hr class="tot-divider" />
+            <div class="tot-grand">
+                <span class="label">TOTAL</span>
+                <span class="value">$@Model.Total.ToString("N2")</span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="fac-footer">
+            <span class="metodo-chip">
+                @(Model.MetodoPago == EcommerceApp.Models.MetodoPago.Tarjeta       ? "💳 Tarjeta" :
+                  Model.MetodoPago == EcommerceApp.Models.MetodoPago.Efectivo      ? "💵 Efectivo" :
+                  "🏦 Transferencia")
+            </span>
+            @if (!string.IsNullOrEmpty(Model.Notas))
+            {
+                <span style="font-size:.8rem;color:rgba(255,255,255,.45);">
+                    📝 @Model.Notas
+                </span>
+            }
+            <span class="fac-legal">
+                Documento generado: @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+                · Compra simulada para demostración
+            </span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('btn-pdf-fac')?.addEventListener('click', function() {
+        const orig = this.innerHTML;
+        this.innerHTML = '⏳ Generando PDF...';
+        this.style.opacity = '0.7';
+        setTimeout(() => { this.innerHTML = orig; this.style.opacity = ''; }, 4000);
+    });
+</script>
+}

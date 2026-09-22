@@ -191,6 +191,7 @@
                 {
                     <li><a asp-controller="Tienda" asp-action="Index">🛒 Tienda</a></li>
                     <li><a asp-controller="Tienda" asp-action="Carrito">🛒 Mi Carrito</a></li>
+                    <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Mis Pedidos</a></li>
                 }
                 else
                 {
@@ -198,6 +199,7 @@
                     <li><a asp-controller="Componentes" asp-action="Index">🔧 Componentes</a></li>
                     <li><a asp-controller="Combos" asp-action="Index">🎁 Combos</a></li>
                     <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
+                    <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Pedidos</a></li>
                     <li><a asp-controller="Reportes" asp-action="Index">📋 Reportes</a></li>
                     @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
                     {

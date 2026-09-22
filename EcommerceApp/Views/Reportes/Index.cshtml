@@ -1,8 +1,13 @@
 @{
-    ViewData["Title"] = "Reportes";
+    ViewData["Title"] = "Centro de Reportes";
+    var esGerenteOAdmin = User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("Admin");
+    var currentYear = DateTime.Now.Year;
+    var currentMonth = DateTime.Now.Month;
 }
 
 <style>
+    body { background: #080a14; }
+
     .rep-hero {
         background: linear-gradient(135deg, #0d0f1a 0%, #12142a 100%);
         border-bottom: 1px solid rgba(108,99,255,0.2);
@@ -20,9 +25,29 @@
     }
     .rep-hero p { color: rgba(200,200,255,0.6); margin: 0; font-size: 0.92rem; }
 
+    .clock-banner {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: rgba(108,99,255,0.15);
+        border: 1px solid rgba(108,99,255,0.35);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        margin-top: 1rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #a78bfa;
+    }
+    .clock-time {
+        font-family: monospace;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #00d9b5;
+    }
+
     .rep-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 1.25rem;
         padding: 0 2rem 2.5rem;
     }
@@ -34,6 +59,9 @@
         padding: 1.5rem;
         transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
         backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     .rep-card:hover {
         transform: translateY(-4px);
@@ -52,12 +80,16 @@
     .rep-card-icon.teal   { background: linear-gradient(135deg, rgba(0,217,181,0.2), rgba(0,217,181,0.1)); border: 1px solid rgba(0,217,181,0.3); }
     .rep-card-icon.amber  { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1)); border: 1px solid rgba(245,158,11,0.3); }
     .rep-card-icon.red    { background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1)); border: 1px solid rgba(239,68,68,0.3); }
+    .rep-card-icon.green  { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.1)); border: 1px solid rgba(16,185,129,0.3); }
 
     .rep-card h3 {
         font-size: 1rem;
         font-weight: 700;
         color: #e0e0ff;
         margin: 0 0 0.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
     .rep-card p {
         font-size: 0.82rem;
@@ -66,7 +98,7 @@
         line-height: 1.5;
     }
 
-    .rep-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .rep-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: auto; }
 
     .btn-pdf {
         display: inline-flex; align-items: center; gap: 0.4rem;
@@ -94,6 +126,40 @@
     }
     .btn-excel:hover { opacity: 0.85; transform: translateY(-1px); color: #fff; }
 
+    .rep-filter-box {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(108,99,255,0.15);
+        border-radius: 10px;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .rep-filter-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .rep-filter-row label {
+        font-size: 0.75rem;
+        color: rgba(200,200,255,0.6);
+        min-width: 45px;
+    }
+    .rep-input, .rep-select {
+        background: rgba(13,15,26,0.9);
+        border: 1px solid rgba(108,99,255,0.3);
+        color: #fff;
+        border-radius: 8px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+        outline: none;
+        width: 100%;
+    }
+    .rep-input:focus, .rep-select:focus {
+        border-color: #00d9b5;
+    }
+
     .rep-badge {
         display: inline-block;
         font-size: 0.68rem;
@@ -102,10 +168,10 @@
         letter-spacing: 0.05em;
         padding: 0.2rem 0.55rem;
         border-radius: 6px;
-        margin-left: 0.4rem;
         vertical-align: middle;
     }
     .rep-badge.only-admin { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .rep-badge.new { background: rgba(0,217,181,0.15); color: #00d9b5; border: 1px solid rgba(0,217,181,0.3); }
 
     .rep-info {
         background: rgba(108,99,255,0.08);
@@ -120,13 +186,16 @@
         color: rgba(200,200,255,0.75);
     }
     .rep-info strong { color: #a78bfa; }
-
-    body { background: #080a14; }
 </style>
 
 <div class="rep-hero">
-    <h1>📋 Centro de Reportes</h1>
-    <p>Descarga reportes en PDF o Excel de todos los módulos del sistema.</p>
+    <h1>📋 Centro de Reportes & Facturación</h1>
+    <p>Descarga reportes gerenciales en PDF y Excel con fecha y hora exacta de transacción e IVA desglosado.</p>
+    <div class="clock-banner">
+        <span>🕐 Hora del Sistema:</span>
+        <span id="reloj-sistema" class="clock-time">--:--:--</span>
+        <span style="font-size:0.75rem; color:rgba(200,200,255,0.5);">&nbsp;·&nbsp; Siempre registrada en documentos</span>
+    </div>
 </div>
 
 <div class="rep-info">
@@ -138,65 +207,236 @@
 
 <div class="rep-grid">
 
-    <!-- Componentes -->
+    <!-- 1. Ventas por Período -->
     <div class="rep-card">
-        <div class="rep-card-icon purple">🔧</div>
-        <h3>Componentes</h3>
-        <p>Lista completa de componentes con tipo, marca, precio y stock actual. Identifica items con stock crítico.</p>
+        <div>
+            <div class="rep-card-icon purple">📈</div>
+            <h3>
+                Ventas por Período
+                <span class="rep-badge new">Nuevo</span>
+            </h3>
+            <p>Reporte consolidado de pedidos completados y devueltos por rango de fechas, con IVA y totales.</p>
+            <div class="rep-filter-box">
+                <div class="rep-filter-row">
+                    <label>Desde:</label>
+                    <input type="date" id="vp-desde" class="rep-input" value="@DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="rep-filter-row">
+                    <label>Hasta:</label>
+                    <input type="date" id="vp-hasta" class="rep-input" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+        </div>
         <div class="rep-actions">
-            <a href="/Reportes/ComponentesPdf" class="btn-pdf" id="btn-comp-pdf">
-                📄 Descargar PDF
-            </a>
-            <a href="/Reportes/ComponentesExcel" class="btn-excel" id="btn-comp-excel">
-                📊 Descargar Excel
-            </a>
+            <button onclick="descargarVentas('pdf')" class="btn-pdf">📄 PDF</button>
+            <button onclick="descargarVentas('excel')" class="btn-excel">📊 Excel</button>
         </div>
     </div>
 
-    <!-- Combos -->
+    <!-- 2. Productos Más Vendidos -->
     <div class="rep-card">
-        <div class="rep-card-icon teal">🎁</div>
-        <h3>Combos</h3>
-        <p>Detalle de todos los combos, sus componentes incluidos, precio de venta y disponibilidad.</p>
+        <div>
+            <div class="rep-card-icon teal">🏆</div>
+            <h3>
+                Productos Más Vendidos
+                <span class="rep-badge new">Nuevo</span>
+            </h3>
+            <p>Ranking Top 20 de componentes y combos con mayor demanda en unidades e ingresos acumulados.</p>
+        </div>
         <div class="rep-actions">
-            <a href="/Reportes/CombosPdf" class="btn-pdf" id="btn-combos-pdf">
-                📄 Descargar PDF
-            </a>
-            <a href="/Reportes/CombosExcel" class="btn-excel" id="btn-combos-excel">
-                📊 Descargar Excel
-            </a>
+            <a href="/Reportes/MasVendidosPdf" class="btn-pdf">📄 PDF</a>
+            <a href="/Reportes/MasVendidosExcel" class="btn-excel">📊 Excel</a>
         </div>
     </div>
 
-    <!-- Inventario -->
+    <!-- 3. Inventarios Críticos / Stock Bajo -->
     <div class="rep-card">
-        <div class="rep-card-icon amber">📦</div>
-        <h3>Inventario Consolidado</h3>
-        <p>Resumen de valor total del inventario agrupado por categoría. Incluye valor económico por producto y alertas de stock crítico.</p>
+        <div>
+            <div class="rep-card-icon red">⚠️</div>
+            <h3>
+                Inventarios Más Bajos
+                <span class="rep-badge new">Nuevo</span>
+            </h3>
+            <p>Lista de componentes con stock menor o igual a 10 unidades para reabastecimiento urgente.</p>
+        </div>
         <div class="rep-actions">
-            <a href="/Reportes/InventarioPdf" class="btn-pdf" id="btn-inv-pdf">
-                📄 Descargar PDF
-            </a>
-            <a href="/Reportes/InventarioExcel" class="btn-excel" id="btn-inv-excel">
-                📊 Descargar Excel
-            </a>
+            <a href="/Reportes/StockBajoPdf" class="btn-pdf">📄 PDF</a>
+            <a href="/Reportes/StockBajoExcel" class="btn-excel">📊 Excel</a>
         </div>
     </div>
 
-    <!-- Usuarios (Solo Admin/Gerente General) -->
-    @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+    <!-- 4. Carritos Abandonados -->
+    <div class="rep-card">
+        <div>
+            <div class="rep-card-icon amber">🛒</div>
+            <h3>
+                Carritos Abandonados
+                <span class="rep-badge new">Nuevo</span>
+            </h3>
+            <p>Auditoría de carritos que los usuarios no completaron, valor estimado y última actividad.</p>
+        </div>
+        <div class="rep-actions">
+            <a href="/Reportes/CarritosAbandonadosPdf" class="btn-pdf">📄 PDF</a>
+            <a href="/Reportes/CarritosAbandonadosExcel" class="btn-excel">📊 Excel</a>
+        </div>
+    </div>
+
+    <!-- 5. Devoluciones y Reembolsos -->
+    <div class="rep-card">
+        <div>
+            <div class="rep-card-icon red">↩️</div>
+            <h3>
+                Devoluciones & Reembolsos
+                <span class="rep-badge new">Nuevo</span>
+            </h3>
+            <p>Registro histórico de pedidos cancelados o devueltos, importes reintegrados y detalle de ítems.</p>
+        </div>
+        <div class="rep-actions">
+            <a href="/Reportes/DevolucionesPdf" class="btn-pdf">📄 PDF</a>
+            <a href="/Reportes/DevolucionesExcel" class="btn-excel">📊 Excel</a>
+        </div>
+    </div>
+
+    <!-- 6. Factura / Comprobante de Pago -->
+    <div class="rep-card">
+        <div>
+            <div class="rep-card-icon green">🧾</div>
+            <h3>
+                Comprobante de Pago / Factura
+                <span class="rep-badge new">Nuevo</span>
+            </h3>
+            <p>Genera y descarga el PDF oficial de factura de cualquier pedido ingresando su identificador.</p>
+            <div class="rep-filter-box">
+                <div class="rep-filter-row">
+                    <label>ID Pedido:</label>
+                    <input type="number" id="factura-id" class="rep-input" placeholder="Ej: 1" min="1" value="1" />
+                </div>
+            </div>
+        </div>
+        <div class="rep-actions">
+            <button onclick="descargarFactura()" class="btn-pdf">📄 Descargar Factura PDF</button>
+        </div>
+    </div>
+
+    @if (esGerenteOAdmin)
+    {
+        <!-- 7. Conciliación de Pagos y Comisiones (Solo Gerentes) -->
+        <div class="rep-card">
+            <div>
+                <div class="rep-card-icon purple">⚖️</div>
+                <h3>
+                    Conciliación & Comisiones
+                    <span class="rep-badge only-admin">Gerencial</span>
+                </h3>
+                <p>Cierre mensual de pagos por método (Tarjeta, Transferencia, Efectivo) y cálculo del 5% de comisión.</p>
+                <div class="rep-filter-box">
+                    <div class="rep-filter-row">
+                        <label>Mes:</label>
+                        <select id="con-mes" class="rep-select">
+                            @for (int m = 1; m <= 12; m++)
+                            {
+                                var sel = m == currentMonth ? "selected" : "";
+                                <option value="@m" selected="@(m == currentMonth)">@m - @(new System.Globalization.CultureInfo("es-MX").DateTimeFormat.GetMonthName(m))</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="rep-filter-row">
+                        <label>Año:</label>
+                        <input type="number" id="con-anio" class="rep-input" value="@currentYear" />
+                    </div>
+                </div>
+            </div>
+            <div class="rep-actions">
+                <button onclick="descargarConciliacion('pdf')" class="btn-pdf">📄 PDF</button>
+                <button onclick="descargarConciliacion('excel')" class="btn-excel">📊 Excel</button>
+            </div>
+        </div>
+
+        <!-- 8. Impuestos por Mes (IVA 16%) (Solo Gerentes) -->
+        <div class="rep-card">
+            <div>
+                <div class="rep-card-icon teal">🏛️</div>
+                <h3>
+                    Impuestos por Mes (IVA 16%)
+                    <span class="rep-badge only-admin">Gerencial</span>
+                </h3>
+                <p>Auditoría fiscal de IVA acumulado por mes y comparativa anual de ventas netas.</p>
+                <div class="rep-filter-box">
+                    <div class="rep-filter-row">
+                        <label>Mes:</label>
+                        <select id="imp-mes" class="rep-select">
+                            @for (int m = 1; m <= 12; m++)
+                            {
+                                <option value="@m" selected="@(m == currentMonth)">@m - @(new System.Globalization.CultureInfo("es-MX").DateTimeFormat.GetMonthName(m))</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="rep-filter-row">
+                        <label>Año:</label>
+                        <input type="number" id="imp-anio" class="rep-input" value="@currentYear" />
+                    </div>
+                </div>
+            </div>
+            <div class="rep-actions">
+                <button onclick="descargarImpuestos('pdf')" class="btn-pdf">📄 PDF</button>
+                <button onclick="descargarImpuestos('excel')" class="btn-excel">📊 Excel</button>
+            </div>
+        </div>
+    }
+
+    <!-- 9. Componentes -->
+    <div class="rep-card">
+        <div>
+            <div class="rep-card-icon purple">🔧</div>
+            <h3>Componentes</h3>
+            <p>Lista completa de componentes con tipo, marca, precio y stock actual.</p>
+        </div>
+        <div class="rep-actions">
+            <a href="/Reportes/ComponentesPdf" class="btn-pdf">📄 PDF</a>
+            <a href="/Reportes/ComponentesExcel" class="btn-excel">📊 Excel</a>
+        </div>
+    </div>
+
+    <!-- 10. Combos -->
+    <div class="rep-card">
+        <div>
+            <div class="rep-card-icon teal">🎁</div>
+            <h3>Combos</h3>
+            <p>Detalle de todos los combos, componentes incluidos, precio y ahorro.</p>
+        </div>
+        <div class="rep-actions">
+            <a href="/Reportes/CombosPdf" class="btn-pdf">📄 PDF</a>
+            <a href="/Reportes/CombosExcel" class="btn-excel">📊 Excel</a>
+        </div>
+    </div>
+
+    <!-- 11. Inventario Consolidado -->
+    <div class="rep-card">
+        <div>
+            <div class="rep-card-icon amber">📦</div>
+            <h3>Inventario Consolidado</h3>
+            <p>Resumen de valor económico total del inventario agrupado por categoría.</p>
+        </div>
+        <div class="rep-actions">
+            <a href="/Reportes/InventarioPdf" class="btn-pdf">📄 PDF</a>
+            <a href="/Reportes/InventarioExcel" class="btn-excel">📊 Excel</a>
+        </div>
+    </div>
+
+    <!-- 12. Usuarios (Solo Admin/Gerente General) -->
+    @if (esGerenteOAdmin)
     {
         <div class="rep-card">
-            <div class="rep-card-icon red">👥</div>
-            <h3>
-                Usuarios del Sistema
-                <span class="rep-badge only-admin">Solo Gerentes</span>
-            </h3>
-            <p>Lista de todos los usuarios registrados con sus roles, sucursal asignada y código de cliente.</p>
+            <div>
+                <div class="rep-card-icon red">👥</div>
+                <h3>
+                    Usuarios del Sistema
+                    <span class="rep-badge only-admin">Solo Gerentes</span>
+                </h3>
+                <p>Lista de todos los usuarios con sus roles y sucursal asignada.</p>
+            </div>
             <div class="rep-actions">
-                <a href="/Reportes/UsuariosExcel" class="btn-excel" id="btn-usuarios-excel">
-                    📊 Descargar Excel
-                </a>
+                <a href="/Reportes/UsuariosExcel" class="btn-excel">📊 Excel</a>
             </div>
         </div>
     }
@@ -205,16 +445,66 @@
 
 @section Scripts {
 <script>
+    // Reloj en tiempo real
+    function actualizarRelojSistema() {
+        const el = document.getElementById('reloj-sistema');
+        if (el) {
+            const now = new Date();
+            el.textContent = now.toLocaleTimeString('es-MX', { hour12: false });
+        }
+    }
+    actualizarRelojSistema();
+    setInterval(actualizarRelojSistema, 1000);
+
+    // Funciones de descarga con filtros
+    function descargarVentas(tipo) {
+        const desde = document.getElementById('vp-desde').value;
+        const hasta = document.getElementById('vp-hasta').value;
+        const url = tipo === 'pdf' 
+            ? `/Reportes/VentasPeriodoPdf?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`
+            : `/Reportes/VentasPeriodoExcel?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`;
+        window.location.href = url;
+    }
+
+    function descargarConciliacion(tipo) {
+        const mes = document.getElementById('con-mes').value;
+        const anio = document.getElementById('con-anio').value;
+        const url = tipo === 'pdf'
+            ? `/Reportes/ConciliacionPdf?mes=${mes}&anio=${anio}`
+            : `/Reportes/ConciliacionExcel?mes=${mes}&anio=${anio}`;
+        window.location.href = url;
+    }
+
+    function descargarImpuestos(tipo) {
+        const mes = document.getElementById('imp-mes').value;
+        const anio = document.getElementById('imp-anio').value;
+        const url = tipo === 'pdf'
+            ? `/Reportes/ImpuestosMesPdf?mes=${mes}&anio=${anio}`
+            : `/Reportes/ImpuestosExcel?mes=${mes}&anio=${anio}`;
+        window.location.href = url;
+    }
+
+    function descargarFactura() {
+        const id = document.getElementById('factura-id').value;
+        if (!id) {
+            alert('Por favor ingresa un ID de pedido válido.');
+            return;
+        }
+        window.location.href = `/Reportes/FacturaPdf/${id}`;
+    }
+
     // Feedback visual al descargar
     document.querySelectorAll('.btn-pdf, .btn-excel').forEach(btn => {
         btn.addEventListener('click', function() {
-            const original = this.innerHTML;
-            this.innerHTML = this.classList.contains('btn-pdf') ? '⏳ Generando PDF...' : '⏳ Generando Excel...';
-            this.style.opacity = '0.7';
-            setTimeout(() => {
-                this.innerHTML = original;
-                this.style.opacity = '';
-            }, 3000);
+            if (this.tagName === 'A' || this.onclick) {
+                const original = this.innerHTML;
+                this.innerHTML = this.classList.contains('btn-pdf') ? '⏳ Generando PDF...' : '⏳ Generando Excel...';
+                this.style.opacity = '0.7';
+                setTimeout(() => {
+                    this.innerHTML = original;
+                    this.style.opacity = '';
+                }, 3000);
+            }
         });
     });
 </script>

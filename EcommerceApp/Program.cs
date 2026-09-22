@@ -347,5 +347,98 @@ catch (Exception ex)
     Console.WriteLine($"[AVISO BD] Error en seeding: {ex.Message}");
 }
 
+// ─── Sembrar Pedidos de Demo ───────────────────────────────────────────────
+try
+{
+    using var scope2 = app.Services.CreateScope();
+    var db2 = scope2.ServiceProvider.GetRequiredService<EcommerceApp.Data.ApplicationDbContext>();
+    var userMgr2 = scope2.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    if (!db2.Pedidos.Any())
+    {
+        // Asegurarnos que existen componentes
+        var comps = await db2.Componentes.Take(5).ToListAsync();
+        var combos2 = await db2.Combos.Take(2).ToListAsync();
+
+        if (comps.Count >= 3)
+        {
+            var clienteUser  = await userMgr2.FindByEmailAsync("cliente@techparts.com");
+            var vendedorUser = await userMgr2.FindByEmailAsync("vendedor@techparts.com");
+            var gerenteUser  = await userMgr2.FindByEmailAsync("gerente.general@techparts.com");
+
+            string clienteId  = clienteUser?.Id  ?? "demo-cliente";
+            string vendedorId = vendedorUser?.Id ?? "demo-vendedor";
+            string gerenteId  = gerenteUser?.Id  ?? "demo-gerente";
+
+            // Helper local para crear numero de pedido
+            static string NumPedido(int seq, DateTime fecha) =>
+                $"TPC-{fecha:yyyyMMdd}-{seq:D4}";
+
+            var pedidosDemo = new List<EcommerceApp.Models.Pedido>();
+
+            // ── 10 pedidos distribuidos en los últimos 3 meses ──
+            var datos = new[]
+            {
+                (UserId: clienteId,  Fecha: DateTime.Now.AddDays(-89), Metodo: EcommerceApp.Models.MetodoPago.Tarjeta,       Estado: EcommerceApp.Models.EstadoPedido.Completado),
+                (UserId: clienteId,  Fecha: DateTime.Now.AddDays(-75), Metodo: EcommerceApp.Models.MetodoPago.Efectivo,       Estado: EcommerceApp.Models.EstadoPedido.Completado),
+                (UserId: clienteId,  Fecha: DateTime.Now.AddDays(-60), Metodo: EcommerceApp.Models.MetodoPago.Transferencia,  Estado: EcommerceApp.Models.EstadoPedido.Devuelto),
+                (UserId: vendedorId, Fecha: DateTime.Now.AddDays(-45), Metodo: EcommerceApp.Models.MetodoPago.Tarjeta,        Estado: EcommerceApp.Models.EstadoPedido.Completado),
+                (UserId: vendedorId, Fecha: DateTime.Now.AddDays(-30), Metodo: EcommerceApp.Models.MetodoPago.Tarjeta,        Estado: EcommerceApp.Models.EstadoPedido.Completado),
+                (UserId: gerenteId,  Fecha: DateTime.Now.AddDays(-20), Metodo: EcommerceApp.Models.MetodoPago.Efectivo,       Estado: EcommerceApp.Models.EstadoPedido.Completado),
+                (UserId: clienteId,  Fecha: DateTime.Now.AddDays(-15), Metodo: EcommerceApp.Models.MetodoPago.Transferencia,  Estado: EcommerceApp.Models.EstadoPedido.Completado),
+                (UserId: clienteId,  Fecha: DateTime.Now.AddDays(-10), Metodo: EcommerceApp.Models.MetodoPago.Tarjeta,        Estado: EcommerceApp.Models.EstadoPedido.Completado),
+                (UserId: vendedorId, Fecha: DateTime.Now.AddDays(-5),  Metodo: EcommerceApp.Models.MetodoPago.Efectivo,       Estado: EcommerceApp.Models.EstadoPedido.Devuelto),
+                (UserId: clienteId,  Fecha: DateTime.Now.AddDays(-1),  Metodo: EcommerceApp.Models.MetodoPago.Tarjeta,        Estado: EcommerceApp.Models.EstadoPedido.Completado),
+            };
+
+            int seq = 1;
+            foreach (var d in datos)
+            {
+                var c1 = comps[seq % comps.Count];
+                var c2 = comps[(seq + 1) % comps.Count];
+                int qty1 = (seq % 3) + 1;
+                int qty2 = 1;
+
+                decimal sub = c1.Precio * qty1 + c2.Precio * qty2;
+                decimal iva = Math.Round(sub * 0.16m, 2);
+                decimal tot = sub + iva;
+                decimal com = Math.Round(sub * 0.05m, 2);
+
+                var pedido = new EcommerceApp.Models.Pedido
+                {
+                    NumeroPedido = NumPedido(seq, d.Fecha),
+                    UserId       = d.UserId,
+                    FechaPedido  = d.Fecha,
+                    Subtotal     = sub,
+                    Impuesto     = iva,
+                    Total        = tot,
+                    Comision     = com,
+                    MetodoPago   = d.Metodo,
+                    Estado       = d.Estado,
+                    Items = new List<EcommerceApp.Models.PedidoItem>
+                    {
+                        new() { ProductoNombre = c1.Nombre, Tipo = "componente", ProductoId = c1.Id,
+                                PrecioUnitario = c1.Precio, Cantidad = qty1,
+                                Subtotal = c1.Precio * qty1, ImageUrl = c1.ImageUrl },
+                        new() { ProductoNombre = c2.Nombre, Tipo = "componente", ProductoId = c2.Id,
+                                PrecioUnitario = c2.Precio, Cantidad = qty2,
+                                Subtotal = c2.Precio * qty2, ImageUrl = c2.ImageUrl },
+                    }
+                };
+                pedidosDemo.Add(pedido);
+                seq++;
+            }
+
+            db2.Pedidos.AddRange(pedidosDemo);
+            await db2.SaveChangesAsync();
+            Console.WriteLine($"[SEED] {pedidosDemo.Count} pedidos de demo insertados.");
+        }
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[AVISO SEED PEDIDOS] {ex.Message}");
+}
+
 app.Run();
 

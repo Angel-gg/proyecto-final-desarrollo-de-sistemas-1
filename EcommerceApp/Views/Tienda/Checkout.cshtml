@@ -1,0 +1,204 @@
+@{
+    ViewData["Title"] = "Checkout — TechParts";
+    var carrito = (EcommerceApp.Models.CarritoViewModel)ViewBag.Carrito;
+    decimal iva   = Math.Round(carrito.Total * 0.16m, 2);
+    decimal total = carrito.Total + iva;
+}
+
+<style>
+    body { background: #080a14 !important; }
+    .ck-page { max-width: 960px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }
+    .ck-header h1 { font-weight: 800; font-size: 1.8rem; color: #fff; margin: 0 0 .3rem; }
+    .ck-header p  { color: rgba(255,255,255,.4); font-size: .9rem; }
+
+    .ck-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; margin-top: 2rem; }
+    @@media(max-width:720px){ .ck-layout { grid-template-columns: 1fr; } }
+
+    /* --- Panel izquierdo: formulario --- */
+    .ck-form-card {
+        background: rgba(255,255,255,.04); border: 1px solid rgba(108,99,255,.2);
+        border-radius: 18px; padding: 2rem;
+    }
+    .ck-section-title { font-size: .78rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .08em; color: #6c63ff; margin: 0 0 1rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: .83rem; color: rgba(255,255,255,.6); margin-bottom: .4rem; }
+    .form-control-tp {
+        width: 100%; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+        border-radius: 10px; color: #fff; padding: .65rem 1rem; font-size: .9rem;
+        outline: none; transition: border-color .2s; box-sizing: border-box;
+    }
+    .form-control-tp:focus { border-color: #6c63ff; }
+
+    /* Método de pago */
+    .payment-methods { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; }
+    .pay-option { display: none; }
+    .pay-label {
+        display: flex; flex-direction: column; align-items: center; gap: .5rem;
+        padding: 1rem .75rem; background: rgba(255,255,255,.04);
+        border: 2px solid rgba(255,255,255,.08); border-radius: 14px;
+        cursor: pointer; transition: all .2s; text-align: center;
+    }
+    .pay-label:hover { border-color: rgba(108,99,255,.4); }
+    .pay-option:checked + .pay-label {
+        border-color: #6c63ff;
+        background: rgba(108,99,255,.12);
+    }
+    .pay-icon { font-size: 1.8rem; }
+    .pay-name { font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.8); }
+
+    /* --- Panel derecho: resumen --- */
+    .ck-summary {
+        background: rgba(255,255,255,.04); border: 1px solid rgba(108,99,255,.2);
+        border-radius: 18px; padding: 1.5rem; height: fit-content;
+        position: sticky; top: 80px;
+    }
+    .ck-summary h3 { color: #fff; font-weight: 700; font-size: .95rem; margin: 0 0 1.25rem; }
+    .sum-row { display: flex; justify-content: space-between; font-size: .85rem;
+        margin-bottom: .65rem; }
+    .sum-row .lbl { color: rgba(255,255,255,.5); }
+    .sum-row .val { color: rgba(255,255,255,.85); font-weight: 600; }
+    .sum-divider { height: 1px; background: rgba(255,255,255,.08); margin: 1rem 0; }
+    .sum-total { display: flex; justify-content: space-between; align-items: center; }
+    .sum-total .lbl { color: #fff; font-weight: 700; font-size: 1rem; }
+    .sum-total .tot {
+        font-size: 1.6rem; font-weight: 900;
+        background: linear-gradient(135deg,#6c63ff,#00d9b5);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .ck-item { display: flex; justify-content: space-between;
+        font-size: .8rem; color: rgba(255,255,255,.55); margin-bottom: .45rem; }
+    .ck-item span:last-child { color: rgba(255,255,255,.75); font-weight: 600; }
+
+    .btn-confirm {
+        width: 100%; margin-top: 1.5rem; padding: .9rem;
+        background: linear-gradient(135deg,#6c63ff,#574fd6);
+        border: none; border-radius: 14px; color: #fff; font-weight: 800;
+        font-size: 1rem; cursor: pointer; transition: opacity .2s, transform .15s;
+    }
+    .btn-confirm:hover { opacity: .85; transform: translateY(-2px); }
+    .secure-note { text-align: center; font-size: .72rem; color: rgba(255,255,255,.25); margin-top: .75rem; }
+
+    .iva-badge { display: inline-block; background: rgba(0,217,181,.12);
+        color: #00d9b5; border: 1px solid rgba(0,217,181,.25);
+        border-radius: 6px; font-size: .7rem; font-weight: 700;
+        padding: .1rem .45rem; margin-left: .35rem; }
+
+    .alert-err { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25);
+        border-radius: 12px; padding: .85rem 1.25rem; color: #f87171;
+        font-size: .88rem; margin-bottom: 1.25rem; }
+</style>
+
+<div class="ck-page">
+    <div class="ck-header">
+        <h1>💳 Finalizar Compra</h1>
+        <p>Revisa tu pedido y elige método de pago (simulado)</p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-err">⚠ @TempData["Error"]</div>
+    }
+
+    <form asp-action="ProcesarPago" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="ck-layout">
+            <!-- Formulario -->
+            <div class="ck-form-card">
+                <p class="ck-section-title">💳 Método de pago</p>
+
+                <div class="payment-methods" style="margin-bottom:1.5rem;">
+                    <div>
+                        <input type="radio" name="metodoPago" id="pay-tarjeta" value="Tarjeta"
+                               class="pay-option" checked />
+                        <label for="pay-tarjeta" class="pay-label">
+                            <span class="pay-icon">💳</span>
+                            <span class="pay-name">Tarjeta</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" name="metodoPago" id="pay-efectivo" value="Efectivo"
+                               class="pay-option" />
+                        <label for="pay-efectivo" class="pay-label">
+                            <span class="pay-icon">💵</span>
+                            <span class="pay-name">Efectivo</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" name="metodoPago" id="pay-transferencia" value="Transferencia"
+                               class="pay-option" />
+                        <label for="pay-transferencia" class="pay-label">
+                            <span class="pay-icon">🏦</span>
+                            <span class="pay-name">Transferencia</span>
+                        </label>
+                    </div>
+                </div>
+
+                <p class="ck-section-title">📝 Notas del pedido (opcional)</p>
+                <div class="form-group">
+                    <textarea name="notas" class="form-control-tp" rows="3"
+                              placeholder="Instrucciones especiales, comentarios..."></textarea>
+                </div>
+
+                <div style="background:rgba(108,99,255,.08);border:1px solid rgba(108,99,255,.2);
+                     border-radius:12px;padding:1rem;font-size:.82rem;color:rgba(200,200,255,.7);">
+                    🔒 Esta es una compra <strong style="color:#a78bfa;">simulada</strong> — no se realizará ningún cargo real.
+                    El pedido quedará registrado en el sistema para fines de demostración.
+                </div>
+            </div>
+
+            <!-- Resumen -->
+            <div class="ck-summary">
+                <h3>📋 Resumen del pedido</h3>
+
+                @foreach (var item in carrito.Items)
+                {
+                    <div class="ck-item">
+                        <span>@item.Nombre (×@item.Cantidad)</span>
+                        <span>$@item.Subtotal.ToString("N2")</span>
+                    </div>
+                }
+
+                <div class="sum-divider"></div>
+
+                <div class="sum-row">
+                    <span class="lbl">Subtotal</span>
+                    <span class="val">$@carrito.Total.ToString("N2")</span>
+                </div>
+                <div class="sum-row">
+                    <span class="lbl">IVA <span class="iva-badge">16%</span></span>
+                    <span class="val">$@iva.ToString("N2")</span>
+                </div>
+
+                <div class="sum-divider"></div>
+
+                <div class="sum-total">
+                    <span class="lbl">Total</span>
+                    <span class="tot">$@total.ToString("N2")</span>
+                </div>
+
+                <button type="submit" class="btn-confirm" id="btn-confirmar">
+                    ✅ Confirmar Compra
+                </button>
+                <p class="secure-note">🔒 Pago simulado · Sin cargo real</p>
+
+                <a asp-action="Carrito" style="display:block;text-align:center;margin-top:.75rem;
+                   font-size:.78rem;color:rgba(255,255,255,.35);text-decoration:none;">
+                    ← Volver al carrito
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('btn-confirmar')?.addEventListener('click', function() {
+        this.innerHTML = '⏳ Procesando...';
+        this.disabled = true;
+    });
+</script>
+}
