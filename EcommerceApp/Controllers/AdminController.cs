@@ -20,8 +20,8 @@ namespace EcommerceApp.Controllers
             ViewBag.SucursalId = user?.SucursalId;
             ViewBag.RegionId = user?.RegionId;
 
-            var hoy = DateTime.Now.Date;
-            var inicioMes = new DateTime(hoy.Year, hoy.Month, 1);
+            var hoy = DateTime.UtcNow.Date;
+            var inicioMes = new DateTime(hoy.Year, hoy.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
             // KPIs básicos
             var totalInventario = await db.Componentes.SumAsync(c => c.Stock);
@@ -55,7 +55,7 @@ namespace EcommerceApp.Controllers
             for (int i = 5; i >= 0; i--)
             {
                 var m = hoy.AddMonths(-i);
-                var start = new DateTime(m.Year, m.Month, 1);
+                var start = new DateTime(m.Year, m.Month, 1, 0, 0, 0, DateTimeKind.Utc);
                 var end = start.AddMonths(1).AddDays(-1);
                 var sum = await db.Pedidos.Where(p => p.FechaPedido >= start && p.FechaPedido <= end && p.Estado == EstadoPedido.Completado).SumAsync(p => p.Total);
                 ventasMeses.Add(sum);
