@@ -26,10 +26,6 @@
             background: linear-gradient(90deg, #0d0f1a 0%, #12142a 100%);
             border-bottom: 1px solid rgba(108,99,255,0.25);
             padding: 0.6rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -201,83 +197,93 @@
 <body class="tp-global-theme" style="margin:0; padding:0;">
 
     <!-- ── Navbar ── -->
-    <nav class="tp-navbar">
+    <nav class="tp-navbar navbar navbar-expand-md navbar-dark">
+      <div class="container-fluid px-0">
         <!-- Brand -->
-        <a class="tp-brand" asp-controller="Home" asp-action="Index">
+        <a class="tp-brand navbar-brand m-0" asp-controller="Home" asp-action="Index">
             <div class="tp-brand-icon">⚡</div>
             TechParts ERP
         </a>
 
-        <!-- Nav links -->
-        <ul class="tp-nav-links d-none d-md-flex">
-            @if (User.Identity!.IsAuthenticated)
-            {
-                @if (User.IsInRole("Cliente") || User.IsInRole("User"))
+        <!-- Toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" style="border-color: rgba(108,99,255,0.5);">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Collapse -->
+        <div class="collapse navbar-collapse mt-3 mt-md-0" id="navContent">
+            <!-- Nav links -->
+            <ul class="tp-nav-links ms-md-4 mb-3 mb-md-0 d-flex flex-column flex-md-row gap-1">
+                @if (User.Identity!.IsAuthenticated)
                 {
-                    <li><a asp-controller="Tienda" asp-action="Index">🛒 Tienda</a></li>
-                    <li>
-                        <a asp-controller="Tienda" asp-action="Carrito" id="nav-cart-link" style="position:relative;">
-                            🛒 Mi Carrito <span id="nav-cart-badge" class="badge bg-danger rounded-pill" style="display:none; font-size:0.65rem; position:absolute; top:-5px; right:-10px;">0</span>
-                        </a>
-                    </li>
-                    <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Mis Pedidos</a></li>
+                    @if (User.IsInRole("Cliente") || User.IsInRole("User"))
+                    {
+                        <li><a asp-controller="Tienda" asp-action="Index">🛒 Tienda</a></li>
+                        <li>
+                            <a asp-controller="Tienda" asp-action="Carrito" id="nav-cart-link" style="position:relative;">
+                                🛒 Mi Carrito <span id="nav-cart-badge" class="badge bg-danger rounded-pill" style="display:none; font-size:0.65rem; position:absolute; top:-5px; right:-10px;">0</span>
+                            </a>
+                        </li>
+                        <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Mis Pedidos</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller="Admin" asp-action="Dashboard">📊 Dashboard</a></li>
+                        <li><a asp-controller="Componentes" asp-action="Index">🔧 Componentes</a></li>
+                        <li><a asp-controller="Combos" asp-action="Index">🎁 Combos</a></li>
+                        <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
+                        <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Pedidos</a></li>
+                        <li><a asp-controller="Reportes" asp-action="Index">📋 Reportes</a></li>
+                        @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+                        {
+                            <li><a asp-controller="Personal" asp-action="Index">👥 Personal</a></li>
+                            <li><a asp-controller="Sucursales" asp-action="Index">🗺️ Sucursales</a></li>
+                        }
+                        @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+                        {
+                            <li><a asp-controller="Proveedores" asp-action="Index">🚚 Proveedores</a></li>
+                        }
+                    }
+                }
+            </ul>
+
+            <!-- Right side -->
+            <div class="tp-nav-right ms-auto d-flex flex-column flex-md-row gap-2">
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <!-- User chip -->
+                    <div class="tp-user-chip d-flex">
+                        <div class="tp-user-avatar">
+                            @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
+                        </div>
+                        <div>
+                            <div class="tp-user-name">@User.Identity.Name</div>
+                            @{
+                                var rolName = User.IsInRole("GerenteGeneral") ? "Gerente General"
+                                            : User.IsInRole("GerenteRegional") ? "Gerente Regional"
+                                            : User.IsInRole("GerenteSucursal") ? "Gerente Sucursal"
+                                            : User.IsInRole("Vendedor") ? "Vendedor"
+                                            : User.IsInRole("Comercial") ? "Comercial"
+                                            : User.IsInRole("Admin") ? "Admin"
+                                            : "Cliente";
+                            }
+                            <div class="tp-role-badge">@rolName</div>
+                        </div>
+                    </div>
+
+                    <!-- Logout -->
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="tp-btn-logout w-100">🚪 Salir</button>
+                    </form>
                 }
                 else
                 {
-                    <li><a asp-controller="Admin" asp-action="Dashboard">📊 Dashboard</a></li>
-                    <li><a asp-controller="Componentes" asp-action="Index">🔧 Componentes</a></li>
-                    <li><a asp-controller="Combos" asp-action="Index">🎁 Combos</a></li>
-                    <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
-                    <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Pedidos</a></li>
-                    <li><a asp-controller="Reportes" asp-action="Index">📋 Reportes</a></li>
-                    @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
-                    {
-                        <li><a asp-controller="Personal" asp-action="Index">👥 Personal</a></li>
-                        <li><a asp-controller="Sucursales" asp-action="Index">🗺️ Sucursales</a></li>
-                    }
-                    @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
-                    {
-                        <li><a asp-controller="Proveedores" asp-action="Index">🚚 Proveedores</a></li>
-                    }
+                    <a asp-controller="Account" asp-action="Login" class="tp-btn-login text-center">Iniciar sesión</a>
                 }
-            }
-        </ul>
-
-        <!-- Right side -->
-        <div class="tp-nav-right">
-            @if (User.Identity!.IsAuthenticated)
-            {
-                <!-- User chip -->
-                <div class="tp-user-chip d-none d-sm-flex">
-                    <div class="tp-user-avatar">
-                        @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
-                    </div>
-                    <div>
-                        <div class="tp-user-name">@User.Identity.Name</div>
-                        @{
-                            var rolName = User.IsInRole("GerenteGeneral") ? "Gerente General"
-                                        : User.IsInRole("GerenteRegional") ? "Gerente Regional"
-                                        : User.IsInRole("GerenteSucursal") ? "Gerente Sucursal"
-                                        : User.IsInRole("Vendedor") ? "Vendedor"
-                                        : User.IsInRole("Comercial") ? "Comercial"
-                                        : User.IsInRole("Admin") ? "Admin"
-                                        : "Cliente";
-                        }
-                        <div class="tp-role-badge">@rolName</div>
-                    </div>
-                </div>
-
-                <!-- Logout -->
-                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="tp-btn-logout">🚪 Salir</button>
-                </form>
-            }
-            else
-            {
-                <a asp-controller="Account" asp-action="Login" class="tp-btn-login">Iniciar sesión</a>
-            }
+            </div>
         </div>
+      </div>
     </nav>
 
     <!-- ── Main ── -->
