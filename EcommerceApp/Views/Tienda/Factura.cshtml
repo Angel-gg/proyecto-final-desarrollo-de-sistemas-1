@@ -198,9 +198,9 @@
                                     @(item.Tipo == "combo" ? "🎁 Combo" : "🔧 Comp.")
                                 </span>
                             </td>
-                            <td class="num">$@item.PrecioUnitario.ToString("N2")</td>
+                            <td class="num">Bs.@item.PrecioUnitario.ToString("N2")</td>
                             <td class="num">@item.Cantidad</td>
-                            <td class="num">$@item.Subtotal.ToString("N2")</td>
+                            <td class="num">Bs.@item.Subtotal.ToString("N2")</td>
                         </tr>
                         rowNum++;
                     }
@@ -212,16 +212,16 @@
         <div class="fac-totals">
             <div class="tot-row">
                 <span class="label">Subtotal</span>
-                <span class="value">$@Model.Subtotal.ToString("N2")</span>
+                <span class="value">Bs.@Model.Subtotal.ToString("N2")</span>
             </div>
             <div class="tot-row">
                 <span class="label">IVA (16%)</span>
-                <span class="value">$@Model.Impuesto.ToString("N2")</span>
+                <span class="value">Bs.@Model.Impuesto.ToString("N2")</span>
             </div>
             <hr class="tot-divider" />
             <div class="tot-grand">
                 <span class="label">TOTAL</span>
-                <span class="value">$@Model.Total.ToString("N2")</span>
+                <span class="value">Bs.@Model.Total.ToString("N2")</span>
             </div>
         </div>
 

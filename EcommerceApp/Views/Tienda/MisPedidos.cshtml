@@ -111,7 +111,7 @@
                 <div class="stat-lbl">Total pedidos</div>
             </div>
             <div class="stat-card teal">
-                <div class="stat-num">$@total.ToString("N0")</div>
+                <div class="stat-num">Bs.@total.ToString("N0")</div>
                 <div class="stat-lbl">Valor total</div>
             </div>
             <div class="stat-card amber">
@@ -159,7 +159,7 @@
                             </td>
                             <td>@p.Items.Count ítem(s)</td>
                             <td style="text-align:right;font-weight:700;color:#fff;">
-                                $@p.Total.ToString("N2")
+                                Bs.@p.Total.ToString("N2")
                             </td>
                             <td>
                                 @if (p.Estado == EcommerceApp.Models.EstadoPedido.Completado)

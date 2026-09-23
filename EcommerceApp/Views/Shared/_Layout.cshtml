@@ -171,9 +171,34 @@
 
         /* ── Main content ── */
         .tp-main { min-height: calc(100vh - 120px); }
+
+        /* ── Global Theme ── */
+        .tp-global-theme {
+            background: linear-gradient(135deg, #080a14 0%, #12142a 100%);
+            color: #e8eaf6;
+            min-height: 100vh;
+        }
+        .tp-global-theme .card {
+            background: rgba(13,15,26,0.7) !important;
+            border: 1px solid rgba(108,99,255,0.25) !important;
+            backdrop-filter: blur(12px) !important;
+            color: #fff !important;
+            border-radius: 16px;
+        }
+        .tp-global-theme .table { color: #e8eaf6 !important; }
+        .tp-global-theme .form-control {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+        }
+        .tp-global-theme .form-control:focus {
+            background: rgba(255,255,255,0.08);
+            border-color: #6c63ff;
+            color: #fff;
+        }
     </style>
 </head>
-<body style="background:#f4f6ff; margin:0; padding:0;">
+<body class="tp-global-theme" style="margin:0; padding:0;">
 
     <!-- ── Navbar ── -->
     <nav class="tp-navbar">
