@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using EcommerceApp.Data;
 using EcommerceApp.Models;
 
+// Compatibilidad de DateTime con PostgreSQL en Npgsql 6+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -59,9 +62,15 @@ app.MapControllerRoute(
 try
 {
     using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<EcommerceApp.Data.ApplicationDbContext>();
+
+    // 1. Auto-aplicar migraciones de Entity Framework en la base de datos (PostgreSQL Railway)
+    Console.WriteLine("[BD] Verificando y aplicando migraciones pendientes...");
+    await db.Database.MigrateAsync();
+    Console.WriteLine("[BD] Migraciones aplicadas con éxito.");
+
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    var db = scope.ServiceProvider.GetRequiredService<EcommerceApp.Data.ApplicationDbContext>();
 
     // Roles del nuevo sistema ERP + roles legacy para compatibilidad
     string[] roles =
