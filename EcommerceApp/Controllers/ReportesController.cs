@@ -521,8 +521,11 @@ namespace EcommerceApp.Controllers
         //  FACTURA PDF (por ID de pedido)
         // ════════════════════════════════════════════════════════════════
 
+        [AllowAnonymous]
         public async Task<IActionResult> FacturaPdf(int id)
         {
+            if (!User.Identity!.IsAuthenticated) return Challenge();
+
             var userId  = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             bool staff  = User.IsInRole("GerenteGeneral") || User.IsInRole("Admin") ||
                           User.IsInRole("GerenteSucursal") || User.IsInRole("GerenteRegional");
