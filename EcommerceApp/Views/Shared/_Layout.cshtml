@@ -191,6 +191,14 @@
             background: rgba(255,255,255,0.08);
             border-color: #6c63ff;
             color: #fff;
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .tp-navbar { padding: 0.8rem 1rem; }
+            .tp-nav-links { gap: 0.5rem; margin-top: 1rem; margin-bottom: 1rem !important; }
+            .tp-nav-links a { padding: 0.75rem 1rem; font-size: 0.95rem; border: 1px solid rgba(255,255,255,0.05); }
+            .tp-nav-right { flex-direction: column; width: 100%; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; }
+            .tp-user-chip { width: 100%; justify-content: flex-start; padding: 0.5rem 1rem; }
+            .tp-btn-logout { padding: 0.75rem; }
         }
     </style>
 </head>
@@ -229,17 +237,36 @@
                     else
                     {
                         <li><a asp-controller="Admin" asp-action="Dashboard">📊 Dashboard</a></li>
-                        <li><a asp-controller="Componentes" asp-action="Index">🔧 Componentes</a></li>
-                        <li><a asp-controller="Combos" asp-action="Index">🎁 Combos</a></li>
+                        
+                        @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Vendedor") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                        {
+                            <li><a asp-controller="Componentes" asp-action="Index">🔧 Componentes</a></li>
+                        }
+                        
+                        @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                        {
+                            <li><a asp-controller="Combos" asp-action="Index">🎁 Combos</a></li>
+                        }
+                        
                         <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
                         <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Pedidos</a></li>
-                        <li><a asp-controller="Reportes" asp-action="Index">📋 Reportes</a></li>
+                        
+                        @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("GerenteSucursal") || User.IsInRole("Vendedor") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                        {
+                            <li><a asp-controller="Reportes" asp-action="Index">📋 Reportes</a></li>
+                        }
+                        
                         @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
                         {
                             <li><a asp-controller="Personal" asp-action="Index">👥 Personal</a></li>
+                        }
+                        
+                        @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("GerenteSucursal") || User.IsInRole("Admin"))
+                        {
                             <li><a asp-controller="Sucursales" asp-action="Index">🗺️ Sucursales</a></li>
                         }
-                        @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+                        
+                        @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("Admin"))
                         {
                             <li><a asp-controller="Proveedores" asp-action="Index">🚚 Proveedores</a></li>
                         }

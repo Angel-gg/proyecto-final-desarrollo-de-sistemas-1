@@ -13,6 +13,9 @@
         console.warn('[Speech] Web Speech API no soportada en este navegador.');
         return;
     }
+    if (window.isSecureContext === false) {
+        console.warn('[Speech] Web Speech API requiere HTTPS para funcionar.');
+    }
 
     // ─── Comandos de navegación (español) ────────────────────────────
     const COMMANDS = [
@@ -35,7 +38,8 @@
 
     function createRecognition() {
         const r = new SpeechRecognition();
-        r.lang = 'es-ES';
+        // Usar español genérico o el idioma del navegador si es español
+        r.lang = navigator.language && navigator.language.startsWith('es') ? navigator.language : 'es-ES';
         r.interimResults = true;
         r.maxAlternatives = 3;
         r.continuous = false;
@@ -156,7 +160,8 @@
             try {
                 recognition.start();
             } catch (e) {
-                showToast('❌ No se puede iniciar el micrófono', 'error');
+                console.error('[Speech] Error al iniciar:', e);
+                showToast('❌ Ocurrió un error al iniciar el micrófono. Revisa los permisos.', 'error');
             }
         }
     }
@@ -208,6 +213,18 @@
                     0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
                     70%  { box-shadow: 0 0 0 14px rgba(239,68,68,0); }
                     100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+                }
+
+                @media (max-width: 768px) {
+                    #speech-fab-wrapper {
+                        bottom: 1rem;
+                        right: 1rem;
+                    }
+                    #speech-fab {
+                        width: 44px;
+                        height: 44px;
+                        font-size: 1.1rem;
+                    }
                 }
 
                 #speech-fab-tooltip {
