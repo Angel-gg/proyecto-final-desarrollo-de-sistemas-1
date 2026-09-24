@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — TechParts ERP</title>
+    <title>@ViewData["Title"] — TechParts</title>
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#6c63ff" />
@@ -266,7 +266,7 @@
         <!-- Brand -->
         <a class="tp-brand navbar-brand m-0" asp-controller="Home" asp-action="Index">
             <div class="tp-brand-icon">⚡</div>
-            TechParts ERP
+            TechParts
         </a>
 
         <!-- Toggler -->
@@ -302,8 +302,10 @@
                         {
                             <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
                             <li>
-                                <a asp-controller="Tienda" asp-action="Carrito" id="nav-cart-link" style="position:relative;">
-                                    🛒 Carrito <span id="nav-cart-badge" class="badge bg-danger rounded-pill" style="display:none; font-size:0.65rem; position:absolute; top:-5px; right:-10px;">0</span>
+                                <a asp-controller="Tienda" asp-action="Carrito" id="nav-cart-link" class="d-flex align-items-center gap-2 position-relative" style="background: rgba(0,217,181,0.1); color: #00d9b5; border: 1px solid rgba(0,217,181,0.2);">
+                                    <span style="font-size: 1.1rem;">🛒</span>
+                                    <span class="d-none d-md-inline fw-bold">Carrito</span>
+                                    <span id="nav-cart-badge" class="badge bg-danger rounded-pill position-absolute" style="display:none; font-size:0.65rem; top:-6px; right:-6px; box-shadow: 0 0 0 2px #0d0f1a;">0</span>
                                 </a>
                             </li>
                             <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Pedidos</a></li>
@@ -349,41 +351,49 @@
                 </ul>
             </div>
 
+            <!-- Center Search Form Desktop -->
+            <form class="tp-search-form d-none d-md-flex mx-auto" action="/Tienda" method="get" style="width: 400px; max-width: 100%;">
+                <span class="tp-search-icon">🔍</span>
+                <input type="search" name="tipo" class="tp-search-input w-100" placeholder="Buscar RTX 4060, B650, Ryzen 7..." style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); width: 100% !important;" />
+            </form>
+
             <!-- Drawer Footer / Right Side Desktop -->
             <div class="drawer-footer ms-auto tp-nav-right">
-                <!-- Desktop Search Form -->
-                <form class="tp-search-form d-none d-md-flex" action="/Tienda" method="get">
-                    <span class="tp-search-icon">🔍</span>
-                    <input type="search" name="tipo" class="tp-search-input" placeholder="Buscar SSD, CPU..." />
-                </form>
-
                 @if (User.Identity!.IsAuthenticated)
                 {
-                    <!-- User chip -->
-                    <div class="tp-user-chip d-flex">
-                        <div class="tp-user-avatar">
-                            @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
-                        </div>
-                        <div>
-                            <div class="tp-user-name">@User.Identity.Name</div>
-                            @{
-                                var rolName = User.IsInRole("GerenteGeneral") ? "Gerente General"
-                                            : User.IsInRole("GerenteRegional") ? "Gerente Regional"
-                                            : User.IsInRole("GerenteSucursal") ? "Gerente Sucursal"
-                                            : User.IsInRole("Vendedor") ? "Vendedor"
-                                            : User.IsInRole("Comercial") ? "Comercial"
-                                            : User.IsInRole("Admin") ? "Admin"
-                                            : "Cliente";
-                            }
-                            <div class="tp-role-badge">@rolName</div>
-                        </div>
+                    <!-- User Dropdown -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: rgba(255,255,255,0.06); padding: 0.35rem 0.8rem 0.35rem 0.35rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="tp-user-avatar me-2" style="width:30px; height:30px;">
+                                @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
+                            </div>
+                            <span class="d-none d-md-block fw-semibold" style="font-size:0.85rem; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@User.Identity.Name</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-0" aria-labelledby="userDropdown" style="background: rgba(13,15,26,0.95); backdrop-filter: blur(12px); border: 1px solid rgba(108,99,255,0.3) !important; border-radius: 12px; margin-top: 0.5rem;">
+                            <li>
+                                <div class="px-3 py-2">
+                                    <div class="fw-bold" style="font-size: 0.85rem; color: #fff;">@User.Identity.Name</div>
+                                    @{
+                                        var rolName = User.IsInRole("GerenteGeneral") ? "Gerente General"
+                                                    : User.IsInRole("GerenteRegional") ? "Gerente Regional"
+                                                    : User.IsInRole("GerenteSucursal") ? "Gerente Sucursal"
+                                                    : User.IsInRole("Vendedor") ? "Vendedor"
+                                                    : User.IsInRole("Comercial") ? "Comercial"
+                                                    : User.IsInRole("Admin") ? "Admin"
+                                                    : "Cliente";
+                                    }
+                                    <div class="tp-role-badge mt-1" style="font-size:0.7rem;">@rolName</div>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2 fw-semibold" style="font-size:0.85rem;">🚪 Cerrar Sesión</button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
-
-                    <!-- Logout -->
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0 w-100">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="tp-btn-logout">🚪 Salir</button>
-                    </form>
                 }
                 else
                 {
@@ -404,7 +414,7 @@
         <div class="container-fluid px-4">
             <div class="row g-4 mb-4">
                 <div class="col-12 col-md-4 footer-col">
-                    <h5 class="text-white mb-3" style="font-size:0.95rem;font-weight:700;">TechParts ERP</h5>
+                    <h5 class="text-white mb-3" style="font-size:0.95rem;font-weight:700;">TechParts</h5>
                     <p style="font-size:0.85rem;line-height:1.6;color:rgba(255,255,255,0.6);">
                         Tu aliado en hardware de alto rendimiento. Envíos a todo el país y garantía directa de fábrica.
                     </p>
