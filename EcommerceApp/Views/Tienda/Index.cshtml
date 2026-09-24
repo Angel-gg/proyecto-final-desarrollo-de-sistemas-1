@@ -289,6 +289,7 @@
                                 <div class="product-specs">
                                     @{
                                         string tipoLower = p.Tipo?.ToLower() ?? "";
+                                        string nombreLower = p.Nombre?.ToLower() ?? "";
                                         if (tipoLower.Contains("ram") || tipoLower.Contains("memoria")) {
                                             <span class="micro-spec">DDR5</span><span class="micro-spec">6000MHz</span><span class="micro-spec">RGB</span>
                                         } else if (tipoLower.Contains("ssd") || tipoLower.Contains("almacenamiento")) {
