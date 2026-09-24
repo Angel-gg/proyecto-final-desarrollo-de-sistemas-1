@@ -97,6 +97,22 @@
     .login-cta p { margin:0; font-size:0.9rem; color:#fff; font-weight:500; }
     .login-cta a { background:var(--primary); color:#fff; padding:0.5rem 1.25rem; border-radius:8px; font-weight:700; font-size:0.85rem; text-decoration:none; white-space:nowrap; }
 
+    @@media (max-width: 991px) {
+        .catalog-sidebar { margin-bottom: 1rem; }
+        .filter-card { padding: 0; background: transparent; border: none; margin-bottom: 0.5rem; }
+        .filter-title { display: none; }
+        .cat-list { flex-direction: row; overflow-x: auto; flex-wrap: nowrap; gap: 0.5rem; padding-bottom: 0.5rem; scrollbar-width: none; }
+        .cat-list::-webkit-scrollbar { display: none; }
+        .cat-link { flex: 0 0 auto; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 0.5rem 1rem; white-space: nowrap; }
+        .cat-link.active { background: rgba(108,99,255,0.2); }
+        .mobile-hide { display: none !important; }
+    }
+    
+    @@media (max-width: 576px) {
+        .login-cta { padding: 0.75rem; justify-content: center; border-radius: 8px; margin-bottom: 1rem; }
+        .login-cta p { font-size: 0.8rem; text-align: center; }
+    }
+
     /* Component grid - 100% Dark Mode */
     .product-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1.5rem; }
     .product-card {
@@ -107,7 +123,7 @@
     .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px rgba(108,99,255,0.15); border-color: rgba(108,99,255,0.4); }
     
     .product-img { height: 210px; padding: 1.5rem; display: flex; align-items: center; justify-content: center; position: relative; background: #151e2e; }
-    .product-img img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.4s; }
+    .product-img img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.4s; mix-blend-mode: lighten; }
     .product-card:hover .product-img img { transform: scale(1.1); }
     
     .product-img-placeholder { font-size:4rem; color:rgba(255,255,255,0.1); filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); }
@@ -132,17 +148,28 @@
     .btn-add:active { transform:scale(0.95); }
     .btn-add:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); box-shadow: none; cursor:not-allowed; }
 
-    /* Mobile specific layout (1 column, image left, text right) */
+    /* Mobile specific layout (2 column Grid) */
     @@media (max-width: 576px) {
-        .product-grid { grid-template-columns: 1fr; gap: 1rem; }
-        .product-card { flex-direction: row; height: 150px; }
-        .product-img { width: 140px; height: 100%; padding: 0.75rem; border-right: 1px solid rgba(255,255,255,0.05); border-bottom: none; }
-        .product-body { padding: 0.8rem; justify-content: space-between; }
-        .product-name { font-size: 0.85rem; margin-bottom: 0.2rem; }
-        .product-price { font-size: 1.15rem; }
-        .btn-add { padding: 0.35rem 0.75rem; font-size: 0.75rem; }
+        .product-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .product-card { border-radius: 0.75rem; }
+        .product-img { padding: 1rem; height: 130px; }
+        .product-body { padding: 0.75rem; }
+        .product-name { font-size: 0.8rem; margin-bottom: 0.3rem; }
+        .product-brand { font-size: 0.65rem; margin-bottom: 0.2rem; }
+        .product-price { font-size: 1rem; }
+        .btn-add { padding: 0.4rem; justify-content: center; width: 100%; margin-top: 0.5rem; border-radius: 6px; }
+        .product-footer { flex-direction: column; align-items: flex-start; gap: 0; width: 100%; }
         .product-cat-badge { display: none; }
         .product-specs { display: none; }
+        
+        .combos-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .combo-img { padding: 1rem; height: 130px; }
+        .combo-body { padding: 0.75rem; }
+        .combo-name { font-size: 0.8rem; }
+        .combo-desc, .combo-parts-count { display: none; }
+        .combo-price { font-size: 1rem; }
+        .btn-add-combo { padding: 0.4rem; justify-content: center; width: 100%; margin-top: 0.5rem; }
+        .combo-footer { flex-direction: column; align-items: flex-start; gap: 0; }
     }
 
     /* Combos grid */
@@ -153,7 +180,7 @@
     }
     .combo-card:hover { transform:translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px rgba(0,217,181,0.15); }
     .combo-img { height: 210px; overflow:hidden; background:#151e2e; position:relative; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
-    .combo-img img { max-width:100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition:transform 0.4s; }
+    .combo-img img { max-width:100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition:transform 0.4s; mix-blend-mode: lighten; }
     .combo-card:hover .combo-img img { transform:scale(1.1); }
     .combo-img-ph { font-size:4rem;color:rgba(0,217,181,0.2); filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); }
     
@@ -182,10 +209,16 @@
             <p class="hero-subtitle">Descubre los componentes de hardware más extremos del mercado. Envíos a todo el país y garantía oficial directa de fábrica.</p>
             <a href="#catalogo" class="hero-cta">🚀 Explorar Catálogo</a>
             
-            <div class="trust-badges">
-                <div class="trust-badge"><span>🛡️</span> Garantía Oficial</div>
-                <div class="trust-badge"><span>🚚</span> Envíos Rápidos</div>
-                <div class="trust-badge"><span>⚙️</span> Soporte Experto</div>
+            <div class="trust-badges mt-4">
+                <div class="trust-badge">
+                    <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span> Garantía Oficial
+                </div>
+                <div class="trust-badge">
+                    <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"></path><path d="M14 9h4l4 4v5c0 .6-.4 1-1 1h-2"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></span> Envíos Rápidos
+                </div>
+                <div class="trust-badge">
+                    <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span> Soporte Experto
+                </div>
             </div>
         </div>
         <div class="col-lg-6 mt-5 mt-lg-0">
@@ -235,7 +268,7 @@
                 </ul>
             </div>
             
-            <div class="filter-card">
+            <div class="filter-card mobile-hide">
                 <h3 class="filter-title">Garantía TechParts</h3>
                 <p style="font-size:0.8rem; color:#94a3b8; line-height:1.5; margin:0;">
                     Todos nuestros productos cuentan con garantía directa de fábrica. Al comprar, adquieres hardware 100% original.
@@ -249,8 +282,8 @@
         @if (!User.Identity!.IsAuthenticated)
         {
             <div class="login-cta">
-                <p>🔒 <strong>Inicia sesión</strong> para comprar hardware de alto rendimiento al instante.</p>
-                <a asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                <p class="d-flex align-items-center gap-2 m-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> <strong>Inicia sesión</strong> para ver precios de distribuidor.</p>
+                <a asp-controller="Account" asp-action="Login" class="d-none d-md-block">Iniciar sesión</a>
             </div>
         }
 
@@ -333,9 +366,10 @@
                                     }
                                     else
                                     {
-                                        <div style="font-size: 0.8rem; color: #94a3b8; font-weight: 600; width: 100%; text-align: center; padding: 0.5rem 0; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                                            🔒 Inicia sesión para ver precio
-                                        </div>
+                                        <a asp-controller="Account" asp-action="Login" class="btn-lock-price" style="display:flex; align-items:center; justify-content:center; gap:0.4rem; font-size:0.8rem; color:#94a3b8; background:rgba(255,255,255,0.05); padding:0.5rem; border-radius:6px; text-decoration:none; width:100%; font-weight:600;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                            Ver precio
+                                        </a>
                                     }
                                 </div>
                             </div>
@@ -391,9 +425,10 @@
                                     }
                                     else
                                     {
-                                        <div style="font-size: 0.8rem; color: #94a3b8; font-weight: 600; width: 100%; text-align: center; padding: 0.5rem 0; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                                            🔒 Inicia sesión para ver precio
-                                        </div>
+                                        <a asp-controller="Account" asp-action="Login" class="btn-lock-price" style="display:flex; align-items:center; justify-content:center; gap:0.4rem; font-size:0.8rem; color:#94a3b8; background:rgba(255,255,255,0.05); padding:0.5rem; border-radius:6px; text-decoration:none; width:100%; font-weight:600;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                            Ver precio
+                                        </a>
                                     }
                                 </div>
                             </div>
