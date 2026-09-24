@@ -14,7 +14,7 @@ public class HomeController : Controller
                 return RedirectToAction("Index", "Tienda");
             return RedirectToAction("Dashboard", "Admin");
         }
-        return RedirectToAction("Login", "Account");
+        return RedirectToAction("Index", "Tienda");
     }
 
     public IActionResult Privacy()

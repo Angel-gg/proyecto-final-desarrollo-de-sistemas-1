@@ -302,10 +302,10 @@
                         {
                             <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
                             <li>
-                                <a asp-controller="Tienda" asp-action="Carrito" id="nav-cart-link" class="d-flex align-items-center gap-2 position-relative" style="background: rgba(0,217,181,0.1); color: #00d9b5; border: 1px solid rgba(0,217,181,0.2);">
+                                <a asp-controller="Tienda" asp-action="Carrito" id="nav-cart-link" class="d-flex align-items-center gap-2 position-relative" style="color: rgba(255,255,255,0.8); text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 8px; transition: all 0.2s;">
                                     <span style="font-size: 1.1rem;">🛒</span>
-                                    <span class="d-none d-md-inline fw-bold">Carrito</span>
-                                    <span id="nav-cart-badge" class="badge bg-danger rounded-pill position-absolute" style="display:none; font-size:0.65rem; top:-6px; right:-6px; box-shadow: 0 0 0 2px #0d0f1a;">0</span>
+                                    <span class="d-none d-md-inline fw-semibold">Carrito</span>
+                                    <span id="nav-cart-badge" class="badge bg-danger rounded-pill position-absolute" style="display:none; font-size:0.65rem; top:0px; right:0px; box-shadow: 0 0 0 2px #0d0f1a;">0</span>
                                 </a>
                             </li>
                             <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Pedidos</a></li>
@@ -443,19 +443,21 @@
         </div>
     </footer>
 
-    <!-- PWA Install Toast (Non-invasive) -->
-    <div id="pwa-toast" class="toast align-items-center text-white bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(108,99,255,0.3) !important; border-radius: 12px; width: auto; max-width: 90vw;">
-      <div class="d-flex">
-        <div class="toast-body d-flex align-items-center gap-3" style="padding: 1rem 1.25rem;">
-          <div style="font-size: 1.8rem; line-height: 1;">📱</div>
-          <div>
-              <strong style="display: block; font-size: 0.95rem; color: #a78bfa;">TechParts App</strong>
-              <span style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">Instala la app para un acceso más rápido.</span>
-          </div>
-          <button type="button" id="btn-pwa-install" class="btn btn-sm ms-2" style="background: linear-gradient(135deg, #00d9b5, #00a89a); color: #fff; font-weight: 700; border-radius: 8px; white-space: nowrap;">Instalar</button>
+    <!-- PWA Install Banner -->
+    <div id="pwa-toast" class="pwa-banner" style="display:none; position:fixed; bottom:0; left:0; width:100%; z-index:9999; background:rgba(15,23,42,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-top:1px solid rgba(255,255,255,0.1); padding:0.6rem 1rem; box-shadow:0 -5px 25px rgba(0,0,0,0.5);">
+        <div class="container-fluid d-flex align-items-center justify-content-between p-0">
+            <div class="d-flex align-items-center gap-2">
+                <div style="width:28px; height:28px; background:var(--primary); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;">⚡</div>
+                <div>
+                    <h6 class="text-white m-0" style="font-weight:700; font-size:0.85rem;">TechParts App</h6>
+                    <p class="m-0" style="font-size:0.75rem; color:#cbd5e1;">Mejor experiencia móvil</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" id="btn-pwa-install" class="btn btn-sm text-white" style="background:var(--primary); font-weight:700; border-radius:50px; font-size:0.75rem; padding:0.25rem 1rem;">Instalar</button>
+                <button type="button" id="btn-pwa-close" class="btn-close btn-close-white" style="font-size:0.75rem;" aria-label="Close"></button>
+            </div>
         </div>
-        <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast" aria-label="Close" id="btn-pwa-close"></button>
-      </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
