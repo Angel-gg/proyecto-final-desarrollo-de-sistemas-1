@@ -399,29 +399,6 @@
         .btn-submit:hover::after { opacity: 1; }
         .btn-submit:active { transform: translateY(0); }
 
-        /* PWA Install Button */
-        .btn-pwa {
-            display: none; /* Hidden by default until ready */
-            width: 100%;
-            padding: 0.8rem;
-            margin-top: 1rem;
-            background: rgba(0, 229, 195, 0.15);
-            border: 1px solid rgba(0, 229, 195, 0.3);
-            color: var(--accent);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .btn-pwa:hover {
-            background: rgba(0, 229, 195, 0.25);
-            transform: translateY(-1px);
-        }
-
         /* Footer link */
         .form-footer {
             text-align: center;
@@ -585,10 +562,6 @@
             <div class="form-footer">
                 ¿No tienes cuenta?&nbsp;
                 <a asp-controller="Account" asp-action="Register">Regístrate gratis</a>
-                
-                <button type="button" id="btn-install-pwa" class="btn-pwa">
-                    📱 Instalar App
-                </button>
             </div>
         </div>
 
@@ -646,39 +619,6 @@
                     .catch(err => console.warn('[PWA Login] Error registrando SW:', err));
             });
         }
-
-        // PWA Install Logic
-        let deferredPrompt;
-        const btnInstall = document.getElementById('btn-install-pwa');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
-            e.preventDefault();
-            // Stash the event so it can be triggered later.
-            deferredPrompt = e;
-            // Update UI notify the user they can install the PWA
-            btnInstall.style.display = 'block';
-        });
-
-        btnInstall.addEventListener('click', async () => {
-            if (deferredPrompt !== null) {
-                // Show the install prompt
-                deferredPrompt.prompt();
-                // Wait for the user to respond to the prompt
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                // We've used the prompt, and can't use it again, throw it away
-                deferredPrompt = null;
-                btnInstall.style.display = 'none';
-            }
-        });
-
-        window.addEventListener('appinstalled', () => {
-            // Clear the deferredPrompt so it can be garbage collected
-            deferredPrompt = null;
-            btnInstall.style.display = 'none';
-            console.log('PWA was installed');
-        });
     </script>
 </body>
 </html>

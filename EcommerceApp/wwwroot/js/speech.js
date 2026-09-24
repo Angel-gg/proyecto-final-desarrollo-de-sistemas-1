@@ -19,16 +19,32 @@
 
     // ─── Comandos de navegación (español) ────────────────────────────
     const COMMANDS = [
-        { patterns: ['ir a tienda', 'abrir tienda', 'ver tienda', 'tienda'],           action: () => goto('/Tienda') },
-        { patterns: ['ir al carrito', 'abrir carrito', 'ver carrito', 'mi carrito'],   action: () => goto('/Tienda/Carrito') },
-        { patterns: ['ir a componentes', 'ver componentes', 'componentes'],            action: () => goto('/Componentes') },
-        { patterns: ['ir a combos', 'ver combos', 'combos'],                           action: () => goto('/Combos') },
-        { patterns: ['ir a reportes', 'ver reportes', 'reportes', 'descargar reporte'],action: () => goto('/Reportes') },
-        { patterns: ['ir al dashboard', 'dashboard', 'panel de control', 'panel admin'],action: () => goto('/Admin/Dashboard') },
-        { patterns: ['ir al inicio', 'ir a inicio', 'inicio', 'home'],                 action: () => goto('/') },
-        { patterns: ['cerrar sesion', 'cerrar sesión', 'salir', 'logout'],             action: () => submitLogout() },
-        { patterns: ['buscar '],                                                         action: (t) => handleSearch(t) },
-        { patterns: ['ayuda', 'que puedo decir', 'qué puedo decir', 'comandos'],       action: () => showHelp() },
+        // Clientes
+        { patterns: ['ir a tienda', 'abrir tienda', 'ver tienda', 'tienda', 'comprar', 'catálogo', 'catalogo'], action: () => goto('/Tienda') },
+        { patterns: ['ir al carrito', 'abrir carrito', 'ver carrito', 'mi carrito', 'pagar', 'cesta'], action: () => goto('/Tienda/Carrito') },
+        { patterns: ['mis pedidos', 'ver mis pedidos', 'mis compras', 'pedidos'], action: () => goto('/Tienda/MisPedidos') },
+        
+        // Trabajadores / Vendedores
+        { patterns: ['ir a componentes', 'ver componentes', 'componentes', 'productos', 'inventario'], action: () => goto('/Componentes') },
+        { patterns: ['ir a combos', 'ver combos', 'combos', 'paquetes'], action: () => goto('/Combos') },
+        { patterns: ['agregar componente', 'nuevo componente', 'crear componente', 'agregar producto', 'nuevo producto', 'crear producto'], action: () => goto('/Componentes/Create') },
+        { patterns: ['agregar combo', 'nuevo combo', 'crear combo'], action: () => goto('/Combos/Create') },
+        
+        // Administración
+        { patterns: ['ir a reportes', 'ver reportes', 'reportes', 'descargar reporte', 'estadísticas', 'estadisticas', 'ventas'], action: () => goto('/Reportes') },
+        { patterns: ['ir al dashboard', 'dashboard', 'panel de control', 'panel admin', 'resumen', 'inicio admin'], action: () => goto('/Admin/Dashboard') },
+        { patterns: ['ver personal', 'personal', 'empleados', 'usuarios', 'equipo'], action: () => goto('/Personal') },
+        { patterns: ['ver sucursales', 'sucursales', 'tiendas', 'sedes'], action: () => goto('/Sucursales') },
+        { patterns: ['ver proveedores', 'proveedores', 'mayoristas', 'marcas'], action: () => goto('/Proveedores') },
+        { patterns: ['agregar proveedor', 'nuevo proveedor', 'crear proveedor'], action: () => goto('/Proveedores/Create') },
+        { patterns: ['agregar sucursal', 'nueva sucursal', 'crear sucursal'], action: () => goto('/Sucursales/Create') },
+        { patterns: ['agregar empleado', 'nuevo empleado', 'crear empleado', 'agregar personal'], action: () => goto('/Personal/Create') },
+        
+        // Generales
+        { patterns: ['ir al inicio', 'ir a inicio', 'inicio', 'home', 'portada'], action: () => goto('/') },
+        { patterns: ['cerrar sesion', 'cerrar sesión', 'salir', 'logout', 'desconectar'], action: () => submitLogout() },
+        { patterns: ['buscar '], action: (t) => handleSearch(t) },
+        { patterns: ['ayuda', 'que puedo decir', 'qué puedo decir', 'comandos', 'instrucciones', 'opciones'], action: () => showHelp() },
     ];
 
     // ─── Instancia del reconocedor ────────────────────────────────────
@@ -312,15 +328,15 @@
                     </div>
                     <div class="modal-body">
                         <p style="color:rgba(200,200,255,0.6);font-size:0.85rem;margin-bottom:1rem;">Dí cualquiera de estos comandos en español:</p>
-                        <div style="display:grid;gap:0.5rem;">
+                        <div style="display:grid;gap:0.5rem;max-height:50vh;overflow-y:auto;padding-right:0.5rem;">
                             ${[
-                                ['🏪', 'Navegación', '"ir a tienda", "ir a componentes", "ir a combos"'],
-                                ['🛒', 'Carrito', '"ir al carrito", "mi carrito", "ver carrito"'],
-                                ['📋', 'Reportes', '"ir a reportes", "ver reportes", "descargar reporte"'],
-                                ['📊', 'Dashboard', '"dashboard", "ir al panel", "panel de control"'],
-                                ['🔍', 'Buscar', '"buscar [término]" — ejemplo: "buscar GPU"'],
-                                ['🚪', 'Sesión', '"cerrar sesión", "salir", "logout"'],
-                                ['❓', 'Ayuda', '"ayuda", "qué puedo decir", "comandos"'],
+                                ['🏪', 'Tienda', '"tienda", "catálogo", "buscar [producto]"'],
+                                ['🛒', 'Carrito & Pedidos', '"ir al carrito", "mis pedidos", "compras"'],
+                                ['📦', 'Inventario (Trabajadores)', '"componentes", "combos", "agregar producto"'],
+                                ['🏢', 'Empresa (Admin)', '"sucursales", "personal", "proveedores", "agregar proveedor"'],
+                                ['📋', 'Análisis', '"reportes", "dashboard", "estadísticas"'],
+                                ['🚪', 'Sesión', '"cerrar sesión", "salir", "inicio"'],
+                                ['❓', 'Ayuda', '"ayuda", "comandos", "opciones"'],
                             ].map(([emoji, cat, cmds]) => `
                                 <div style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:0.65rem 0.85rem;display:flex;align-items:flex-start;gap:0.75rem;">
                                     <span style="font-size:1.1rem;flex-shrink:0;">${emoji}</span>

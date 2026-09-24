@@ -405,6 +405,21 @@
         </div>
     </footer>
 
+    <!-- PWA Install Toast (Non-invasive) -->
+    <div id="pwa-toast" class="toast align-items-center text-white bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(108,99,255,0.3) !important; border-radius: 12px; width: auto; max-width: 90vw;">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-3" style="padding: 1rem 1.25rem;">
+          <div style="font-size: 1.8rem; line-height: 1;">📱</div>
+          <div>
+              <strong style="display: block; font-size: 0.95rem; color: #a78bfa;">TechParts App</strong>
+              <span style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">Instala la app para un acceso más rápido.</span>
+          </div>
+          <button type="button" id="btn-pwa-install" class="btn btn-sm ms-2" style="background: linear-gradient(135deg, #00d9b5, #00a89a); color: #fff; font-weight: 700; border-radius: 8px; white-space: nowrap;">Instalar</button>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast" aria-label="Close" id="btn-pwa-close"></button>
+      </div>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -436,6 +451,49 @@
                     .catch(err => console.warn('[PWA] Error registrando SW:', err));
             });
         }
+
+        // PWA Install Logic
+        let deferredPrompt;
+        const pwaToast = document.getElementById('pwa-toast');
+        const btnPwaInstall = document.getElementById('btn-pwa-install');
+        const btnPwaClose = document.getElementById('btn-pwa-close');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            if (sessionStorage.getItem('pwaPromptClosed')) return;
+
+            if (pwaToast) {
+                pwaToast.style.display = 'block';
+                pwaToast.classList.add('show');
+            }
+        });
+
+        if (btnPwaInstall) {
+            btnPwaInstall.addEventListener('click', async () => {
+                if (deferredPrompt !== null) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to the install prompt: ${outcome}`);
+                    deferredPrompt = null;
+                    if (pwaToast) pwaToast.style.display = 'none';
+                }
+            });
+        }
+        
+        if (btnPwaClose) {
+            btnPwaClose.addEventListener('click', () => {
+                if (pwaToast) pwaToast.style.display = 'none';
+                sessionStorage.setItem('pwaPromptClosed', 'true');
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            if (pwaToast) pwaToast.style.display = 'none';
+            console.log('PWA was installed');
+        });
 
         // ── JS for Cart Count Badge ──
         $(document).ready(function() {
