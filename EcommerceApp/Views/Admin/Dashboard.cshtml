@@ -27,12 +27,13 @@
 
     body { background: var(--bg-dark); color: var(--text-main); }
 
-    .dashboard-hero {
-        background: linear-gradient(135deg, #1a1c2e 0%, #12142a 100%);
-        border-bottom: 1px solid rgba(108,99,255,0.2);
-        padding: 2.5rem 2rem 2rem;
+    .dashboard-header {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
-
+    
     .role-badge {
         display: inline-block;
         background: linear-gradient(135deg, var(--primary), var(--accent));
@@ -136,26 +137,15 @@
 
 </style>
 
-<div class="dashboard-hero">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div>
-                <h1 class="h3 mb-1 fw-bold">👋 Bienvenido, @ViewBag.NombreUsuario</h1>
-                <span class="role-badge">@ViewBag.Rol</span>
-                @if (ViewBag.SucursalId != null)
-                {
-                    <span class="ms-2 text-muted" style="font-size:0.85rem">Sucursal #@ViewBag.SucursalId</span>
-                }
-            </div>
-            <form asp-controller="Account" asp-action="Logout" method="post">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-danger btn-sm">🚪 Cerrar sesión</button>
-            </form>
-        </div>
-    </div>
-</div>
-
 <div class="container-fluid py-4 px-4">
+    
+    <div class="dashboard-header">
+        <h1 class="h4 m-0 fw-bold">📊 Resumen Operativo</h1>
+        @if (ViewBag.SucursalId != null)
+        {
+            <span class="role-badge" style="font-size:0.65rem;">Sucursal #@ViewBag.SucursalId</span>
+        }
+    </div>
     
     <!-- Módulos rápidos -->
     <div class="row g-3 mb-4">
