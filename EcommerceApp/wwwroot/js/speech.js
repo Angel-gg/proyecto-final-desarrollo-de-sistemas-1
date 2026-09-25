@@ -17,34 +17,141 @@
         console.warn('[Speech] Web Speech API requiere HTTPS para funcionar.');
     }
 
+    // ─── Estado de sesión (inyectado desde el HTML por meta tag) ─────
+    const isAuthenticated = document.querySelector('meta[name="user-auth"]')?.content === 'true';
+
+    // ─── Helper para rutas protegidas ────────────────────────────────
+    function gotoProtected(url) {
+        if (isAuthenticated) {
+            goto(url);
+        } else {
+            showToast('🔒 Inicia sesión para acceder a esta sección.', 'warning', 4000);
+            setTimeout(() => { window.location.href = '/Account/Login'; }, 1800);
+        }
+    }
+
     // ─── Comandos de navegación (español) ────────────────────────────
     const COMMANDS = [
-        // Clientes
-        { patterns: ['ir a tienda', 'abrir tienda', 'ver tienda', 'tienda', 'comprar', 'catálogo', 'catalogo'], action: () => goto('/Tienda') },
-        { patterns: ['ir al carrito', 'abrir carrito', 'ver carrito', 'mi carrito', 'pagar', 'cesta'], action: () => goto('/Tienda/Carrito') },
-        { patterns: ['mis pedidos', 'ver mis pedidos', 'mis compras', 'pedidos'], action: () => goto('/Tienda/MisPedidos') },
-        
-        // Trabajadores / Vendedores
-        { patterns: ['ir a componentes', 'ver componentes', 'componentes', 'productos', 'inventario'], action: () => goto('/Componentes') },
-        { patterns: ['ir a combos', 'ver combos', 'combos', 'paquetes'], action: () => goto('/Combos') },
-        { patterns: ['agregar componente', 'nuevo componente', 'crear componente', 'agregar producto', 'nuevo producto', 'crear producto'], action: () => goto('/Componentes/Create') },
-        { patterns: ['agregar combo', 'nuevo combo', 'crear combo'], action: () => goto('/Combos/Create') },
-        
-        // Administración
-        { patterns: ['ir a reportes', 'ver reportes', 'reportes', 'descargar reporte', 'estadísticas', 'estadisticas', 'ventas'], action: () => goto('/Reportes') },
-        { patterns: ['ir al dashboard', 'dashboard', 'panel de control', 'panel admin', 'resumen', 'inicio admin'], action: () => goto('/Admin/Dashboard') },
-        { patterns: ['ver personal', 'personal', 'empleados', 'usuarios', 'equipo'], action: () => goto('/Personal') },
-        { patterns: ['ver sucursales', 'sucursales', 'tiendas', 'sedes'], action: () => goto('/Sucursales') },
-        { patterns: ['ver proveedores', 'proveedores', 'mayoristas', 'marcas'], action: () => goto('/Proveedores') },
-        { patterns: ['agregar proveedor', 'nuevo proveedor', 'crear proveedor'], action: () => goto('/Proveedores/Create') },
-        { patterns: ['agregar sucursal', 'nueva sucursal', 'crear sucursal'], action: () => goto('/Sucursales/Create') },
-        { patterns: ['agregar empleado', 'nuevo empleado', 'crear empleado', 'agregar personal'], action: () => goto('/Personal/Create') },
-        
-        // Generales
-        { patterns: ['ir al inicio', 'ir a inicio', 'inicio', 'home', 'portada'], action: () => goto('/') },
-        { patterns: ['cerrar sesion', 'cerrar sesión', 'salir', 'logout', 'desconectar'], action: () => submitLogout() },
+        // ── Tienda (todos, incluyendo visitantes) ────────────────────
+        { patterns: [
+            'ir a tienda', 'abrir tienda', 'ver tienda', 'abrir catalogo', 'abrir catálogo',
+            'tienda', 'catalogo', 'catálogo', 'ver productos', 'productos disponibles',
+            'quiero comprar', 'ver ofertas', 'explorar', 'navegar tienda', 'ir a la tienda',
+            'muéstrame la tienda', 'muestrame la tienda', 'quiero ver productos'
+          ], action: () => goto('/Tienda') },
+
+        // ── Inicio ──────────────────────────────────────────────────
+        { patterns: [
+            'ir al inicio', 'ir a inicio', 'inicio', 'home', 'portada', 'página principal',
+            'pagina principal', 'volver al inicio', 'menú principal', 'menu principal'
+          ], action: () => goto('/') },
+
+        // ── Login ────────────────────────────────────────────────────
+        { patterns: [
+            'iniciar sesión', 'iniciar sesion', 'entrar', 'login', 'ingresar',
+            'acceder', 'ir al login', 'ir a login', 'abrir sesión', 'abrir sesion'
+          ], action: () => isAuthenticated ? showToast('✅ Ya tienes sesión iniciada.', 'success') : goto('/Account/Login') },
+
+        // ── Carrito (requiere sesión) ─────────────────────────────────
+        { patterns: [
+            'ir al carrito', 'abrir carrito', 'ver carrito', 'mi carrito', 'cesta',
+            'ver cesta', 'abrir cesta', 'carrito de compras', 'mi cesta', 'ir al carro'
+          ], action: () => gotoProtected('/Tienda/Carrito') },
+
+        // ── Pagar (requiere sesión) ──────────────────────────────────
+        { patterns: [
+            'pagar', 'realizar pago', 'finalizar compra', 'checkout', 'proceder al pago',
+            'ir a pagar', 'pago', 'comprar ahora'
+          ], action: () => gotoProtected('/Tienda/Carrito') },
+
+        // ── Pedidos (requiere sesión) ────────────────────────────────
+        { patterns: [
+            'mis pedidos', 'ver mis pedidos', 'mis compras', 'historial de compras',
+            'pedidos', 'mis órdenes', 'mis ordenes', 'historial pedidos', 'ver pedidos',
+            'estado de mi pedido', 'ver mis órdenes'
+          ], action: () => gotoProtected('/Tienda/MisPedidos') },
+
+        // ── Dashboard / Admin ────────────────────────────────────────
+        { patterns: [
+            'ir al dashboard', 'dashboard', 'panel de control', 'panel admin',
+            'resumen', 'inicio admin', 'panel administrativo', 'administración', 'administracion',
+            'ir al panel', 'abrir dashboard'
+          ], action: () => gotoProtected('/Admin/Dashboard') },
+
+        // ── Componentes ──────────────────────────────────────────────
+        { patterns: [
+            'ir a componentes', 'ver componentes', 'componentes', 'inventario',
+            'ver inventario', 'gestionar componentes', 'lista de componentes',
+            'piezas', 'ver piezas', 'partes'
+          ], action: () => gotoProtected('/Componentes') },
+        { patterns: [
+            'agregar componente', 'nuevo componente', 'crear componente',
+            'agregar producto', 'nuevo producto', 'crear producto', 'añadir componente',
+            'registrar componente', 'añadir producto'
+          ], action: () => gotoProtected('/Componentes/Create') },
+
+        // ── Combos ───────────────────────────────────────────────────
+        { patterns: [
+            'ir a combos', 'ver combos', 'combos', 'paquetes', 'ver paquetes',
+            'gestionar combos', 'lista de combos', 'promociones', 'bundles'
+          ], action: () => gotoProtected('/Combos') },
+        { patterns: [
+            'agregar combo', 'nuevo combo', 'crear combo', 'añadir combo', 'nuevo paquete'
+          ], action: () => gotoProtected('/Combos/Create') },
+
+        // ── Reportes ─────────────────────────────────────────────────
+        { patterns: [
+            'ir a reportes', 'ver reportes', 'reportes', 'descargar reporte',
+            'estadísticas', 'estadisticas', 'ventas', 'análisis', 'analisis',
+            'ver estadísticas', 'informe', 'informes', 'reporte de ventas'
+          ], action: () => gotoProtected('/Reportes') },
+
+        // ── Personal ─────────────────────────────────────────────────
+        { patterns: [
+            'ver personal', 'personal', 'empleados', 'usuarios', 'equipo',
+            'gestionar personal', 'staff', 'trabajadores', 'ver empleados'
+          ], action: () => gotoProtected('/Personal') },
+        { patterns: [
+            'agregar empleado', 'nuevo empleado', 'crear empleado', 'agregar personal',
+            'registrar empleado', 'añadir trabajador'
+          ], action: () => gotoProtected('/Personal/Create') },
+
+        // ── Sucursales ───────────────────────────────────────────────
+        { patterns: [
+            'ver sucursales', 'sucursales', 'tiendas', 'sedes', 'locales',
+            'gestionar sucursales', 'lista de sucursales', 'ver sedes'
+          ], action: () => gotoProtected('/Sucursales') },
+        { patterns: [
+            'agregar sucursal', 'nueva sucursal', 'crear sucursal', 'añadir sucursal'
+          ], action: () => gotoProtected('/Sucursales/Create') },
+
+        // ── Proveedores ──────────────────────────────────────────────
+        { patterns: [
+            'ver proveedores', 'proveedores', 'mayoristas', 'marcas',
+            'gestionar proveedores', 'lista de proveedores', 'ver mayoristas'
+          ], action: () => gotoProtected('/Proveedores') },
+        { patterns: [
+            'agregar proveedor', 'nuevo proveedor', 'crear proveedor', 'añadir proveedor'
+          ], action: () => gotoProtected('/Proveedores/Create') },
+
+        // ── Cerrar sesión ────────────────────────────────────────────
+        { patterns: [
+            'cerrar sesion', 'cerrar sesión', 'salir', 'logout', 'desconectar',
+            'cerrar cuenta', 'terminar sesión', 'terminar sesion', 'salir de la cuenta'
+          ], action: () => isAuthenticated ? submitLogout() : showToast('ℹ️ No tienes sesión activa.', 'info') },
+
+        // ── Búsqueda ─────────────────────────────────────────────────
         { patterns: ['buscar '], action: (t) => handleSearch(t) },
-        { patterns: ['ayuda', 'que puedo decir', 'qué puedo decir', 'comandos', 'instrucciones', 'opciones'], action: () => showHelp() },
+        { patterns: ['quiero buscar '], action: (t) => handleSearch(t.replace('quiero ', '')) },
+        { patterns: ['encuentra '], action: (t) => handleSearch(t.replace('encuentra ', 'buscar ')) },
+        { patterns: ['necesito '], action: (t) => handleSearch(t.replace('necesito ', 'buscar ')) },
+
+        // ── Ayuda ────────────────────────────────────────────────────
+        { patterns: [
+            'ayuda', 'que puedo decir', 'qué puedo decir', 'comandos', 'instrucciones',
+            'opciones', 'cómo funciona', 'como funciona', 'qué puedes hacer', 'que puedes hacer',
+            'qué comandos hay', 'que comandos hay', 'ver comandos'
+          ], action: () => showHelp() },
     ];
 
     // ─── Instancia del reconocedor ────────────────────────────────────

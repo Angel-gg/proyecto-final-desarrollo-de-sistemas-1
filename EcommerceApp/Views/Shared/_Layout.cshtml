@@ -7,6 +7,7 @@
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#6c63ff" />
+    <meta name="user-auth" content="@(User.Identity!.IsAuthenticated ? "true" : "false")" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="TechParts" />
@@ -353,6 +354,11 @@
                             }
                         }
                     }
+                    else
+                    {
+                        @* Visitantes sin sesión: solo pueden ver la tienda *@
+                        <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
+                    }
                 </ul>
             </div>
 
@@ -497,11 +503,8 @@
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 
-    @* ── Web Speech API (todos los usuarios autenticados) ── *@
-    @if (User.Identity!.IsAuthenticated)
-    {
-        <script src="~/js/speech.js" asp-append-version="true"></script>
-    }
+    @* ── Web Speech API (todos los usuarios, autenticados o no) ── *@
+    <script src="~/js/speech.js" asp-append-version="true"></script>
 
     @* ── PWA Service Worker Registration ── *@
     <script>
