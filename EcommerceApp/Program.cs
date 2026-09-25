@@ -54,6 +54,16 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// ─── Encabezados de seguridad y permisos ─────────────────────────────────────
+// Permite el uso del micrófono (Web Speech API) en producción
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["Permissions-Policy"] = "microphone=*, camera=()";
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+    await next();
+});
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

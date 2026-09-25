@@ -74,8 +74,12 @@
         r.onerror = (e) => {
             isListening = false;
             updateMicUI(false);
-            if (e.error !== 'no-speech' && e.error !== 'aborted') {
-                showToast('❌ Error de micrófono: ' + e.error, 'error');
+            if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+                showToast('⚠️ Permiso de micrófono denegado. Actívalo en Configuración del sitio.', 'warning', 5000);
+            } else if (e.error === 'audio-capture') {
+                showToast('❌ No se pudo capturar audio. Verifica que tu micrófono esté conectado y activo.', 'error', 5000);
+            } else if (e.error !== 'no-speech' && e.error !== 'aborted') {
+                showToast('❌ Error de micrófono: ' + e.error, 'error', 4000);
             }
         };
 
@@ -171,14 +175,40 @@
     function toggleListening() {
         if (isListening) {
             if (recognition) recognition.stop();
+            return;
+        }
+
+        // Solicitar permiso de micrófono explícitamente antes de iniciar
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    // Permiso concedido: detener el stream (solo era para pedir permiso)
+                    stream.getTracks().forEach(t => t.stop());
+                    startRecognition();
+                })
+                .catch(err => {
+                    console.error('[Speech] Permiso de micrófono denegado:', err);
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                        showToast('⚠️ Permiso de micrófono denegado. Actívalo en Configuración del sitio.', 'warning', 5000);
+                    } else if (err.name === 'NotFoundError') {
+                        showToast('❌ No se encontró micrófono en este dispositivo.', 'error', 4000);
+                    } else {
+                        showToast('❌ Error de micrófono: ' + err.name, 'error', 4000);
+                    }
+                });
         } else {
-            recognition = createRecognition();
-            try {
-                recognition.start();
-            } catch (e) {
-                console.error('[Speech] Error al iniciar:', e);
-                showToast('❌ Ocurrió un error al iniciar el micrófono. Revisa los permisos.', 'error');
-            }
+            // Fallback: intentar directamente (navegadores más antiguos)
+            startRecognition();
+        }
+    }
+
+    function startRecognition() {
+        recognition = createRecognition();
+        try {
+            recognition.start();
+        } catch (e) {
+            console.error('[Speech] Error al iniciar:', e);
+            showToast('❌ Error al iniciar el micrófono. Recarga la página e intenta de nuevo.', 'error');
         }
     }
 

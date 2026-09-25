@@ -189,17 +189,22 @@
                 position: fixed;
                 top: 0; bottom: 0; right: -100%;
                 width: 85%; max-width: 350px;
-                background: rgba(13,15,26,0.95);
-                backdrop-filter: blur(16px);
+                /* Solid fallback for Android Chrome where backdrop-filter fails */
+                background: #0d0f1a;
                 z-index: 1050;
                 transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 display: flex !important;
                 flex-direction: column;
-                border-left: 1px solid rgba(255,255,255,0.1);
-                box-shadow: -10px 0 40px rgba(0,0,0,0.7);
+                border-left: 1px solid rgba(108,99,255,0.25);
+                box-shadow: -10px 0 50px rgba(0,0,0,0.9);
                 padding: 0;
+                overscroll-behavior: contain;
             }
             .navbar-collapse.show { right: 0; }
+            /* Progressive enhancement: blur only where supported */
+            @supports (backdrop-filter: blur(1px)) {
+                .navbar-collapse { background: rgba(10,12,24,0.98); }
+            }
             
             /* Add backdrop overlay when open */
             .mobile-backdrop {
