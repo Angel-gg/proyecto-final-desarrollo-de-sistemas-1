@@ -37,8 +37,16 @@
             'ir a tienda', 'abrir tienda', 'ver tienda', 'abrir catalogo', 'abrir catálogo',
             'tienda', 'catalogo', 'catálogo', 'ver productos', 'productos disponibles',
             'quiero comprar', 'ver ofertas', 'explorar', 'navegar tienda', 'ir a la tienda',
-            'muéstrame la tienda', 'muestrame la tienda', 'quiero ver productos'
+            'muéstrame la tienda', 'muestrame la tienda', 'quiero ver productos',
+            'ver componentes', 'ver piezas', 'ver partes', 'piezas disponibles'
           ], action: () => goto('/Tienda') },
+
+        // ── Ver Combos públicos (tab combos en la tienda) ───────────────
+        { patterns: [
+            'ver combos', 'combos', 'paquetes', 'ver paquetes', 'bundles',
+            'ofertas de paquetes', 'kits', 'ver kits', 'paquetes de pc',
+            'combos disponibles', 'ver combos disponibles', 'qué combos hay', 'que combos hay'
+          ], action: () => goto('/Tienda?tab=combos') },
 
         // ── Inicio ──────────────────────────────────────────────────
         { patterns: [
@@ -78,11 +86,12 @@
             'ir al panel', 'abrir dashboard'
           ], action: () => gotoProtected('/Admin/Dashboard') },
 
-        // ── Componentes ──────────────────────────────────────────────
+        // ── Componentes: palabras genéricas → Tienda pública ────────────
+        // (cliente solo ve el catálogo, no el CRUD de admin)
+        // Admin-only: 'gestionar', 'administrar', 'agregar', 'crear'
         { patterns: [
-            'ir a componentes', 'ver componentes', 'componentes', 'inventario',
-            'ver inventario', 'gestionar componentes', 'lista de componentes',
-            'piezas', 'ver piezas', 'partes'
+            'ir a componentes', 'gestionar componentes', 'administrar componentes',
+            'lista de componentes admin', 'componentes admin'
           ], action: () => gotoProtected('/Componentes') },
         { patterns: [
             'agregar componente', 'nuevo componente', 'crear componente',
@@ -90,14 +99,19 @@
             'registrar componente', 'añadir producto'
           ], action: () => gotoProtected('/Componentes/Create') },
 
-        // ── Combos ───────────────────────────────────────────────────
+        // ── Combos públicos → Tienda (tab combos) ─────────────────────
+        // Cualquier cliente/visitante puede ver los combos en la tienda
         { patterns: [
-            'ir a combos', 'ver combos', 'combos', 'paquetes', 'ver paquetes',
-            'gestionar combos', 'lista de combos', 'promociones', 'bundles'
-          ], action: () => gotoProtected('/Combos') },
+            'ver combos', 'combos', 'paquetes', 'ver paquetes', 'bundles',
+            'kits', 'ver kits', 'ofertas de paquetes', 'paquetes de pc',
+            'combos disponibles', 'ver combos disponibles', 'qué combos hay', 'que combos hay', 'promociones'
+          ], action: () => goto('/Tienda?tab=combos') },
+
+        // ── Combos admin (gestión interna) ───────────────────────────
         { patterns: [
+            'ir a combos', 'gestionar combos', 'administrar combos',
             'agregar combo', 'nuevo combo', 'crear combo', 'añadir combo', 'nuevo paquete'
-          ], action: () => gotoProtected('/Combos/Create') },
+          ], action: () => gotoProtected('/Combos') },
 
         // ── Reportes ─────────────────────────────────────────────────
         { patterns: [
