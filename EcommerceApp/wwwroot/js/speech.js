@@ -384,13 +384,23 @@
 
                 @media (max-width: 768px) {
                     #speech-fab-wrapper {
-                        bottom: 1rem;
-                        right: 1rem;
+                        bottom: 5.5rem;   /* por encima del PWA banner cuando está visible */
+                        left: 1rem;       /* esquina inferior IZQUIERDA en móvil */
+                        right: auto;      /* anular el right */
+                        align-items: flex-start;
                     }
                     #speech-fab {
                         width: 44px;
                         height: 44px;
                         font-size: 1.1rem;
+                    }
+                    #speech-fab-tooltip {
+                        text-align: left;
+                    }
+                    #speech-toast-container {
+                        right: auto;
+                        left: 1rem;
+                        max-width: calc(100vw - 2rem);
                     }
                 }
 
