@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════
    TechParts ERP — Web Speech API
    Comandos de voz en español para navegación y búsqueda.
    Compatible con Chrome, Edge y Safari (con limitaciones).
@@ -32,66 +32,120 @@
 
     // ─── Comandos de navegación (español) ────────────────────────────
     const COMMANDS = [
-        // ── Tienda (todos, incluyendo visitantes) ────────────────────
+        // ── Tienda — Todos los productos (sin filtro) ──────────────────────────────────
         { patterns: [
             'ir a tienda', 'abrir tienda', 'ver tienda', 'abrir catalogo', 'abrir catálogo',
             'tienda', 'catalogo', 'catálogo', 'ver productos', 'productos disponibles',
-            'quiero comprar', 'ver ofertas', 'explorar', 'navegar tienda', 'ir a la tienda',
+            'quiero comprar', 'explorar', 'navegar tienda', 'ir a la tienda',
             'muéstrame la tienda', 'muestrame la tienda', 'quiero ver productos',
-            'ver componentes', 'ver piezas', 'ver partes', 'piezas disponibles'
+            'ver componentes', 'ver piezas', 'ver partes', 'piezas disponibles',
+            'ir al catálogo', 'ir al catalogo', 'todos los productos', 'ver todo'
           ], action: () => goto('/Tienda') },
 
-        // ── Ver Combos públicos (tab combos en la tienda) ───────────────
+        // ── Categorías de hardware específicas ────────────────────────────────────────
+        { patterns: [
+            'ver cpu', 'ver procesadores', 'procesadores', 'cpu', 'ver ryzen',
+            'quiero cpu', 'quiero un procesador', 'busco un procesador',
+            'ir a procesadores', 'mostrar procesadores', 'microprocesadores'
+          ], action: () => goto('/Tienda?tipo=CPU') },
+
+        { patterns: [
+            'ver gpu', 'ver tarjetas de video', 'tarjetas de video', 'gpu',
+            'ver rtx', 'ver radeon', 'ver geforce', 'tarjeta gráfica', 'tarjeta grafica',
+            'quiero una gpu', 'quiero una tarjeta de video', 'ir a gpu',
+            'mostrar tarjetas de video', 'tarjetas gráficas'
+          ], action: () => goto('/Tienda?tipo=GPU') },
+
+        { patterns: [
+            'ver ram', 'ver memoria', 'ram', 'memoria ram', 'ddr4', 'ddr5',
+            'quiero ram', 'quiero memoria', 'ir a memoria', 'mostrar ram',
+            'memoria para pc', 'módulos de memoria'
+          ], action: () => goto('/Tienda?tipo=RAM') },
+
+        { patterns: [
+            'ver ssd', 'ver discos', 'ssd', 'disco duro', 'disco solido', 'disco sólido',
+            'almacenamiento', 'nvme', 'ver nvme', 'quiero ssd', 'quiero un disco',
+            'ir a ssd', 'mostrar ssd', 'unidades de almacenamiento', 'discos de estado sólido'
+          ], action: () => goto('/Tienda?tipo=SSD') },
+
+        { patterns: [
+            'ver motherboard', 'ver placa madre', 'motherboard', 'placa madre', 'placa base',
+            'quiero una placa', 'ir a motherboard', 'mostrar placas',
+            'tarjeta madre', 'board'
+          ], action: () => goto('/Tienda?tipo=Motherboard') },
+
+        { patterns: [
+            'ver fuente', 'fuente de poder', 'fuente de alimentacion', 'fuente de alimentación',
+            'psu', 'ver psu', 'quiero una fuente', 'ir a fuentes',
+            'mostrar fuentes de poder', 'fuentes'
+          ], action: () => goto('/Tienda?tipo=Fuente') },
+
+        { patterns: [
+            'ver cooler', 'ver ventilacion', 'cooler', 'ventilación', 'ventilacion',
+            'ver disipadores', 'disipador', 'watercooling', 'ver fans', 'fans',
+            'quiero un cooler', 'ir a coolers', 'mostrar coolers'
+          ], action: () => goto('/Tienda?tipo=Cooler') },
+
+        { patterns: [
+            'ver gabinete', 'ver gabinetes', 'gabinete', 'carcasa', 'case',
+            'ver case', 'chasis', 'torre', 'quiero un gabinete', 'ir a gabinetes',
+            'mostrar gabinetes'
+          ], action: () => goto('/Tienda?tipo=Gabinete') },
+
+        // ── Combos / Paquetes (públicos) ──────────────────────────────────────────────
         { patterns: [
             'ver combos', 'combos', 'paquetes', 'ver paquetes', 'bundles',
-            'ofertas de paquetes', 'kits', 'ver kits', 'paquetes de pc',
-            'combos disponibles', 'ver combos disponibles', 'qué combos hay', 'que combos hay'
+            'kits', 'ver kits', 'paquetes de pc', 'combos disponibles',
+            'ver combos disponibles', 'qué combos hay', 'que combos hay',
+            'ofertas de paquetes', 'promociones', 'ver ofertas', 'ofertas'
           ], action: () => goto('/Tienda?tab=combos') },
 
-        // ── Inicio ──────────────────────────────────────────────────
+        // ── Inicio ──────────────────────────────────────────────────────────────────────
         { patterns: [
             'ir al inicio', 'ir a inicio', 'inicio', 'home', 'portada', 'página principal',
-            'pagina principal', 'volver al inicio', 'menú principal', 'menu principal'
+            'pagina principal', 'volver al inicio', 'menú principal', 'menu principal',
+            'página de inicio', 'ir a home'
           ], action: () => goto('/') },
 
-        // ── Login ────────────────────────────────────────────────────
+        // ── Login ────────────────────────────────────────────────────────────────────────
         { patterns: [
             'iniciar sesión', 'iniciar sesion', 'entrar', 'login', 'ingresar',
-            'acceder', 'ir al login', 'ir a login', 'abrir sesión', 'abrir sesion'
+            'acceder', 'ir al login', 'ir a login', 'abrir sesión', 'abrir sesion',
+            'quiero entrar', 'quiero iniciar sesión', 'registrarme', 'crear cuenta'
           ], action: () => isAuthenticated ? showToast('✅ Ya tienes sesión iniciada.', 'success') : goto('/Account/Login') },
 
-        // ── Carrito (requiere sesión) ─────────────────────────────────
+        // ── Carrito (requiere sesión) ─────────────────────────────────────────────────
         { patterns: [
             'ir al carrito', 'abrir carrito', 'ver carrito', 'mi carrito', 'cesta',
-            'ver cesta', 'abrir cesta', 'carrito de compras', 'mi cesta', 'ir al carro'
+            'ver cesta', 'abrir cesta', 'carrito de compras', 'mi cesta', 'ir al carro',
+            'mis productos seleccionados', 'revisar carrito', 'ver mi carrito'
           ], action: () => gotoProtected('/Tienda/Carrito') },
 
-        // ── Pagar (requiere sesión) ──────────────────────────────────
+        // ── Pagar (requiere sesión) ────────────────────────────────────────────────────
         { patterns: [
             'pagar', 'realizar pago', 'finalizar compra', 'checkout', 'proceder al pago',
-            'ir a pagar', 'pago', 'comprar ahora'
+            'ir a pagar', 'comprar ahora', 'confirmar compra', 'completar pedido'
           ], action: () => gotoProtected('/Tienda/Carrito') },
 
-        // ── Pedidos (requiere sesión) ────────────────────────────────
+        // ── Pedidos (requiere sesión) ──────────────────────────────────────────────────
         { patterns: [
             'mis pedidos', 'ver mis pedidos', 'mis compras', 'historial de compras',
             'pedidos', 'mis órdenes', 'mis ordenes', 'historial pedidos', 'ver pedidos',
-            'estado de mi pedido', 'ver mis órdenes'
+            'estado de mi pedido', 'ver mis órdenes', 'seguimiento de pedido',
+            '¿dónde está mi pedido', 'donde esta mi pedido'
           ], action: () => gotoProtected('/Tienda/MisPedidos') },
 
-        // ── Dashboard / Admin ────────────────────────────────────────
+        // ── Dashboard / Admin ────────────────────────────────────────────────────────
         { patterns: [
             'ir al dashboard', 'dashboard', 'panel de control', 'panel admin',
             'resumen', 'inicio admin', 'panel administrativo', 'administración', 'administracion',
-            'ir al panel', 'abrir dashboard'
+            'ir al panel', 'abrir dashboard', 'panel principal'
           ], action: () => gotoProtected('/Admin/Dashboard') },
 
-        // ── Componentes: palabras genéricas → Tienda pública ────────────
-        // (cliente solo ve el catálogo, no el CRUD de admin)
-        // Admin-only: 'gestionar', 'administrar', 'agregar', 'crear'
+        // ── Componentes admin (CRUD) ─────────────────────────────────────────────────
         { patterns: [
-            'ir a componentes', 'gestionar componentes', 'administrar componentes',
-            'lista de componentes admin', 'componentes admin'
+            'gestionar componentes', 'administrar componentes',
+            'lista de componentes admin', 'componentes admin', 'inventario'
           ], action: () => gotoProtected('/Componentes') },
         { patterns: [
             'agregar componente', 'nuevo componente', 'crear componente',
@@ -99,72 +153,75 @@
             'registrar componente', 'añadir producto'
           ], action: () => gotoProtected('/Componentes/Create') },
 
-        // ── Combos públicos → Tienda (tab combos) ─────────────────────
-        // Cualquier cliente/visitante puede ver los combos en la tienda
+        // ── Combos admin (gestión interna) ───────────────────────────────────────────
         { patterns: [
-            'ver combos', 'combos', 'paquetes', 'ver paquetes', 'bundles',
-            'kits', 'ver kits', 'ofertas de paquetes', 'paquetes de pc',
-            'combos disponibles', 'ver combos disponibles', 'qué combos hay', 'que combos hay', 'promociones'
-          ], action: () => goto('/Tienda?tab=combos') },
-
-        // ── Combos admin (gestión interna) ───────────────────────────
-        { patterns: [
-            'ir a combos', 'gestionar combos', 'administrar combos',
-            'agregar combo', 'nuevo combo', 'crear combo', 'añadir combo', 'nuevo paquete'
+            'gestionar combos', 'administrar combos',
+            'agregar combo', 'nuevo combo', 'crear combo', 'añadir combo', 'nuevo paquete',
+            'combos admin', 'gestionar paquetes'
           ], action: () => gotoProtected('/Combos') },
 
-        // ── Reportes ─────────────────────────────────────────────────
+        // ── Reportes ──────────────────────────────────────────────────────────────────
         { patterns: [
             'ir a reportes', 'ver reportes', 'reportes', 'descargar reporte',
             'estadísticas', 'estadisticas', 'ventas', 'análisis', 'analisis',
-            'ver estadísticas', 'informe', 'informes', 'reporte de ventas'
+            'ver estadísticas', 'informe', 'informes', 'reporte de ventas',
+            'ver ventas', 'resumen de ventas'
           ], action: () => gotoProtected('/Reportes') },
 
-        // ── Personal ─────────────────────────────────────────────────
+        // ── Personal ─────────────────────────────────────────────────────────────────
         { patterns: [
             'ver personal', 'personal', 'empleados', 'usuarios', 'equipo',
-            'gestionar personal', 'staff', 'trabajadores', 'ver empleados'
+            'gestionar personal', 'staff', 'trabajadores', 'ver empleados',
+            'gestión de personal', 'ver mi equipo'
           ], action: () => gotoProtected('/Personal') },
         { patterns: [
             'agregar empleado', 'nuevo empleado', 'crear empleado', 'agregar personal',
-            'registrar empleado', 'añadir trabajador'
+            'registrar empleado', 'añadir trabajador', 'contratar empleado'
           ], action: () => gotoProtected('/Personal/Create') },
 
-        // ── Sucursales ───────────────────────────────────────────────
+        // ── Sucursales ────────────────────────────────────────────────────────────────
         { patterns: [
             'ver sucursales', 'sucursales', 'tiendas', 'sedes', 'locales',
-            'gestionar sucursales', 'lista de sucursales', 'ver sedes'
+            'gestionar sucursales', 'lista de sucursales', 'ver sedes',
+            'dónde están las tiendas', 'donde estan las tiendas'
           ], action: () => gotoProtected('/Sucursales') },
         { patterns: [
-            'agregar sucursal', 'nueva sucursal', 'crear sucursal', 'añadir sucursal'
+            'agregar sucursal', 'nueva sucursal', 'crear sucursal', 'añadir sucursal',
+            'registrar sucursal'
           ], action: () => gotoProtected('/Sucursales/Create') },
 
-        // ── Proveedores ──────────────────────────────────────────────
+        // ── Proveedores ───────────────────────────────────────────────────────────────
         { patterns: [
             'ver proveedores', 'proveedores', 'mayoristas', 'marcas',
-            'gestionar proveedores', 'lista de proveedores', 'ver mayoristas'
+            'gestionar proveedores', 'lista de proveedores', 'ver mayoristas',
+            'distribuidores'
           ], action: () => gotoProtected('/Proveedores') },
         { patterns: [
-            'agregar proveedor', 'nuevo proveedor', 'crear proveedor', 'añadir proveedor'
+            'agregar proveedor', 'nuevo proveedor', 'crear proveedor', 'añadir proveedor',
+            'registrar proveedor'
           ], action: () => gotoProtected('/Proveedores/Create') },
 
-        // ── Cerrar sesión ────────────────────────────────────────────
+        // ── Cerrar sesión ─────────────────────────────────────────────────────────────
         { patterns: [
             'cerrar sesion', 'cerrar sesión', 'salir', 'logout', 'desconectar',
-            'cerrar cuenta', 'terminar sesión', 'terminar sesion', 'salir de la cuenta'
+            'cerrar cuenta', 'terminar sesión', 'terminar sesion', 'salir de la cuenta',
+            'desloguear', 'desloguearme', 'cerrar mi sesión'
           ], action: () => isAuthenticated ? submitLogout() : showToast('ℹ️ No tienes sesión activa.', 'info') },
 
-        // ── Búsqueda ─────────────────────────────────────────────────
+        // ── Búsqueda por voz ─────────────────────────────────────────────────────────
         { patterns: ['buscar '], action: (t) => handleSearch(t) },
         { patterns: ['quiero buscar '], action: (t) => handleSearch(t.replace('quiero ', '')) },
         { patterns: ['encuentra '], action: (t) => handleSearch(t.replace('encuentra ', 'buscar ')) },
         { patterns: ['necesito '], action: (t) => handleSearch(t.replace('necesito ', 'buscar ')) },
+        { patterns: ['muéstrame '], action: (t) => handleSearch(t.replace('muéstrame ', 'buscar ')) },
+        { patterns: ['busca '], action: (t) => handleSearch(t.replace('busca ', 'buscar ')) },
 
-        // ── Ayuda ────────────────────────────────────────────────────
+        // ── Ayuda ──────────────────────────────────────────────────────────────────────
         { patterns: [
             'ayuda', 'que puedo decir', 'qué puedo decir', 'comandos', 'instrucciones',
             'opciones', 'cómo funciona', 'como funciona', 'qué puedes hacer', 'que puedes hacer',
-            'qué comandos hay', 'que comandos hay', 'ver comandos'
+            'qué comandos hay', 'que comandos hay', 'ver comandos', 'mostrar comandos',
+            'lista de comandos', 'guía de voz'
           ], action: () => showHelp() },
     ];
 
@@ -488,34 +545,51 @@
         modal.className = 'modal fade';
         modal.setAttribute('tabindex', '-1');
         modal.innerHTML = `
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content" style="background:#12142a;border:1px solid rgba(108,99,255,0.3);border-radius:16px;color:#e0e0ff;">
                     <div class="modal-header" style="border-bottom:1px solid rgba(108,99,255,0.2);">
                         <h5 class="modal-title" style="background:linear-gradient(135deg,#6c63ff,#00d9b5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">
-                            🎙️ Comandos de Voz
+                            🎙️ Comandos de Voz — TechParts
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p style="color:rgba(200,200,255,0.6);font-size:0.85rem;margin-bottom:1rem;">Dí cualquiera de estos comandos en español:</p>
-                        <div style="display:grid;gap:0.5rem;max-height:50vh;overflow-y:auto;padding-right:0.5rem;">
+                        <p style="color:rgba(200,200,255,0.6);font-size:0.82rem;margin-bottom:1rem;">
+                            Habla con naturalidad en español. Deja de hablar y el comando se ejecutará automáticamente.
+                        </p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;max-height:55vh;overflow-y:auto;padding-right:0.25rem;">
                             ${[
-                                ['🏪', 'Tienda', '"tienda", "catálogo", "buscar [producto]"'],
-                                ['🛒', 'Carrito & Pedidos', '"ir al carrito", "mis pedidos", "compras"'],
-                                ['📦', 'Inventario (Trabajadores)', '"componentes", "combos", "agregar producto"'],
-                                ['🏢', 'Empresa (Admin)', '"sucursales", "personal", "proveedores", "agregar proveedor"'],
-                                ['📋', 'Análisis', '"reportes", "dashboard", "estadísticas"'],
-                                ['🚪', 'Sesión', '"cerrar sesión", "salir", "inicio"'],
-                                ['❓', 'Ayuda', '"ayuda", "comandos", "opciones"'],
+                                ['🏪', 'Tienda / Catálogo', '"tienda", "catálogo", "ver todo"'],
+                                ['🧠', 'Procesadores', '"ver CPU", "procesadores", "ver Ryzen"'],
+                                ['🎮', 'Tarjetas de Video', '"ver GPU", "tarjetas de video", "ver RTX"'],
+                                ['💾', 'Memoria RAM', '"ver RAM", "memoria", "DDR5"'],
+                                ['⚡', 'Almacenamiento', '"ver SSD", "disco sólido", "NVMe"'],
+                                ['🔌', 'Motherboard', '"ver motherboard", "placa madre"'],
+                                ['🔋', 'Fuentes de Poder', '"ver fuente", "PSU", "fuente de alimentación"'],
+                                ['❄️', 'Coolers', '"ver cooler", "ventilación", "disipadores"'],
+                                ['🖥️', 'Gabinetes', '"ver gabinete", "case", "chasis"'],
+                                ['🎁', 'Combos / Paquetes', '"combos", "paquetes", "promociones"'],
+                                ['🛒', 'Carrito', '"ir al carrito", "mi carrito", "ver cesta"'],
+                                ['📦', 'Mis Pedidos', '"mis pedidos", "historial", "seguimiento"'],
+                                ['📊', 'Dashboard (Admin)', '"dashboard", "panel de control"'],
+                                ['📋', 'Reportes', '"reportes", "estadísticas", "ventas"'],
+                                ['👥', 'Personal', '"personal", "empleados", "staff"'],
+                                ['🚚', 'Proveedores', '"proveedores", "mayoristas"'],
+                                ['🗺️', 'Sucursales', '"sucursales", "sedes", "locales"'],
+                                ['🔍', 'Buscar', '"buscar [producto]", "necesito [algo]", "busca [X]"'],
+                                ['🚨', 'Sesión', '"iniciar sesión", "cerrar sesión", "salir"'],
                             ].map(([emoji, cat, cmds]) => `
-                                <div style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:0.65rem 0.85rem;display:flex;align-items:flex-start;gap:0.75rem;">
-                                    <span style="font-size:1.1rem;flex-shrink:0;">${emoji}</span>
+                                <div style="background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.18);border-radius:10px;padding:0.6rem 0.75rem;display:flex;align-items:flex-start;gap:0.6rem;">
+                                    <span style="font-size:1rem;flex-shrink:0;margin-top:1px;">${emoji}</span>
                                     <div>
-                                        <div style="font-size:0.78rem;font-weight:700;color:#a78bfa;margin-bottom:0.15rem;">${cat}</div>
-                                        <div style="font-size:0.82rem;color:rgba(200,200,255,0.8);">${cmds}</div>
+                                        <div style="font-size:0.74rem;font-weight:700;color:#a78bfa;margin-bottom:0.1rem;">${cat}</div>
+                                        <div style="font-size:0.76rem;color:rgba(200,200,255,0.75);">${cmds}</div>
                                     </div>
                                 </div>
                             `).join('')}
+                        </div>
+                        <div style="margin-top:1rem;padding:0.6rem 0.8rem;background:rgba(0,217,181,0.07);border:1px solid rgba(0,217,181,0.2);border-radius:8px;font-size:0.78rem;color:rgba(0,217,181,0.9);">
+                            💡 También puedes decir <strong>"buscar [producto]"</strong> para buscar cualquier cosa directamente.
                         </div>
                     </div>
                 </div>

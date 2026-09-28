@@ -187,42 +187,105 @@
         /* ── Mobile Offcanvas Drawer (Bootstrap 5.3 nativo) ── */
         @@media (max-width: 767.98px) {
             #tpNavOffcanvas {
-                width: 82% !important;
-                max-width: 320px !important;
-                background: #0d0f1a !important;
+                width: 85% !important;
+                max-width: 340px !important;
+                background: #0b0d1a !important;
                 border-left: 1px solid rgba(108,99,255,0.3) !important;
-                box-shadow: -8px 0 35px rgba(0,0,0,0.85);
+                box-shadow: -8px 0 40px rgba(0,0,0,0.9);
             }
+            #tpNavOffcanvas .offcanvas-body { padding: 0 !important; overflow-y: auto; }
             .offcanvas-backdrop.show {
-                opacity: 0.65;
+                opacity: 0.7;
                 background-color: #000;
             }
 
+            /* ── Sección interna ── */
+            .oc-section { padding: 1rem 1.25rem; }
+            .oc-section + .oc-section { border-top: 1px solid rgba(255,255,255,0.06); }
+            .oc-label {
+                font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+                text-transform: uppercase; color: rgba(108,99,255,0.8);
+                margin-bottom: 0.65rem;
+            }
+
             /* Nav list vertical left-aligned */
-            .tp-nav-links { flex-direction: column; gap: 0.4rem; align-items: stretch; margin: 1.5rem 0; width: 100%; }
+            .tp-nav-links { flex-direction: column; gap: 0.25rem; align-items: stretch; width: 100%; margin: 0; padding: 0; list-style: none; }
             .tp-nav-links a {
-                padding: 12px 16px;
-                font-size: 0.95rem;
-                border-radius: 8px;
-                display: flex; align-items: center; gap: 12px;
+                padding: 11px 14px;
+                font-size: 0.9rem;
+                border-radius: 10px;
+                display: flex; align-items: center; gap: 10px;
                 background: transparent;
                 border: 1px solid transparent;
-                min-height: 48px;   /* área táctil mínima recomendada */
-                color: rgba(255,255,255,0.85);
+                min-height: 46px;
+                color: rgba(255,255,255,0.82);
+                text-decoration: none;
+                transition: background 0.18s, color 0.18s;
             }
-            .tp-nav-links a:hover, .tp-nav-links a:active { background: rgba(255,255,255,0.07); }
+            .tp-nav-links a:hover, .tp-nav-links a:active {
+                background: rgba(108,99,255,0.12);
+                color: #fff;
+                border-color: rgba(108,99,255,0.25);
+            }
+
+            /* Category pills */
+            .oc-cat-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            .oc-cat-pill {
+                display: flex; align-items: center; gap: 8px;
+                padding: 0.55rem 0.8rem;
+                background: rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 10px;
+                color: rgba(255,255,255,0.8);
+                font-size: 0.8rem; font-weight: 600;
+                text-decoration: none;
+                transition: all 0.2s;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+            .oc-cat-pill:hover, .oc-cat-pill:active {
+                background: rgba(108,99,255,0.18);
+                border-color: rgba(108,99,255,0.4);
+                color: #fff;
+            }
+            .oc-cat-pill .oc-cat-icon {
+                font-size: 1rem; flex-shrink: 0;
+            }
+
+            /* Quick access row */
+            .oc-quick-row {
+                display: grid; grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            .oc-quick-btn {
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                gap: 4px;
+                padding: 0.65rem 0.5rem;
+                background: rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 12px;
+                color: rgba(255,255,255,0.75);
+                font-size: 0.72rem; font-weight: 600;
+                text-decoration: none;
+                text-align: center;
+                transition: all 0.2s;
+            }
+            .oc-quick-btn .oc-quick-icon { font-size: 1.3rem; }
+            .oc-quick-btn:hover, .oc-quick-btn:active {
+                background: rgba(108,99,255,0.15);
+                border-color: rgba(108,99,255,0.35);
+                color: #fff;
+            }
 
             /* Search bar full width */
             .tp-search-form { width: 100%; margin-bottom: 0.5rem; }
             .tp-search-input { width: 100% !important; }
 
-            /* User chip full width */
-            .tp-user-chip { width: 100%; background: transparent; border: none; padding: 0; gap: 0.75rem; }
-            .tp-user-avatar { width: 36px; height: 36px; font-size: 1rem; }
-            .tp-user-name { font-size: 0.95rem; }
-
-            .tp-btn-logout { width: 100%; border: 1px solid rgba(239,68,68,0.4); padding: 0.75rem; border-radius: 8px; display: flex; justify-content: center; gap: 0.5rem; align-items: center; }
-            .tp-btn-login { width: 100%; display: block; padding: 0.75rem; text-align: center; }
+            .tp-btn-login { width: 100%; display: block; padding: 0.8rem; text-align: center; border-radius: 10px; font-size: 0.9rem; }
 
             /* Footer accordions */
             .footer-col h5 { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -266,16 +329,150 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
             </div>
 
-            <!-- Body -->
-            <div class="offcanvas-body d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between p-4 p-md-0">
-                <!-- Mobile Search Form -->
-                <form class="tp-search-form d-md-none w-100 mb-3" action="/Tienda" method="get">
-                    <span class="tp-search-icon">🔍</span>
-                    <input type="search" name="tipo" class="tp-search-input w-100" placeholder="Buscar SSD, CPU..." />
-                </form>
+            <!-- Body Offcanvas: layout de secciones apiladas en móvil, horizontal en desktop -->
+            <div class="offcanvas-body d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between p-0 p-md-0">
 
-                <!-- Nav links -->
-                <ul class="tp-nav-links ms-md-4 mb-0 d-flex flex-column flex-md-row gap-1">
+                <!-- ══ MOBILE ONLY CONTENT ══════════════════════════════════════ -->
+                <div class="d-md-none w-100">
+
+                    <!-- Buscador -->
+                    <div class="oc-section pt-3 pb-2">
+                        <form class="tp-search-form w-100" action="/Tienda" method="get">
+                            <span class="tp-search-icon">🔍</span>
+                            <input type="search" name="tipo" class="tp-search-input w-100" placeholder="Buscar CPU, SSD, GPU..." />
+                        </form>
+                    </div>
+
+                    <!-- Categorías de productos -->
+                    <div class="oc-section">
+                        <div class="oc-label">🗂️ Categorías</div>
+                        <div class="oc-cat-grid">
+                            <a class="oc-cat-pill" href="/Tienda?tipo=CPU" data-bs-dismiss="offcanvas">
+                                <span class="oc-cat-icon">🧠</span> CPU / Procesadores
+                            </a>
+                            <a class="oc-cat-pill" href="/Tienda?tipo=GPU" data-bs-dismiss="offcanvas">
+                                <span class="oc-cat-icon">🎮</span> GPU / Tarjetas
+                            </a>
+                            <a class="oc-cat-pill" href="/Tienda?tipo=RAM" data-bs-dismiss="offcanvas">
+                                <span class="oc-cat-icon">💾</span> RAM / Memoria
+                            </a>
+                            <a class="oc-cat-pill" href="/Tienda?tipo=SSD" data-bs-dismiss="offcanvas">
+                                <span class="oc-cat-icon">⚡</span> SSD / Almacenamiento
+                            </a>
+                            <a class="oc-cat-pill" href="/Tienda?tipo=Motherboard" data-bs-dismiss="offcanvas">
+                                <span class="oc-cat-icon">🔌</span> Motherboard
+                            </a>
+                            <a class="oc-cat-pill" href="/Tienda?tipo=Fuente" data-bs-dismiss="offcanvas">
+                                <span class="oc-cat-icon">🔋</span> Fuentes de poder
+                            </a>
+                            <a class="oc-cat-pill" href="/Tienda?tipo=Cooler" data-bs-dismiss="offcanvas">
+                                <span class="oc-cat-icon">❄️</span> Coolers / Ventilación
+                            </a>
+                            <a class="oc-cat-pill" href="/Tienda?tipo=Gabinete" data-bs-dismiss="offcanvas">
+                                <span class="oc-cat-icon">🖥️</span> Gabinetes
+                            </a>
+                        </div>
+                        <a href="/Tienda" class="d-flex align-items-center justify-content-center gap-1 mt-2 text-center" 
+                           data-bs-dismiss="offcanvas"
+                           style="font-size:0.78rem;color:rgba(108,99,255,0.9);text-decoration:none;padding:0.4rem;">
+                            Ver todos los productos →
+                        </a>
+                    </div>
+
+                    <!-- Accesos rápidos (según rol) -->
+                    <div class="oc-section">
+                        <div class="oc-label">⚡ Acceso rápido</div>
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            @if (User.IsInRole("Cliente") || User.IsInRole("User"))
+                            {
+                                <div class="oc-quick-row">
+                                    <a class="oc-quick-btn" href="/Tienda?tab=combos" data-bs-dismiss="offcanvas">
+                                        <span class="oc-quick-icon">🎁</span> Combos
+                                    </a>
+                                    <a class="oc-quick-btn" asp-controller="Tienda" asp-action="Carrito" data-bs-dismiss="offcanvas">
+                                        <span class="oc-quick-icon">🛒</span> Carrito
+                                    </a>
+                                    <a class="oc-quick-btn" asp-controller="Tienda" asp-action="MisPedidos" data-bs-dismiss="offcanvas">
+                                        <span class="oc-quick-icon">📦</span> Mis pedidos
+                                    </a>
+                                    <a class="oc-quick-btn" href="/Tienda" data-bs-dismiss="offcanvas">
+                                        <span class="oc-quick-icon">🏪</span> Tienda
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="oc-quick-row">
+                                    <a class="oc-quick-btn" asp-controller="Admin" asp-action="Dashboard" data-bs-dismiss="offcanvas">
+                                        <span class="oc-quick-icon">📊</span> Dashboard
+                                    </a>
+                                    <a class="oc-quick-btn" href="/Tienda?tab=combos" data-bs-dismiss="offcanvas">
+                                        <span class="oc-quick-icon">🎁</span> Combos
+                                    </a>
+                                    @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("GerenteSucursal") || User.IsInRole("Vendedor") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                                    {
+                                        <a class="oc-quick-btn" asp-controller="Reportes" asp-action="Index" data-bs-dismiss="offcanvas">
+                                            <span class="oc-quick-icon">📋</span> Reportes
+                                        </a>
+                                    }
+                                    @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Vendedor") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                                    {
+                                        <a class="oc-quick-btn" asp-controller="Componentes" asp-action="Index" data-bs-dismiss="offcanvas">
+                                            <span class="oc-quick-icon">🔧</span> Inventario
+                                        </a>
+                                    }
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="oc-quick-row">
+                                <a class="oc-quick-btn" href="/Tienda?tab=combos" data-bs-dismiss="offcanvas">
+                                    <span class="oc-quick-icon">🎁</span> Combos
+                                </a>
+                                <a class="oc-quick-btn" href="/Tienda" data-bs-dismiss="offcanvas">
+                                    <span class="oc-quick-icon">🏪</span> Catálogo
+                                </a>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Nav links (roles admin) -->
+                    @if (User.Identity!.IsAuthenticated && !(User.IsInRole("Cliente") || User.IsInRole("User")))
+                    {
+                        <div class="oc-section">
+                            <div class="oc-label">🛠️ Gestión</div>
+                            <ul class="tp-nav-links">
+                                <li><a asp-controller="Tienda" asp-action="Index" data-bs-dismiss="offcanvas">🏪 Tienda</a></li>
+                                <li><a asp-controller="Tienda" asp-action="MisPedidos" data-bs-dismiss="offcanvas">📦 Pedidos</a></li>
+                                @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Vendedor") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                                {
+                                    <li><a asp-controller="Componentes" asp-action="Index" data-bs-dismiss="offcanvas">🔧 Componentes</a></li>
+                                }
+                                @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
+                                {
+                                    <li><a asp-controller="Combos" asp-action="Index" data-bs-dismiss="offcanvas">🎁 Combos (Admin)</a></li>
+                                }
+                                @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
+                                {
+                                    <li><a asp-controller="Personal" asp-action="Index" data-bs-dismiss="offcanvas">👥 Personal</a></li>
+                                }
+                                @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("GerenteSucursal") || User.IsInRole("Admin"))
+                                {
+                                    <li><a asp-controller="Sucursales" asp-action="Index" data-bs-dismiss="offcanvas">🗺️ Sucursales</a></li>
+                                }
+                                @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("Admin"))
+                                {
+                                    <li><a asp-controller="Proveedores" asp-action="Index" data-bs-dismiss="offcanvas">🚚 Proveedores</a></li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+
+                <!-- ══ DESKTOP ONLY — Nav links horizontal ══════════════════════ -->
+                <ul class="tp-nav-links ms-md-4 mb-0 d-none d-md-flex flex-md-row gap-1">
                     @if (User.Identity!.IsAuthenticated)
                     {
                         @if (User.IsInRole("Cliente") || User.IsInRole("User"))
@@ -284,7 +481,7 @@
                             <li>
                                 <a asp-controller="Tienda" asp-action="Carrito" id="nav-cart-link" class="d-flex align-items-center gap-2 position-relative" style="color: rgba(255,255,255,0.8); text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 8px; transition: all 0.2s;">
                                     <span style="font-size: 1.1rem;">🛒</span>
-                                    <span class="d-none d-md-inline fw-semibold">Carrito</span>
+                                    <span class="fw-semibold">Carrito</span>
                                     <span id="nav-cart-badge" class="badge bg-danger rounded-pill position-absolute" style="display:none; font-size:0.65rem; top:0px; right:0px; box-shadow: 0 0 0 2px #0d0f1a;">0</span>
                                 </a>
                             </li>
@@ -293,35 +490,28 @@
                         else
                         {
                             <li><a asp-controller="Admin" asp-action="Dashboard">📊 Dashboard</a></li>
-                            
                             @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Vendedor") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
                             {
                                 <li><a asp-controller="Componentes" asp-action="Index">🔧 Componentes</a></li>
                             }
-                            
                             @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteSucursal") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
                             {
                                 <li><a asp-controller="Combos" asp-action="Index">🎁 Combos</a></li>
                             }
-                            
                             <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
                             <li><a asp-controller="Tienda" asp-action="MisPedidos">📦 Pedidos</a></li>
-                            
                             @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("GerenteSucursal") || User.IsInRole("Vendedor") || User.IsInRole("Comercial") || User.IsInRole("Admin"))
                             {
                                 <li><a asp-controller="Reportes" asp-action="Index">📋 Reportes</a></li>
                             }
-                            
                             @if (User.IsInRole("GerenteGeneral") || User.IsInRole("Admin"))
                             {
                                 <li><a asp-controller="Personal" asp-action="Index">👥 Personal</a></li>
                             }
-                            
                             @if (User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("GerenteSucursal") || User.IsInRole("Admin"))
                             {
                                 <li><a asp-controller="Sucursales" asp-action="Index">🗺️ Sucursales</a></li>
                             }
-                            
                             @if (User.IsInRole("Comercial") || User.IsInRole("GerenteGeneral") || User.IsInRole("GerenteRegional") || User.IsInRole("Admin"))
                             {
                                 <li><a asp-controller="Proveedores" asp-action="Index">🚚 Proveedores</a></li>
@@ -330,7 +520,6 @@
                     }
                     else
                     {
-                        @* Visitantes sin sesión: solo pueden ver la tienda *@
                         <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
                     }
                 </ul>
@@ -341,8 +530,8 @@
                     <input type="search" name="tipo" class="tp-search-input w-100" placeholder="Buscar RTX 4060, B650, Ryzen 7..." style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); width: 100% !important;" />
                 </form>
 
-                <!-- Right Side / Drawer Footer Mobile -->
-                <div class="tp-nav-right ms-md-auto mt-auto mt-md-0 pt-3 pt-md-0" style="border-top: 1px solid rgba(255,255,255,0.08);">
+                <!-- Right Side (Desktop) / Login button Mobile -->
+                <div class="tp-nav-right ms-md-auto mt-auto mt-md-0" style="">
                     @if (User.Identity!.IsAuthenticated)
                     {
                         <!-- User Dropdown -->
@@ -381,9 +570,28 @@
                     }
                     else
                     {
-                        <a asp-controller="Account" asp-action="Login" class="tp-btn-login">Iniciar sesión</a>
+                        <a asp-controller="Account" asp-action="Login" class="tp-btn-login d-none d-md-inline-block">Iniciar sesión</a>
                     }
                 </div>
+
+                <!-- Mobile: Iniciar sesión at bottom (only for unauthenticated users) -->
+                @if (!User.Identity!.IsAuthenticated)
+                {
+                    <div class="d-md-none oc-section" style="border-top: 1px solid rgba(255,255,255,0.08); padding-bottom: 1.5rem;">
+                        <a asp-controller="Account" asp-action="Login" class="tp-btn-login">Iniciar sesión</a>
+                    </div>
+                }
+                else if (User.Identity.IsAuthenticated)
+                {
+                    <div class="d-md-none oc-section" style="border-top: 1px solid rgba(255,255,255,0.08); padding-bottom: 1.5rem;">
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" style="width:100%; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#f87171; padding:0.75rem; border-radius:10px; font-weight:600; font-size:0.88rem; cursor:pointer;">
+                                🚪 Cerrar Sesión — @User.Identity.Name
+                            </button>
+                        </form>
+                    </div>
+                }
             </div>
         </div>
       </div>
