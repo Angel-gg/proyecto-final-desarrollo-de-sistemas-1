@@ -343,11 +343,20 @@
                     position: fixed;
                     bottom: 1.75rem;
                     right: 1.75rem;
-                    z-index: 9999;
+                    z-index: 1030;
                     display: flex;
                     flex-direction: column;
                     align-items: flex-end;
                     gap: 0.5rem;
+                    transition: opacity 0.2s, visibility 0.2s;
+                }
+
+                /* Ocultar micrófono cuando un modal u offcanvas está abierto */
+                body:has(.offcanvas.show) #speech-fab-wrapper,
+                body:has(.modal.show) #speech-fab-wrapper {
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                    visibility: hidden !important;
                 }
 
                 #speech-fab {
@@ -384,7 +393,7 @@
 
                 @media (max-width: 768px) {
                     #speech-fab-wrapper {
-                        bottom: 5.5rem;   /* por encima del PWA banner cuando está visible */
+                        bottom: 5.5rem;   /* por encima del PWA banner */
                         left: 1rem;       /* esquina inferior IZQUIERDA en móvil */
                         right: auto;      /* anular el right */
                         align-items: flex-start;

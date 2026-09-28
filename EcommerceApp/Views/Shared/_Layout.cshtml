@@ -184,55 +184,19 @@
             pointer-events: none;
         }
 
-        /* ── Mobile Drawer ── */
+        /* ── Mobile Offcanvas Drawer (Bootstrap 5.3 nativo) ── */
         @@media (max-width: 767.98px) {
-            /* El drawer siempre está en el DOM pero fuera de pantalla */
-            .navbar-collapse {
-                position: fixed !important;
-                top: 0 !important; bottom: 0 !important;
-                right: 0 !important; left: auto !important;
-                width: 82% !important; max-width: 340px !important;
-                height: 100% !important;
+            #tpNavOffcanvas {
+                width: 82% !important;
+                max-width: 320px !important;
                 background: #0d0f1a !important;
-                z-index: 1060 !important;
-                display: flex !important;
-                flex-direction: column !important;
                 border-left: 1px solid rgba(108,99,255,0.3) !important;
-                box-shadow: -8px 0 40px rgba(0,0,0,0.8) !important;
-                padding: 0 !important;
-                overscroll-behavior: contain;
-                overflow-y: auto;
-                /* Animación con transform (no right, no height — evita bug BS) */
-                transform: translateX(110%) !important;
-                transition: transform 0.28s cubic-bezier(0.4,0,0.2,1) !important;
-                visibility: hidden !important;
-                /* Anular todo lo que Bootstrap injecta vía collapse */
-                max-height: none !important;
-                overflow: visible !important;
-                clip: auto !important;
+                box-shadow: -8px 0 35px rgba(0,0,0,0.85);
             }
-            /* Estado ABIERTO — controlado por JS con clase .drawer-open */
-            .navbar-collapse.drawer-open {
-                transform: translateX(0) !important;
-                visibility: visible !important;
+            .offcanvas-backdrop.show {
+                opacity: 0.65;
+                background-color: #000;
             }
-
-            /* Backdrop: oculto por defecto, bloqueado para clicks cuando cerrado */
-            .mobile-backdrop {
-                display: none;
-                position: fixed; top: 0; left: 0;
-                width: 100%; height: 100%;
-                background: rgba(0,0,0,0.6);
-                z-index: 1059;   /* justo DEBAJO del drawer (1060) */
-                cursor: pointer;
-                -webkit-tap-highlight-color: transparent;
-            }
-            .mobile-backdrop.show { display: block; }
-
-            /* Drawer structure */
-            .drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
-            .drawer-body { padding: 1.5rem; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-            .drawer-footer { padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 1rem; flex-shrink: 0; }
 
             /* Nav list vertical left-aligned */
             .tp-nav-links { flex-direction: column; gap: 0.4rem; align-items: stretch; margin: 1.5rem 0; width: 100%; }
@@ -269,18 +233,13 @@
         }
         
         @@media (min-width: 768px) {
-            .drawer-header { display: none !important; }
-            .drawer-footer { display: flex; align-items: center; gap: 0.75rem; border: none; background: transparent; padding: 0; }
-            .drawer-body { display: contents; }
             .tp-search-form { margin-right: 0.5rem; }
             .footer-col ul { display: block !important; }
+            .tp-nav-right { border-top: none !important; }
         }
     </style>
 </head>
 <body class="tp-global-theme" style="margin:0; padding:0;">
-
-    <!-- Backdrop overlay for mobile drawer -->
-    <div class="mobile-backdrop" id="navBackdrop"></div>
 
     <!-- ── Navbar ── -->
     <nav class="tp-navbar navbar navbar-expand-md navbar-dark">
@@ -291,29 +250,28 @@
             TechParts
         </a>
 
-        <!-- Toggler -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" style="border-color: rgba(255,255,255,0.1); border-radius: 8px;">
+        <!-- Toggler para Offcanvas móvil -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#tpNavOffcanvas" aria-controls="tpNavOffcanvas" aria-label="Abrir menú" style="border-color: rgba(255,255,255,0.15); border-radius: 8px;">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Collapse -->
-        <div class="collapse navbar-collapse mt-3 mt-md-0" id="navContent">
-            
-            <!-- Drawer Header (Mobile Only) -->
-            <div class="drawer-header d-md-none">
+        <!-- Offcanvas (Drawer en móvil, navbar horizontal estándar en escritorio) -->
+        <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="tpNavOffcanvas" aria-labelledby="tpNavOffcanvasLabel">
+            <!-- Header (Solo móvil) -->
+            <div class="offcanvas-header d-md-none border-bottom" style="border-color: rgba(255,255,255,0.08) !important; padding: 1.25rem 1.5rem;">
                 <a class="tp-brand m-0" href="/">
                     <div class="tp-brand-icon">⚡</div>
                     TechParts
                 </a>
-                <button type="button" class="btn-close btn-close-white" data-bs-toggle="collapse" data-bs-target="#navContent"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
             </div>
 
-            <!-- Drawer Body -->
-            <div class="drawer-body">
+            <!-- Body -->
+            <div class="offcanvas-body d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between p-4 p-md-0">
                 <!-- Mobile Search Form -->
-                <form class="tp-search-form d-md-none" action="/Tienda" method="get">
+                <form class="tp-search-form d-md-none w-100 mb-3" action="/Tienda" method="get">
                     <span class="tp-search-icon">🔍</span>
-                    <input type="search" name="tipo" class="tp-search-input" placeholder="Buscar SSD, CPU..." />
+                    <input type="search" name="tipo" class="tp-search-input w-100" placeholder="Buscar SSD, CPU..." />
                 </form>
 
                 <!-- Nav links -->
@@ -376,56 +334,56 @@
                         <li><a asp-controller="Tienda" asp-action="Index">🏪 Tienda</a></li>
                     }
                 </ul>
-            </div>
 
-            <!-- Center Search Form Desktop -->
-            <form class="tp-search-form d-none d-md-flex mx-auto" action="/Tienda" method="get" style="width: 400px; max-width: 100%;">
-                <span class="tp-search-icon">🔍</span>
-                <input type="search" name="tipo" class="tp-search-input w-100" placeholder="Buscar RTX 4060, B650, Ryzen 7..." style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); width: 100% !important;" />
-            </form>
+                <!-- Center Search Form Desktop -->
+                <form class="tp-search-form d-none d-md-flex mx-auto" action="/Tienda" method="get" style="width: 400px; max-width: 100%;">
+                    <span class="tp-search-icon">🔍</span>
+                    <input type="search" name="tipo" class="tp-search-input w-100" placeholder="Buscar RTX 4060, B650, Ryzen 7..." style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); width: 100% !important;" />
+                </form>
 
-            <!-- Drawer Footer / Right Side Desktop -->
-            <div class="drawer-footer ms-auto tp-nav-right">
-                @if (User.Identity!.IsAuthenticated)
-                {
-                    <!-- User Dropdown -->
-                    <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: rgba(255,255,255,0.06); padding: 0.35rem 0.8rem 0.35rem 0.35rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
-                            <div class="tp-user-avatar me-2" style="width:30px; height:30px;">
-                                @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
-                            </div>
-                            <span class="d-none d-md-block fw-semibold" style="font-size:0.85rem; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@User.Identity.Name</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-0" aria-labelledby="userDropdown" style="background: rgba(13,15,26,0.95); backdrop-filter: blur(12px); border: 1px solid rgba(108,99,255,0.3) !important; border-radius: 12px; margin-top: 0.5rem;">
-                            <li>
-                                <div class="px-3 py-2">
-                                    <div class="fw-bold" style="font-size: 0.85rem; color: #fff;">@User.Identity.Name</div>
-                                    @{
-                                        var rolName = User.IsInRole("GerenteGeneral") ? "Gerente General"
-                                                    : User.IsInRole("GerenteRegional") ? "Gerente Regional"
-                                                    : User.IsInRole("GerenteSucursal") ? "Gerente Sucursal"
-                                                    : User.IsInRole("Vendedor") ? "Vendedor"
-                                                    : User.IsInRole("Comercial") ? "Comercial"
-                                                    : User.IsInRole("Admin") ? "Admin"
-                                                    : "Cliente";
-                                    }
-                                    <div class="tp-role-badge mt-1" style="font-size:0.7rem;">@rolName</div>
+                <!-- Right Side / Drawer Footer Mobile -->
+                <div class="tp-nav-right ms-md-auto mt-auto mt-md-0 pt-3 pt-md-0" style="border-top: 1px solid rgba(255,255,255,0.08);">
+                    @if (User.Identity!.IsAuthenticated)
+                    {
+                        <!-- User Dropdown -->
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: rgba(255,255,255,0.06); padding: 0.35rem 0.8rem 0.35rem 0.35rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="tp-user-avatar me-2" style="width:30px; height:30px;">
+                                    @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
                                 </div>
-                            </li>
-                            <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
-                            <li>
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2 fw-semibold" style="font-size:0.85rem;">🚪 Cerrar Sesión</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                }
-                else
-                {
-                    <a asp-controller="Account" asp-action="Login" class="tp-btn-login">Iniciar sesión</a>
-                }
+                                <span class="d-none d-md-block fw-semibold" style="font-size:0.85rem; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@User.Identity.Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-0" aria-labelledby="userDropdown" style="background: rgba(13,15,26,0.95); backdrop-filter: blur(12px); border: 1px solid rgba(108,99,255,0.3) !important; border-radius: 12px; margin-top: 0.5rem;">
+                                <li>
+                                    <div class="px-3 py-2">
+                                        <div class="fw-bold" style="font-size: 0.85rem; color: #fff;">@User.Identity.Name</div>
+                                        @{
+                                            var rolName = User.IsInRole("GerenteGeneral") ? "Gerente General"
+                                                        : User.IsInRole("GerenteRegional") ? "Gerente Regional"
+                                                        : User.IsInRole("GerenteSucursal") ? "Gerente Sucursal"
+                                                        : User.IsInRole("Vendedor") ? "Vendedor"
+                                                        : User.IsInRole("Comercial") ? "Comercial"
+                                                        : User.IsInRole("Admin") ? "Admin"
+                                                        : "Cliente";
+                                        }
+                                        <div class="tp-role-badge mt-1" style="font-size:0.7rem;">@rolName</div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2 fw-semibold" style="font-size:0.85rem;">🚪 Cerrar Sesión</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="tp-btn-login">Iniciar sesión</a>
+                    }
+                </div>
             </div>
         </div>
       </div>
@@ -491,60 +449,18 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
-        // ── MOBILE DRAWER — Sistema propio, sin Bootstrap collapse ──
-        const toggler  = document.querySelector('.navbar-toggler');
-        const navPanel = document.getElementById('navContent');
-        const backdrop = document.getElementById('navBackdrop');
-        const isMobile = () => window.innerWidth < 768;
-
-        function openDrawer() {
-            navPanel.classList.add('drawer-open');
-            backdrop.classList.add('show');
-            document.body.style.overflow = 'hidden';
-            if (toggler) toggler.setAttribute('aria-expanded', 'true');
-        }
-
-        function closeDrawer() {
-            navPanel.classList.remove('drawer-open');
-            backdrop.classList.remove('show');
-            document.body.style.overflow = '';
-            if (toggler) toggler.setAttribute('aria-expanded', 'false');
-        }
-
-        if (toggler && navPanel && backdrop) {
-            // Interceptar el click del toggler en móvil
-            toggler.addEventListener('click', function(e) {
-                if (isMobile()) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    navPanel.classList.contains('drawer-open') ? closeDrawer() : openDrawer();
-                }
-            });
-
-            // Cerrar al tocar el backdrop oscuro
-            backdrop.addEventListener('click', closeDrawer);
-
-            // Botón X dentro del drawer
-            var btnClose = navPanel.querySelector('.btn-close');
-            if (btnClose) btnClose.addEventListener('click', closeDrawer);
-
-            // Cerrar al navegar (tocar link en móvil)
-            navPanel.querySelectorAll('a[href]').forEach(function(link) {
-                link.addEventListener('click', function() {
-                    if (isMobile()) closeDrawer();
+        // ── Cerrar Offcanvas al hacer clic en un enlace de navegación ──
+        document.addEventListener('DOMContentLoaded', function () {
+            var offcanvasEl = document.getElementById('tpNavOffcanvas');
+            if (offcanvasEl) {
+                offcanvasEl.querySelectorAll('a[href]').forEach(function(link) {
+                    link.addEventListener('click', function() {
+                        var bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                        if (bsOffcanvas) bsOffcanvas.hide();
+                    });
                 });
-            });
-
-            // ESC key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && isMobile()) closeDrawer();
-            });
-
-            // Al rotar: cerrar en desktop
-            window.addEventListener('resize', function() {
-                if (!isMobile()) closeDrawer();
-            });
-        }
+            }
+        });
 
         // Footer accordion móvil
         $(document).ready(function() {

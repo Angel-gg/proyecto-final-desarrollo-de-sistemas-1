@@ -6,7 +6,7 @@
      • Offline Fallback → /offline.html cuando no hay red
    ═══════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'techparts-v1';
+const CACHE_NAME = 'techparts-v2';
 const OFFLINE_URL = '/offline.html';
 
 // Assets que se pre-cachean al instalar el SW
@@ -25,7 +25,7 @@ const STATIC_ASSETS = [
 
 // ─── INSTALL ─────────────────────────────────────────────────────────
 self.addEventListener('install', event => {
-    console.log('[SW] Instalando TechParts Service Worker...');
+    console.log('[SW] Instalando TechParts Service Worker v2...');
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
             console.log('[SW] Pre-cacheando assets estáticos...');
@@ -39,7 +39,7 @@ self.addEventListener('install', event => {
 
 // ─── ACTIVATE ────────────────────────────────────────────────────────
 self.addEventListener('activate', event => {
-    console.log('[SW] Activando TechParts Service Worker...');
+    console.log('[SW] Activando TechParts Service Worker v2...');
     event.waitUntil(
         caches.keys().then(keys =>
             Promise.all(
@@ -67,7 +67,13 @@ self.addEventListener('fetch', event => {
     // Ignorar requests POST (formularios, logout, carrito, etc.)
     if (request.method !== 'GET') return;
 
-    // Assets estáticos → Cache-First
+    // speech.js y site.js → Network-First para reflejar actualizaciones de inmediato
+    if (url.pathname.endsWith('/speech.js') || url.pathname.endsWith('/site.js')) {
+        event.respondWith(networkFirst(request));
+        return;
+    }
+
+    // Assets estáticos de librerías/imágenes → Cache-First
     if (isStaticAsset(url.pathname)) {
         event.respondWith(cacheFirst(request));
     } else {
